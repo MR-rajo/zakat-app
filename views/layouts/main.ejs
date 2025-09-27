@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || 'Zakat Fitrah' %></title>
+    <link href="/css/output.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <% if (user) { %>
+    <nav class="bg-primary-600 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <h1 class="text-white text-xl font-bold">
+                <i class="fas fa-mosque mr-2"></i>Zakat Fitrah
+              </h1>
+            </div>
+            <div class="hidden md:block">
+              <div class="ml-10 flex items-baseline space-x-4">
+                <a
+                  href="/muzakki"
+                  class="text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  <i class="fas fa-users mr-1"></i>Muzakki
+                </a>
+                <a
+                  href="/infak"
+                  class="text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  <i class="fas fa-hand-holding-heart mr-1"></i>Infak
+                </a>
+                <a
+                  href="/laporan"
+                  class="text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  <i class="fas fa-chart-bar mr-1"></i>Laporan
+                </a>
+                <% if (user.role === 'admin') { %>
+                <a
+                  href="/users"
+                  class="text-white hover:bg-primary-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  <i class="fas fa-user-cog mr-1"></i>Users
+                </a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="ml-4 flex items-center md:ml-6">
+              <div class="relative">
+                <div class="flex items-center text-white">
+                  <i class="fas fa-user-circle text-2xl mr-2"></i>
+                  <div class="text-sm">
+                    <div class="font-medium"><%= user.name %></div>
+                    <div class="text-primary-200 text-xs">
+                      <%= user.role.toUpperCase() %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a
+                href="/auth/logout"
+                class="ml-4 bg-primary-700 hover:bg-primary-800 text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                <i class="fas fa-sign-out-alt mr-1"></i>Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div class="md:hidden">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <a
+            href="/muzakki"
+            class="text-white hover:bg-primary-700 block px-3 py-2 rounded-md text-base font-medium"
+          >
+            <i class="fas fa-users mr-1"></i>Muzakki
+          </a>
+          <a
+            href="/infak"
+            class="text-white hover:bg-primary-700 block px-3 py-2 rounded-md text-base font-medium"
+          >
+            <i class="fas fa-hand-holding-heart mr-1"></i>Infak
+          </a>
+          <a
+            href="/laporan"
+            class="text-white hover:bg-primary-700 block px-3 py-2 rounded-md text-base font-medium"
+          >
+            <i class="fas fa-chart-bar mr-1"></i>Laporan
+          </a>
+          <% if (user.role === 'admin') { %>
+          <a
+            href="/users"
+            class="text-white hover:bg-primary-700 block px-3 py-2 rounded-md text-base font-medium"
+          >
+            <i class="fas fa-user-cog mr-1"></i>Users
+          </a>
+          <% } %>
+        </div>
+      </div>
+    </nav>
+    <% } %>
+
+    <!-- Flash Messages -->
+    <% if (success_msg && success_msg.length > 0) { %>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <div class="alert-success">
+        <i class="fas fa-check-circle mr-2"></i><%= success_msg %>
+      </div>
+    </div>
+    <% } %> <% if (error_msg && error_msg.length > 0) { %>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <div class="alert-error">
+        <i class="fas fa-exclamation-circle mr-2"></i><%= error_msg %>
+      </div>
+    </div>
+    <% } %> <% if (error && error.length > 0) { %>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+      <div class="alert-error">
+        <i class="fas fa-exclamation-circle mr-2"></i><%= error %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Main Content -->
+    <main class="<%= user ? 'py-8' : 'py-0' %>"><%- body %></main>
+
+    <!-- Footer -->
+    <% if (user) { %>
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+      <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-sm text-gray-500">
+          © <%= new Date().getFullYear() %> Aplikasi Zakat Fitrah. Dibuat dengan
+          ❤️ untuk umat.
+        </div>
+      </div>
+    </footer>
+    <% } %>
+
+    <!-- Scripts -->
+    <script>
+      // Auto hide flash messages after 5 seconds
+      setTimeout(function () {
+        const alerts = document.querySelectorAll(
+          ".alert-success, .alert-error"
+        );
+        alerts.forEach(function (alert) {
+          alert.style.opacity = "0";
+          setTimeout(function () {
+            alert.remove();
+          }, 300);
+        });
+      }, 5000);
+
+      // Confirm delete actions
+      function confirmDelete(name) {
+        return confirm(
+          `Apakah Anda yakin ingin menghapus data "${name}"? Tindakan ini tidak dapat dibatalkan.`
+        );
+      }
+
+      // Format currency input
+      function formatCurrency(input) {
+        let value = input.value.replace(/[^\d]/g, "");
+        input.value = new Intl.NumberFormat("id-ID").format(value);
+      }
+
+      // Calculate zakat automatically
+      function calculateZakat() {
+        const jiwa =
+          parseInt(document.getElementById("jumlah_jiwa")?.value) || 0;
+        const jenisZakat = document.getElementById("jenis_zakat")?.value;
+
+        if (jiwa > 0 && jenisZakat) {
+          let kewajiban = 0;
+          if (jenisZakat === "beras") {
+            kewajiban = jiwa * 2.5; // 2.5 kg per jiwa
+            document.getElementById("kewajiban_display").textContent =
+              kewajiban.toFixed(1) + " kg";
+          } else if (jenisZakat === "uang") {
+            kewajiban = jiwa * 45000; // Rp 45.000 per jiwa
+            document.getElementById("kewajiban_display").textContent =
+              "Rp " + kewajiban.toLocaleString("id-ID");
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

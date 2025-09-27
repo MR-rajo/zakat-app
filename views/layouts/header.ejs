@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title || 'Zakat Fitrah' %></title>
+    <link rel="shortcut icon" href="/public/images/logo.png" type="image/x-icon">
+    <link href="/css/output.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      *{
+        text-decoration: none;
+      }
+      
+      /* Custom styles for navigation */
+      .nav-link-active {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      
+      .nav-link {
+        transition: all 0.3s ease;
+        position: relative;
+        border-bottom: 3px solid transparent;
+      }
+      
+      .nav-link:hover {
+        background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+      
+      .logo-gradient {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .mobile-menu-enter {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      
+      .mobile-menu-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.3s ease;
+      }
+      
+      .user-dropdown {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 1050;
+      }
+      
+      .nav-bg {
+        background: linear-gradient(135deg, #1eaf2f 0%, #1eaf2f 50%, #1eaf2f 100%);
+        backdrop-filter: blur(10px);
+      }
+      
+      /* Fixed navbar styles */
+      .navbar-fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+      }
+      
+      /* Body padding to compensate for fixed navbar */
+      .body-with-navbar {
+        padding-top: 64px; /* Height of navbar */
+      }
+      
+      /* Mobile menu positioning for fixed navbar */
+      #mobile-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 999;
+      }
+      
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      /* Ensure content doesn't overlap with fixed navbar */
+      .content-with-fixed-navbar {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body class="<%= bodyClass || 'bg-gray-50 min-h-screen' %> <%= (typeof user !== 'undefined' && user) ? 'body-with-navbar' : '' %>">
+    <!-- Navigation -->
+    <% if (typeof user !== 'undefined' && user) { %>
+    <nav class="nav-bg shadow-2xl navbar-fixed py-[1.2rem]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <!-- Logo and Desktop Menu -->
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <a href="/dashboard" class="text-white font-bold text-xl lg:text-2xl logo-gradient flex items-center">
+                <div class="bg-white/10 p-2 rounded-lg mr-3 backdrop-blur-sm">
+                  <i class="fas fa-mosque text-white"></i>
+                </div>
+                <span class="">E - Zakat</span>
+              </a>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:block ml-10">
+              <div class="flex items-baseline space-x-1">
+                <a href="/dashboard" 
+                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-tachometer-alt mr-2"></i>
+                  <span>Dashboard</span>
+                </a>
+                <a href="/rt" 
+                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'rt') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-home mr-2"></i>
+                  <span>Data RT</span>
+                </a>
+                <a href="/muzakki" 
+                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'muzakki') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-users mr-2"></i>
+                  <span>Muzakki</span>
+                </a>
+                <a href="/mustahik" 
+                   class="nav-link text-white no-underline px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'mustahik') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-user-friends mr-2"></i>
+                  <span>Mustahik</span>
+                </a>
+                <a href="/distribusi" 
+                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'distribusi') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-share-alt mr-2"></i>
+                  <span>Distribusi</span>
+                </a>
+                <a href="/infak" 
+                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'infak') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-hand-holding-heart mr-2"></i>
+                  <span>Infak</span>
+                </a>
+                <a href="/laporan" 
+                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'laporan') ? 'nav-link-active' : '' %>">
+                  <i class="fas fa-chart-bar mr-2"></i>
+                  <span>Laporan</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile menu button and User menu -->
+          <div class="flex items-center space-x-3">
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+              <button
+                type="button"
+                class="text-white hover:text-gray-200 focus:outline-none focus:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all duration-200"
+                onclick="toggleMobileMenu()"
+                id="mobile-menu-button"
+              >
+                <span class="sr-only">Open main menu</span>
+                <i class="fas fa-bars text-lg" id="menu-icon"></i>
+              </button>
+            </div>
+
+            <!-- User menu -->
+            <div class="relative">
+              <button
+                type="button"
+                class="focus:outline-none focus:text-gray-200 flex items-center p-2 rounded-lg hover:bg-white/10 transition-all duration-200"
+                onclick="toggleDropdown()"
+              >
+                <div class="p-1 rounded-full mr-2 backdrop-blur-sm">
+                  <i class="fas fa-user text-sm"></i>
+                </div>
+                <span class="hidden sm:block text-sm font-medium"><%= (user && user.name) ? user.name.split(' ')[0] : 'User' %></span>
+                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+              </button>
+              
+              <div
+                id="dropdown-menu"
+                class="origin-top-right absolute right-0 mt-6 w-56 rounded-xl shadow-2xl user-dropdown ring-1 ring-black ring-opacity-5 hidden transform transition-all duration-200"
+              >
+                <div class="py-2">
+                  <div class="px-4 py-3 border-b border-gray-100">
+                    <div class="font-semibold text-gray-800"><%= (user && user.name) ? user.name : 'User' %></div>
+                    <div class="text-sm text-gray-500"><%= (user && user.nomor_wa) ? user.nomor_wa : 'No Phone' %></div>
+                  </div>
+                  <a
+                    href="/users/profile"
+                    class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <i class="fas fa-user mr-3 text-blue-500"></i>Profile Saya
+                  </a>
+                  <form method="POST" action="/auth/logout" class="block">
+                    <button
+                      type="submit"
+                      class="w-full flex items-center text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150"
+                    >
+                      <i class="fas fa-sign-out-alt mr-3 text-red-500"></i>Keluar
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+          <div class="px-2 pt-2 pb-3 space-y-1 bg-white/5 backdrop-blur-sm rounded-lg mt-2 mb-4">
+            <a href="/dashboard" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+            </a>
+            <a href="/rt" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'rt') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-home mr-3"></i>Data RT
+            </a>
+            <a href="/muzakki" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'muzakki') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-users mr-3"></i>Muzakki
+            </a>
+            <a href="/mustahik" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'mustahik') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-user-friends mr-3"></i>Mustahik
+            </a>
+            <a href="/distribusi" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'distribusi') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-share-alt mr-3"></i>Distribusi
+            </a>
+            <a href="/infak" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'infak') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-hand-holding-heart mr-3"></i>Infak
+            </a>
+            <a href="/laporan" 
+               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'laporan') ? 'nav-link-active' : '' %>">
+              <i class="fas fa-chart-bar mr-3"></i>Laporan
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <% } %>
+
+    <!-- Flash Messages -->
+    <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+    <div
+      class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4"
+    >
+      <div class="flex items-center">
+        <i class="fas fa-check-circle mr-2"></i><%= success %>
+      </div>
+    </div>
+    <% } %> <% if (typeof error !== 'undefined' && error && error.length > 0) {
+    %>
+    <div
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4"
+    >
+      <div class="flex items-center">
+        <i class="fas fa-exclamation-circle mr-2"></i><%= error %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Main Content -->
+    <% if (typeof user !== 'undefined' && user) { %>
+    <main class="py-4">
+    <% } else { %>
+    <main class="py-0">
+    <% } %>
+
+    <script>
+      // Toggle mobile menu
+      function toggleMobileMenu() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        
+        if (mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.remove('hidden');
+          mobileMenu.classList.add('mobile-menu-enter-active');
+          menuIcon.className = 'fas fa-times text-lg';
+        } else {
+          mobileMenu.classList.add('hidden');
+          mobileMenu.classList.remove('mobile-menu-enter-active');
+          menuIcon.className = 'fas fa-bars text-lg';
+        }
+      }
+
+      // Toggle user dropdown
+      function toggleDropdown() {
+        const dropdown = document.getElementById('dropdown-menu');
+        if (dropdown.classList.contains('hidden')) {
+          dropdown.classList.remove('hidden');
+          dropdown.style.opacity = '0';
+          dropdown.style.transform = 'translateY(-10px)';
+          
+          setTimeout(() => {
+            dropdown.style.opacity = '1';
+            dropdown.style.transform = 'translateY(0)';
+          }, 10);
+        } else {
+          dropdown.style.opacity = '0';
+          dropdown.style.transform = 'translateY(-10px)';
+          
+          setTimeout(() => {
+            dropdown.classList.add('hidden');
+          }, 200);
+        }
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('dropdown-menu');
+        const userButton = event.target.closest('[onclick="toggleDropdown()"]');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileButton = event.target.closest('[onclick="toggleMobileMenu()"]');
+        
+        if (!userButton && dropdown && !dropdown.classList.contains('hidden')) {
+          dropdown.style.opacity = '0';
+          dropdown.style.transform = 'translateY(-10px)';
+          setTimeout(() => {
+            dropdown.classList.add('hidden');
+          }, 200);
+        }
+        
+        if (!mobileButton && mobileMenu && !mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          mobileMenu.classList.remove('mobile-menu-enter-active');
+          document.getElementById('menu-icon').className = 'fas fa-bars text-lg';
+        }
+      });
+
+      // Close mobile menu when window is resized to desktop size
+      window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+          const mobileMenu = document.getElementById('mobile-menu');
+          const menuIcon = document.getElementById('menu-icon');
+          if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('mobile-menu-enter-active');
+            if (menuIcon) {
+              menuIcon.className = 'fas fa-bars text-lg';
+            }
+          }
+        }
+      });
+
+      // Ensure navbar stays on top and handles scroll
+      window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar-fixed');
+        if (navbar) {
+          if (window.scrollY > 10) {
+            navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+          } else {
+            navbar.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+          }
+        }
+      });
+
+      // Close mobile menu when clicking a link
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+        mobileMenuLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+              mobileMenu.classList.add('hidden');
+              mobileMenu.classList.remove('mobile-menu-enter-active');
+              if (menuIcon) {
+                menuIcon.className = 'fas fa-bars text-lg';
+              }
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

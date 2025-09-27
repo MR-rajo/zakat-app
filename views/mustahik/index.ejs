@@ -1,0 +1,399 @@
+<%- include('../layouts/header', { title: 'Data Mustahik - Zakat Fitrah App',
+bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          <i class="fas fa-user-friends mr-2 text-primary-600"></i>Data Mustahik
+        </h1>
+        <p class="text-gray-600 mt-1">Kelola data penerima zakat (mustahik)</p>
+      </div>
+      <div class="mt-4 sm:mt-0">
+        <a href="/mustahik/create" class="btn-primary">
+          <i class="fas fa-plus mr-2"></i>Tambah Mustahik
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-user-friends text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Total Mustahik
+              </dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= mustahik.length %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Fakir</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= mustahik.filter(m => m.kategori === 'fakir').length %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-coins text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Miskin</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= mustahik.filter(m => m.kategori === 'miskin').length %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-hands text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Amil</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= mustahik.filter(m => m.kategori === 'amil').length %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-heart text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Mualaf</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= mustahik.filter(m => m.kategori === 'mualaf').length %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white shadow-sm rounded-lg mb-6">
+    <div class="p-6">
+      <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex-1">
+          <label
+            for="search"
+            class="block text-sm font-medium text-gray-700 mb-2"
+            >Cari Mustahik</label
+          >
+          <div class="relative">
+            <input
+              type="text"
+              id="search"
+              placeholder="Cari berdasarkan nama..."
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+        <div class="flex-1">
+          <label
+            for="categoryFilter"
+            class="block text-sm font-medium text-gray-700 mb-2"
+            >Filter Kategori</label
+          >
+          <select
+            id="categoryFilter"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Semua Kategori</option>
+            <option value="fakir">Fakir</option>
+            <option value="miskin">Miskin</option>
+            <option value="amil">Amil</option>
+            <option value="mualaf">Mualaf</option>
+            <option value="fisabilillah">Fisabilillah</option>
+            <option value="ibnu_sabil">Ibnu Sabil</option>
+            <option value="gharimin">Gharimin</option>
+            <option value="riqab">Riqab</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label
+            for="rtFilter"
+            class="block text-sm font-medium text-gray-700 mb-2"
+            >Filter RT</label
+          >
+          <select
+            id="rtFilter"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          >
+            <option value="">Semua RT</option>
+            <% rtList.forEach(rt => { %>
+            <option value="<%= rt.id %>">RT <%= rt.nomor_rt %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">
+        <i class="fas fa-list mr-2 text-primary-600"></i>Daftar Mustahik
+      </h2>
+    </div>
+
+    <% if (mustahik.length === 0) { %>
+    <div class="text-center py-12">
+      <i class="fas fa-user-friends text-gray-400 text-6xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        Belum ada data mustahik
+      </h3>
+      <p class="text-gray-500 mb-6">
+        Tambahkan data mustahik pertama untuk memulai
+      </p>
+      <a href="/mustahik/create" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Tambah Mustahik Pertama
+      </a>
+    </div>
+    <% } else { %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200" id="mustahikTable">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Nama & RT
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Kategori
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Tanggal Daftar
+            </th>
+            <th
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Aksi
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% mustahik.forEach(m => { %>
+          <tr
+            class="hover:bg-gray-50 transition-colors duration-150"
+            data-category="<%= m.kategori %>"
+            data-rt="<%= m.rt_id || '' %>"
+          >
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div
+                    class="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center"
+                  >
+                    <span class="text-sm font-medium text-white">
+                      <%= m.nama.charAt(0).toUpperCase() %>
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 search-target">
+                    <%= m.nama %>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <% if (m.rt_nama) { %>
+                    <i class="fas fa-home mr-1"></i>RT <%= m.rt_nama %> <% }
+                    else { %> <i class="fas fa-minus mr-1"></i>Tidak ada RT <% }
+                    %>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <% if (m.kategori === 'fakir') { %>bg-red-100 text-red-800<% } else if (m.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } else if (m.kategori === 'amil') { %>bg-green-100 text-green-800<% } else if (m.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } else if (m.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } else { %>bg-gray-100 text-gray-800<% } %>"
+              >
+                <% if (m.kategori === 'fakir') { %>
+                <i class="fas fa-exclamation-triangle mr-1"></i>Fakir <% } else
+                if (m.kategori === 'miskin') { %>
+                <i class="fas fa-coins mr-1"></i>Miskin <% } else if (m.kategori
+                === 'amil') { %> <i class="fas fa-hands mr-1"></i>Amil <% } else
+                if (m.kategori === 'mualaf') { %>
+                <i class="fas fa-heart mr-1"></i>Mualaf <% } else if (m.kategori
+                === 'fisabilillah') { %>
+                <i class="fas fa-moon mr-1"></i>Fisabilillah <% } else if
+                (m.kategori === 'ibnu_sabil') { %>
+                <i class="fas fa-route mr-1"></i>Ibnu Sabil <% } else if
+                (m.kategori === 'gharimin') { %>
+                <i class="fas fa-credit-card mr-1"></i>Gharimin <% } else if
+                (m.kategori === 'riqab') { %>
+                <i class="fas fa-unlock mr-1"></i>Riqab <% } else { %>
+                <i class="fas fa-user mr-1"></i><%= m.kategori %> <% } %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <i class="fas fa-calendar mr-1"></i>
+              <%= new Date(m.created_at).toLocaleDateString('id-ID', { day:
+              'numeric', month: 'long', year: 'numeric' }) %>
+            </td>
+            <td
+              class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+            >
+              <div class="flex items-center justify-end space-x-2">
+                <a
+                  href="/mustahik/detail/<%= m.id %>"
+                  class="text-blue-600 hover:text-blue-900 transition-colors duration-150"
+                  title="Lihat Detail"
+                >
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a
+                  href="/mustahik/edit/<%= m.id %>"
+                  class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150"
+                  title="Edit"
+                >
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form
+                  method="POST"
+                  action="/mustahik/delete/<%= m.id %>?_method=DELETE"
+                  class="inline-block"
+                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mustahik <%= m.nama %>?')"
+                >
+                  <button
+                    type="submit"
+                    class="text-red-600 hover:text-red-900 transition-colors duration-150"
+                    title="Hapus"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  // Search functionality
+  document.getElementById("search").addEventListener("input", function () {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#mustahikTable tbody tr");
+
+    rows.forEach((row) => {
+      const searchTarget = row.querySelector(".search-target");
+      if (searchTarget) {
+        const text = searchTarget.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? "" : "none";
+      }
+    });
+  });
+
+  // Category filter
+  document
+    .getElementById("categoryFilter")
+    .addEventListener("change", function () {
+      const category = this.value;
+      const rows = document.querySelectorAll("#mustahikTable tbody tr");
+
+      rows.forEach((row) => {
+        const rowCategory = row.getAttribute("data-category");
+        if (!category || rowCategory === category) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    });
+
+  // RT filter
+  document.getElementById("rtFilter").addEventListener("change", function () {
+    const rtId = this.value;
+    const rows = document.querySelectorAll("#mustahikTable tbody tr");
+
+    rows.forEach((row) => {
+      const rowRt = row.getAttribute("data-rt");
+      if (!rtId || rowRt === rtId) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  });
+</script>
+
+<%- include('../layouts/footer') %>

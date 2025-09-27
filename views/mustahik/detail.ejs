@@ -1,0 +1,269 @@
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center">
+      <a href="/mustahik" class="text-gray-500 hover:text-gray-700 mr-4">
+        <i class="fas fa-arrow-left text-lg"></i>
+      </a>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          <i class="fas fa-user-friends mr-2 text-primary-600"></i>Detail
+          Mustahik
+        </h1>
+        <p class="text-gray-600 mt-1">Informasi lengkap penerima zakat</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Info -->
+    <div class="lg:col-span-2">
+      <!-- Basic Information -->
+      <div class="bg-white shadow-sm rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-info-circle mr-2 text-primary-600"></i>Informasi
+            Dasar
+          </h2>
+        </div>
+        <div class="p-6">
+          <div class="flex items-center mb-6">
+            <div class="flex-shrink-0 h-20 w-20">
+              <div
+                class="h-20 w-20 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center"
+              >
+                <span class="text-2xl font-bold text-white">
+                  <%= mustahik.nama.charAt(0).toUpperCase() %>
+                </span>
+              </div>
+            </div>
+            <div class="ml-6">
+              <h3 class="text-2xl font-bold text-gray-900">
+                <%= mustahik.nama %>
+              </h3>
+              <p class="text-gray-500">
+                <% if (mustahik.rt_nama) { %>
+                <i class="fas fa-home mr-1"></i>RT <%= mustahik.rt_nama %> <% }
+                else { %> <i class="fas fa-minus mr-1"></i>Tidak terdaftar di RT
+                <% } %>
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-500 mb-1"
+                >Kategori Mustahik</label
+              >
+              <div class="flex items-center">
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <% if (mustahik.kategori === 'fakir') { %>bg-red-100 text-red-800<% } else if (mustahik.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } else if (mustahik.kategori === 'amil') { %>bg-green-100 text-green-800<% } else if (mustahik.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } else if (mustahik.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } else { %>bg-gray-100 text-gray-800<% } %>"
+                >
+                  <% if (mustahik.kategori === 'fakir') { %>
+                  <i class="fas fa-exclamation-triangle mr-2"></i>Fakir <% }
+                  else if (mustahik.kategori === 'miskin') { %>
+                  <i class="fas fa-coins mr-2"></i>Miskin <% } else if
+                  (mustahik.kategori === 'amil') { %>
+                  <i class="fas fa-hands mr-2"></i>Amil <% } else if
+                  (mustahik.kategori === 'mualaf') { %>
+                  <i class="fas fa-heart mr-2"></i>Mualaf <% } else if
+                  (mustahik.kategori === 'fisabilillah') { %>
+                  <i class="fas fa-moon mr-2"></i>Fisabilillah <% } else if
+                  (mustahik.kategori === 'ibnu_sabil') { %>
+                  <i class="fas fa-route mr-2"></i>Ibnu Sabil <% } else if
+                  (mustahik.kategori === 'gharimin') { %>
+                  <i class="fas fa-credit-card mr-2"></i>Gharimin <% } else if
+                  (mustahik.kategori === 'riqab') { %>
+                  <i class="fas fa-unlock mr-2"></i>Riqab <% } else { %>
+                  <i class="fas fa-user mr-2"></i><%= mustahik.kategori %> <% }
+                  %>
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-500 mb-1"
+                >Tanggal Daftar</label
+              >
+              <p class="text-sm text-gray-900">
+                <i class="fas fa-calendar mr-2"></i>
+                <%= new Date(mustahik.created_at).toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'long', year: 'numeric' }) %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distribution History -->
+      <div class="bg-white shadow-sm rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-history mr-2 text-primary-600"></i>Riwayat
+            Distribusi Zakat
+          </h2>
+        </div>
+
+        <% if (distributions.length === 0) { %>
+        <div class="text-center py-12">
+          <i class="fas fa-share-alt text-gray-400 text-4xl mb-4"></i>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">
+            Belum ada distribusi
+          </h3>
+          <p class="text-gray-500 mb-6">
+            Mustahik ini belum pernah menerima distribusi zakat
+          </p>
+          <a
+            href="/distribusi/create?mustahik_id=<%= mustahik.id %>"
+            class="btn-primary"
+          >
+            <i class="fas fa-plus mr-2"></i>Buat Distribusi
+          </a>
+        </div>
+        <% } else { %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Tanggal
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Jenis & Jumlah
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  PIC
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% distributions.forEach(d => { %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= new Date(d.created_at).toLocaleDateString('id-ID') %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">
+                    <% if (d.jenis_zakat === 'beras') { %>
+                    <i class="fas fa-seedling text-green-600 mr-1"></i>
+                    <%= parseFloat(d.jumlah).toLocaleString('id-ID') %> kg Beras
+                    <% } else { %>
+                    <i class="fas fa-coins text-yellow-600 mr-1"></i>
+                    Rp <%= parseFloat(d.jumlah).toLocaleString('id-ID') %> <% }
+                    %>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <% if (d.status === 'diterima') { %>bg-green-100 text-green-800<% } else if (d.status === 'disalurkan') { %>bg-blue-100 text-blue-800<% } else if (d.status === 'pending') { %>bg-yellow-100 text-yellow-800<% } else { %>bg-red-100 text-red-800<% } %>"
+                  >
+                    <%= d.status.charAt(0).toUpperCase() + d.status.slice(1) %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= d.user_nama || 'System' %>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="lg:col-span-1">
+      <!-- Quick Actions -->
+      <div class="bg-white shadow-sm rounded-lg mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-bolt mr-2 text-primary-600"></i>Aksi Cepat
+          </h3>
+        </div>
+        <div class="p-6 space-y-3">
+          <a
+            href="/mustahik/edit/<%= mustahik.id %>"
+            class="btn-secondary w-full text-center"
+          >
+            <i class="fas fa-edit mr-2"></i>Edit Data
+          </a>
+          <a
+            href="/distribusi/create?mustahik_id=<%= mustahik.id %>"
+            class="btn-primary w-full text-center"
+          >
+            <i class="fas fa-share-alt mr-2"></i>Buat Distribusi
+          </a>
+          <form
+            method="POST"
+            action="/mustahik/delete/<%= mustahik.id %>?_method=DELETE"
+            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mustahik <%= mustahik.nama %>? Tindakan ini tidak dapat dibatalkan.')"
+          >
+            <button type="submit" class="btn-danger w-full">
+              <i class="fas fa-trash mr-2"></i>Hapus Data
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="bg-white shadow-sm rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-chart-pie mr-2 text-primary-600"></i>Statistik
+          </h3>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Total Distribusi</span>
+              <span class="text-sm font-medium text-gray-900"
+                ><%= distributions.length %></span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Beras Diterima</span>
+              <span class="text-sm font-medium text-gray-900">
+                <%= distributions .filter(d => d.jenis_zakat === 'beras' &&
+                d.status !== 'batal') .reduce((sum, d) => sum +
+                parseFloat(d.jumlah), 0) .toLocaleString('id-ID') %> kg
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Uang Diterima</span>
+              <span class="text-sm font-medium text-gray-900">
+                Rp <%= distributions .filter(d => d.jenis_zakat === 'uang' &&
+                d.status !== 'batal') .reduce((sum, d) => sum +
+                parseFloat(d.jumlah), 0) .toLocaleString('id-ID') %>
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Status Terakhir</span>
+              <span class="text-sm font-medium text-gray-900">
+                <% if (distributions.length > 0) { %> <%=
+                distributions[0].status.charAt(0).toUpperCase() +
+                distributions[0].status.slice(1) %> <% } else { %> Belum ada
+                distribusi <% } %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

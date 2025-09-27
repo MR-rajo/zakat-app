@@ -1,0 +1,520 @@
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50
+min-h-screen', currentPage: 'distribusi' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center">
+      <a href="/distribusi" class="text-gray-500 hover:text-gray-700 mr-4">
+        <i class="fas fa-arrow-left text-lg"></i>
+      </a>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          <i class="fas fa-edit mr-2 text-primary-600"></i>Edit Distribusi
+        </h1>
+        <p class="text-gray-600 mt-1">
+          Update status dan informasi distribusi zakat
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Info Display -->
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-info-circle text-blue-400"></i>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-blue-800">
+          Informasi Distribusi Saat Ini
+        </h3>
+        <div class="mt-2 text-sm text-blue-700">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <span class="font-medium">Mustahik:</span> <%=
+              distribusi.mustahik_nama %>
+            </div>
+            <div>
+              <span class="font-medium">Jenis:</span>
+              <% if (distribusi.jenis_zakat === 'beras') { %>
+              <i class="fas fa-seedling mr-1"></i><%=
+              parseFloat(distribusi.jumlah).toLocaleString('id-ID') %> kg Beras
+              <% } else { %> <i class="fas fa-coins mr-1"></i>Rp <%=
+              parseFloat(distribusi.jumlah).toLocaleString('id-ID') %> <% } %>
+            </div>
+            <div>
+              <span class="font-medium">Status:</span>
+              <span
+                class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <% if (distribusi.status === 'diterima') { %>bg-green-100 text-green-800<% } else if (distribusi.status === 'disalurkan') { %>bg-blue-100 text-blue-800<% } else if (distribusi.status === 'pending') { %>bg-yellow-100 text-yellow-800<% } else { %>bg-red-100 text-red-800<% } %>"
+              >
+                <%= distribusi.status.charAt(0).toUpperCase() +
+                distribusi.status.slice(1) %>
+              </span>
+            </div>
+            <div>
+              <span class="font-medium">Tanggal:</span>
+              <%= new
+              Date(distribusi.tanggal_distribusi).toLocaleDateString('id-ID') %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <div class="bg-white shadow-sm rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">
+        <i class="fas fa-form mr-2 text-primary-600"></i>Update Distribusi
+      </h2>
+    </div>
+
+    <form
+      method="POST"
+      action="/distribusi/edit/<%= distribusi.id %>"
+      class="p-6 space-y-6"
+      id="editDistributionForm"
+    >
+      <!-- Mustahik (Read-only) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Mustahik
+        </label>
+        <div
+          class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-md"
+        >
+          <div class="flex-shrink-0 h-10 w-10">
+            <div
+              class="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center"
+            >
+              <span class="text-sm font-bold text-white">
+                <%= distribusi.mustahik_nama.charAt(0).toUpperCase() %>
+              </span>
+            </div>
+          </div>
+          <div class="ml-3">
+            <div class="text-sm font-medium text-gray-900">
+              <%= distribusi.mustahik_nama %>
+            </div>
+            <div class="text-sm text-gray-500">
+              <span
+                class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium <% if (distribusi.kategori === 'fakir') { %>bg-red-100 text-red-800<% } else if (distribusi.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } else if (distribusi.kategori === 'amil') { %>bg-green-100 text-green-800<% } else if (distribusi.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } else if (distribusi.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } else { %>bg-gray-100 text-gray-800<% } %>"
+              >
+                <%= distribusi.kategori.charAt(0).toUpperCase() +
+                distribusi.kategori.slice(1) %>
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">
+          Mustahik tidak dapat diubah. Buat distribusi baru jika ingin mengubah
+          penerima.
+        </p>
+      </div>
+
+      <!-- Jenis & Jumlah (Read-only if status not pending) -->
+      <% if (distribusi.status === 'pending') { %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Jenis Zakat <span class="text-red-500">*</span>
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="relative">
+            <input type="radio" id="jenis_beras" name="jenis_zakat"
+            value="beras" <%= distribusi.jenis_zakat === 'beras' ? 'checked' :
+            '' %> required class="sr-only peer">
+            <label
+              for="jenis_beras"
+              class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-primary-500 peer-checked:bg-primary-50"
+            >
+              <div class="flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center"
+                >
+                  <i class="fas fa-seedling text-white"></i>
+                </div>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">Beras</div>
+                <div class="text-sm text-gray-500">
+                  Distribusi dalam bentuk beras (kg)
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <div class="relative">
+            <input type="radio" id="jenis_uang" name="jenis_zakat" value="uang"
+            <%= distribusi.jenis_zakat === 'uang' ? 'checked' : '' %> required
+            class="sr-only peer">
+            <label
+              for="jenis_uang"
+              class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 peer-checked:border-primary-500 peer-checked:bg-primary-50"
+            >
+              <div class="flex-shrink-0">
+                <div
+                  class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center"
+                >
+                  <i class="fas fa-coins text-white"></i>
+                </div>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900">Uang</div>
+                <div class="text-sm text-gray-500">
+                  Distribusi dalam bentuk uang (Rp)
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="jumlah"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Jumlah <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+            <span class="text-gray-500 text-sm" id="jumlahPrefix">
+              <%= distribusi.jenis_zakat === 'uang' ? 'Rp' : '' %>
+            </span>
+          </div>
+          <input
+            type="number"
+            id="jumlah"
+            name="jumlah"
+            required
+            min="0.1"
+            step="0.1"
+            value="<%= parseFloat(distribusi.jumlah) %>"
+            class="block w-full pl-12 pr-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          />
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+            <span class="text-gray-500 text-sm" id="jumlahSuffix">
+              <%= distribusi.jenis_zakat === 'beras' ? 'kg' : '' %>
+            </span>
+          </div>
+        </div>
+      </div>
+      <% } else { %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Jenis & Jumlah Zakat
+        </label>
+        <div
+          class="flex items-center p-3 bg-gray-50 border border-gray-200 rounded-md"
+        >
+          <% if (distribusi.jenis_zakat === 'beras') { %>
+          <div
+            class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3"
+          >
+            <i class="fas fa-seedling text-white"></i>
+          </div>
+          <div>
+            <div class="text-sm font-medium text-gray-900">
+              <%= parseFloat(distribusi.jumlah).toLocaleString('id-ID') %> kg
+              Beras
+            </div>
+            <div class="text-xs text-gray-500">Zakat dalam bentuk beras</div>
+          </div>
+          <% } else { %>
+          <div
+            class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center mr-3"
+          >
+            <i class="fas fa-coins text-white"></i>
+          </div>
+          <div>
+            <div class="text-sm font-medium text-gray-900">
+              Rp <%= parseFloat(distribusi.jumlah).toLocaleString('id-ID') %>
+            </div>
+            <div class="text-xs text-gray-500">Zakat dalam bentuk uang</div>
+          </div>
+          <% } %>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">
+          Jenis dan jumlah tidak dapat diubah setelah status berubah dari
+          pending.
+        </p>
+      </div>
+      <% } %>
+
+      <!-- Tanggal Distribusi -->
+      <div>
+        <label
+          for="tanggal_distribusi"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Tanggal Distribusi <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="date"
+          id="tanggal_distribusi"
+          name="tanggal_distribusi"
+          required
+          value="<%= new Date(distribusi.tanggal_distribusi).toISOString().split('T')[0] %>"
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        />
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label
+          for="status"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Status <span class="text-red-500">*</span>
+        </label>
+        <select
+          id="status"
+          name="status"
+          required
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        >
+          <% if (distribusi.status === 'pending') { %>
+          <option value="pending" selected>
+            Pending - Menunggu distribusi
+          </option>
+          <option value="disalurkan">
+            Disalurkan - Sudah disalurkan kepada mustahik
+          </option>
+          <option value="diterima">
+            Diterima - Sudah diterima oleh mustahik
+          </option>
+          <option value="batal">Batal - Distribusi dibatalkan</option>
+          <% } else if (distribusi.status === 'disalurkan') { %>
+          <option value="disalurkan" selected>
+            Disalurkan - Sudah disalurkan kepada mustahik
+          </option>
+          <option value="diterima">
+            Diterima - Sudah diterima oleh mustahik
+          </option>
+          <option value="batal">Batal - Distribusi dibatalkan</option>
+          <% } else if (distribusi.status === 'diterima') { %>
+          <option value="diterima" selected>
+            Diterima - Sudah diterima oleh mustahik
+          </option>
+          <% } else { %>
+          <option value="batal" selected>Batal - Distribusi dibatalkan</option>
+          <% } %>
+        </select>
+        <div class="mt-2 text-sm text-gray-500">
+          <% if (distribusi.status === 'pending') { %>
+          <i class="fas fa-info-circle mr-1"></i>
+          Anda dapat mengubah status ke disalurkan, diterima, atau batal <% }
+          else if (distribusi.status === 'disalurkan') { %>
+          <i class="fas fa-info-circle mr-1"></i>
+          Anda dapat mengubah status ke diterima atau batal <% } else if
+          (distribusi.status === 'diterima') { %>
+          <i class="fas fa-check-circle mr-1 text-green-600"></i>
+          Status sudah final - tidak dapat diubah <% } else { %>
+          <i class="fas fa-times-circle mr-1 text-red-600"></i>
+          Distribusi sudah dibatalkan <% } %>
+        </div>
+      </div>
+
+      <!-- Keterangan -->
+      <div>
+        <label
+          for="keterangan"
+          class="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Keterangan
+        </label>
+        <textarea
+          id="keterangan"
+          name="keterangan"
+          rows="3"
+          placeholder="Catatan tambahan tentang distribusi (opsional)"
+          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        >
+<%= distribusi.keterangan || '' %></textarea
+        >
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+        <a href="/distribusi/detail/<%= distribusi.id %>" class="btn-secondary">
+          <i class="fas fa-times mr-2"></i>Batal
+        </a>
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-save mr-2"></i>Update Distribusi
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Status Change Warning -->
+  <div
+    class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+    id="statusWarning"
+    style="display: none"
+  >
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+      </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-yellow-800">
+          Perhatian Perubahan Status
+        </h3>
+        <div class="mt-2 text-sm text-yellow-700" id="statusWarningText">
+          <!-- Dynamic warning text will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const jenisRadios = document.querySelectorAll('input[name="jenis_zakat"]');
+    const jumlahInput = document.getElementById("jumlah");
+    const jumlahPrefix = document.getElementById("jumlahPrefix");
+    const jumlahSuffix = document.getElementById("jumlahSuffix");
+    const statusSelect = document.getElementById("status");
+    const statusWarning = document.getElementById("statusWarning");
+    const statusWarningText = document.getElementById("statusWarningText");
+    const originalStatus = "<%= distribusi.status %>";
+
+    // Update jumlah input based on jenis zakat (only if editable)
+    if (jenisRadios.length > 0) {
+      jenisRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          if (this.value === "beras") {
+            jumlahPrefix.textContent = "";
+            jumlahSuffix.textContent = "kg";
+            jumlahInput.step = "0.1";
+            jumlahInput.min = "0.1";
+          } else if (this.value === "uang") {
+            jumlahPrefix.textContent = "Rp";
+            jumlahSuffix.textContent = "";
+            jumlahInput.step = "1000";
+            jumlahInput.min = "1000";
+          }
+        });
+      });
+
+      // Format number input for currency
+      jumlahInput.addEventListener("input", function () {
+        const jenisZakat = document.querySelector(
+          'input[name="jenis_zakat"]:checked'
+        );
+        if (jenisZakat && jenisZakat.value === "uang") {
+          let value = this.value.replace(/[^\d]/g, "");
+          if (value) {
+            this.value = parseInt(value);
+          }
+        }
+      });
+    }
+
+    // Status change warning
+    statusSelect.addEventListener("change", function () {
+      const newStatus = this.value;
+      let warningText = "";
+      let showWarning = false;
+
+      if (originalStatus === "pending" && newStatus === "disalurkan") {
+        warningText =
+          'Mengubah status ke "Disalurkan" berarti zakat sudah diserahkan kepada mustahik. Jenis dan jumlah tidak dapat diubah lagi.';
+        showWarning = true;
+      } else if (originalStatus === "pending" && newStatus === "diterima") {
+        warningText =
+          'Mengubah status ke "Diterima" berarti zakat sudah diterima oleh mustahik. Status ini tidak dapat diubah lagi.';
+        showWarning = true;
+      } else if (originalStatus === "pending" && newStatus === "batal") {
+        warningText =
+          "Membatalkan distribusi akan mengembalikan stok zakat dan distribusi tidak dapat diaktifkan kembali.";
+        showWarning = true;
+      } else if (originalStatus === "disalurkan" && newStatus === "diterima") {
+        warningText =
+          'Mengubah status ke "Diterima" berarti proses distribusi selesai. Status ini tidak dapat diubah lagi.';
+        showWarning = true;
+      } else if (originalStatus === "disalurkan" && newStatus === "batal") {
+        warningText =
+          "Membatalkan distribusi yang sudah disalurkan akan mengembalikan stok zakat.";
+        showWarning = true;
+      }
+
+      if (showWarning) {
+        statusWarningText.textContent = warningText;
+        statusWarning.style.display = "block";
+      } else {
+        statusWarning.style.display = "none";
+      }
+    });
+
+    // Form validation
+    document
+      .getElementById("editDistributionForm")
+      .addEventListener("submit", function (e) {
+        const status = statusSelect.value;
+        const tanggalDistribusi =
+          document.getElementById("tanggal_distribusi").value;
+
+        if (!status) {
+          alert("Silakan pilih status distribusi");
+          e.preventDefault();
+          return;
+        }
+
+        if (!tanggalDistribusi) {
+          alert("Silakan pilih tanggal distribusi");
+          e.preventDefault();
+          return;
+        }
+
+        // Check if jumlah is valid (only if editable)
+        if (jumlahInput && !jumlahInput.readOnly) {
+          const jumlah = parseFloat(jumlahInput.value);
+          const jenisZakat = document.querySelector(
+            'input[name="jenis_zakat"]:checked'
+          );
+
+          if (!jumlah || jumlah <= 0) {
+            alert("Jumlah harus lebih dari 0");
+            e.preventDefault();
+            return;
+          }
+
+          if (jenisZakat && jenisZakat.value === "uang" && jumlah < 1000) {
+            alert("Jumlah uang minimal Rp 1.000");
+            e.preventDefault();
+            return;
+          }
+
+          if (jenisZakat && jenisZakat.value === "beras" && jumlah < 0.1) {
+            alert("Jumlah beras minimal 0.1 kg");
+            e.preventDefault();
+            return;
+          }
+        }
+
+        // Confirm status change if different from original
+        if (status !== originalStatus) {
+          const statusLabels = {
+            pending: "Pending",
+            disalurkan: "Disalurkan",
+            diterima: "Diterima",
+            batal: "Batal",
+          };
+
+          if (
+            !confirm(
+              `Apakah Anda yakin ingin mengubah status dari "${statusLabels[originalStatus]}" ke "${statusLabels[status]}"?`
+            )
+          ) {
+            e.preventDefault();
+            return;
+          }
+        }
+      });
+  });
+</script>
+
+<%- include('../layouts/footer') %>

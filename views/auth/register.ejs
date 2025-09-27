@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link href="/css/output.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-gradient-to-br from-primary-50 to-primary-100 min-h-screen flex items-center justify-center px-4"
+  >
+    <div class="max-w-md w-full space-y-8">
+      <!-- Header -->
+      <div class="text-center">
+        <div
+          class="mx-auto h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center"
+        >
+          <i class="fas fa-mosque text-white text-2xl"></i>
+        </div>
+        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+          Registrasi User
+        </h2>
+        <p class="mt-2 text-sm text-gray-600">
+          Buat akun baru untuk sistem zakat (Development Mode)
+        </p>
+      </div>
+
+      <!-- Flash Messages -->
+      <% if (success_msg && success_msg.length > 0) { %>
+      <div class="alert-success">
+        <i class="fas fa-check-circle mr-2"></i><%= success_msg %>
+      </div>
+      <% } %> <% if (error_msg && error_msg.length > 0) { %>
+      <div class="alert-error">
+        <i class="fas fa-exclamation-circle mr-2"></i><%= error_msg %>
+      </div>
+      <% } %>
+
+      <!-- Register Form -->
+      <form class="mt-8 space-y-6 card" action="/auth/register" method="POST">
+        <div class="space-y-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">
+              <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              class="form-input mt-1"
+              placeholder="Masukkan nama lengkap"
+            />
+          </div>
+
+          <div>
+            <label
+              for="nomor_wa"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <i class="fab fa-whatsapp mr-1 text-green-600"></i>Nomor WhatsApp
+            </label>
+            <input
+              id="nomor_wa"
+              name="nomor_wa"
+              type="text"
+              required
+              class="form-input mt-1"
+              placeholder="Contoh: 08123456789"
+              pattern="[0-9]{10,15}"
+              title="Masukkan nomor WhatsApp yang valid (10-15 digit)"
+            />
+          </div>
+
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <i class="fas fa-lock mr-1 text-gray-500"></i>Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              class="form-input mt-1"
+              placeholder="Minimal 6 karakter"
+              minlength="6"
+            />
+          </div>
+
+          <div>
+            <label
+              for="confirm_password"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <i class="fas fa-lock mr-1 text-gray-500"></i>Konfirmasi Password
+            </label>
+            <input
+              id="confirm_password"
+              name="confirm_password"
+              type="password"
+              required
+              class="form-input mt-1"
+              placeholder="Ulangi password"
+            />
+          </div>
+
+          <div>
+            <label for="role" class="block text-sm font-medium text-gray-700">
+              <i class="fas fa-user-tag mr-1 text-gray-500"></i>Role
+            </label>
+            <select id="role" name="role" class="form-select mt-1">
+              <option value="panitia">Panitia</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" class="w-full btn-primary text-lg py-3">
+            <i class="fas fa-user-plus mr-2"></i>Daftar
+          </button>
+        </div>
+
+        <div class="text-center">
+          <p class="text-sm text-gray-600">
+            Sudah punya akun?
+            <a
+              href="/auth/login"
+              class="font-medium text-primary-600 hover:text-primary-500"
+            >
+              Login di sini
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      // Auto hide flash messages after 5 seconds
+      setTimeout(function () {
+        const alerts = document.querySelectorAll(
+          ".alert-success, .alert-error"
+        );
+        alerts.forEach(function (alert) {
+          alert.style.opacity = "0";
+          setTimeout(function () {
+            alert.remove();
+          }, 300);
+        });
+      }, 5000);
+
+      // Format phone number input
+      document
+        .getElementById("nomor_wa")
+        .addEventListener("input", function (e) {
+          let value = e.target.value.replace(/[^\d]/g, "");
+
+          // Add leading zero if not present and not starting with +62
+          if (
+            value.length > 0 &&
+            !value.startsWith("0") &&
+            !value.startsWith("62")
+          ) {
+            value = "0" + value;
+          }
+
+          e.target.value = value;
+        });
+
+      // Password confirmation validation
+      document
+        .getElementById("confirm_password")
+        .addEventListener("input", function (e) {
+          const password = document.getElementById("password").value;
+          const confirmPassword = e.target.value;
+
+          if (password !== confirmPassword) {
+            e.target.setCustomValidity("Password tidak cocok");
+          } else {
+            e.target.setCustomValidity("");
+          }
+        });
+    </script>
+  </body>
+</html>

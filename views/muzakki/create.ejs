@@ -1,0 +1,258 @@
+<%- include('../layouts/header', { title: 'Tambah Muzakki - Zakat Fitrah App',
+bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-center mb-4">
+      <a href="/muzakki" class="text-primary-600 hover:text-primary-800 mr-4">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1 class="text-3xl font-bold text-gray-900">
+        <i class="fas fa-plus mr-2 text-primary-600"></i>Tambah Muzakki
+      </h1>
+    </div>
+    <p class="text-gray-600">
+      Tambahkan data muzakki baru dan hitung zakat fitrah
+    </p>
+  </div>
+
+  <!-- Form -->
+  <div class="card">
+    <form action="/muzakki" method="POST" id="muzakkiForm">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- RT Selection -->
+        <div>
+          <label for="rt_id" class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-map-marker-alt mr-1 text-gray-500"></i>RT *
+          </label>
+          <select id="rt_id" name="rt_id" required class="form-select mt-1">
+            <option value="">Pilih RT</option>
+            <% rtList.forEach(function(rt) { %>
+            <option value="<%= rt.id %>">
+              <%= rt.nomor_rt %> - <%= rt.ketua_rt %>
+            </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <!-- Nama Muzakki -->
+        <div>
+          <label for="nama" class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-user mr-1 text-gray-500"></i>Nama Muzakki *
+          </label>
+          <input
+            type="text"
+            id="nama"
+            name="nama"
+            required
+            class="form-input mt-1"
+            placeholder="Masukkan nama lengkap muzakki"
+          />
+        </div>
+
+        <!-- Jumlah Jiwa -->
+        <div>
+          <label
+            for="jumlah_jiwa"
+            class="block text-sm font-medium text-gray-700"
+          >
+            <i class="fas fa-users mr-1 text-gray-500"></i>Jumlah Jiwa *
+          </label>
+          <input
+            type="number"
+            id="jumlah_jiwa"
+            name="jumlah_jiwa"
+            required
+            min="1"
+            class="form-input mt-1"
+            placeholder="Jumlah jiwa yang ditanggung"
+            onchange="calculateZakat()"
+          />
+          <p class="text-xs text-gray-500 mt-1">
+            Jumlah jiwa yang ditanggung zakatnya
+          </p>
+        </div>
+
+        <!-- Jenis Zakat -->
+        <div>
+          <label
+            for="jenis_zakat"
+            class="block text-sm font-medium text-gray-700"
+          >
+            <i class="fas fa-hand-holding mr-1 text-gray-500"></i>Jenis Zakat *
+          </label>
+          <select
+            id="jenis_zakat"
+            name="jenis_zakat"
+            required
+            class="form-select mt-1"
+            onchange="calculateZakat()"
+          >
+            <option value="">Pilih jenis zakat</option>
+            <option value="beras">
+              <i class="fas fa-seedling"></i> Beras (2.5 kg/jiwa)
+            </option>
+            <option value="uang">
+              <i class="fas fa-coins"></i> Uang (Rp 45.000/jiwa)
+            </option>
+          </select>
+        </div>
+
+        <!-- Kewajiban Display -->
+        <div class="md:col-span-2">
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-medium text-gray-700">
+                  Kewajiban Zakat
+                </h4>
+                <p
+                  class="text-lg font-bold text-primary-600"
+                  id="kewajiban_display"
+                >
+                  -
+                </p>
+              </div>
+              <i class="fas fa-calculator text-2xl text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jumlah Bayar -->
+        <div class="md:col-span-2">
+          <label
+            for="jumlah_bayar"
+            class="block text-sm font-medium text-gray-700"
+          >
+            <i class="fas fa-money-bill-wave mr-1 text-gray-500"></i>Jumlah
+            Bayar (Rp) *
+          </label>
+          <input
+            type="number"
+            id="jumlah_bayar"
+            name="jumlah_bayar"
+            required
+            min="0"
+            step="0.01"
+            class="form-input mt-1"
+            placeholder="Masukkan jumlah yang dibayarkan dalam rupiah"
+          />
+          <p class="text-xs text-gray-500 mt-1">
+            Jika lebih dari kewajiban, selisihnya akan menjadi kembalian yang
+            bisa disedekahkan
+          </p>
+        </div>
+
+        <!-- Catatan -->
+        <div class="md:col-span-2">
+          <label for="catatan" class="block text-sm font-medium text-gray-700">
+            <i class="fas fa-sticky-note mr-1 text-gray-500"></i>Catatan
+            (Opsional)
+          </label>
+          <textarea
+            id="catatan"
+            name="catatan"
+            rows="3"
+            class="form-input mt-1"
+            placeholder="Catatan tambahan atau keterangan khusus"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="mt-8 flex justify-end space-x-4">
+        <a href="/muzakki" class="btn-secondary">
+          <i class="fas fa-times mr-2"></i>Batal
+        </a>
+        <button type="submit" class="btn-primary">
+          <i class="fas fa-save mr-2"></i>Simpan Data
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Helper Information -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">
+        <i class="fas fa-seedling mr-2 text-green-600"></i>Zakat Beras
+      </h3>
+      <ul class="text-sm text-gray-600 space-y-1">
+        <li>• Kewajiban: 2.5 kg per jiwa</li>
+        <li>• Dapat dibayar dengan beras atau uang senilai</li>
+        <li>• Lebih mudah untuk distribusi</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">
+        <i class="fas fa-coins mr-2 text-blue-600"></i>Zakat Uang
+      </h3>
+      <ul class="text-sm text-gray-600 space-y-1">
+        <li>• Kewajiban: Rp 45.000 per jiwa</li>
+        <li>• Lebih fleksibel untuk pengelolaan</li>
+        <li>• Mudah untuk perhitungan dan distribusi</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Enhanced calculate zakat function
+  function calculateZakat() {
+    const jiwa = parseInt(document.getElementById("jumlah_jiwa").value) || 0;
+    const jenisZakat = document.getElementById("jenis_zakat").value;
+    const kewajibanDisplay = document.getElementById("kewajiban_display");
+
+    if (jiwa > 0 && jenisZakat) {
+      let kewajiban = 0;
+      if (jenisZakat === "beras") {
+        kewajiban = jiwa * 2.5; // 2.5 kg per jiwa
+        kewajibanDisplay.textContent = kewajiban.toFixed(1) + " kg beras";
+        kewajibanDisplay.className = "text-lg font-bold text-green-600";
+      } else if (jenisZakat === "uang") {
+        kewajiban = jiwa * 45000; // Rp 45.000 per jiwa
+        kewajibanDisplay.textContent =
+          "Rp " + kewajiban.toLocaleString("id-ID");
+        kewajibanDisplay.className = "text-lg font-bold text-blue-600";
+      }
+    } else {
+      kewajibanDisplay.textContent = "-";
+      kewajibanDisplay.className = "text-lg font-bold text-gray-400";
+    }
+  }
+
+  // Form validation
+  document
+    .getElementById("muzakkiForm")
+    .addEventListener("submit", function (e) {
+      const jiwa = parseInt(document.getElementById("jumlah_jiwa").value);
+      const jenisZakat = document.getElementById("jenis_zakat").value;
+      const jumlahBayar = parseFloat(
+        document.getElementById("jumlah_bayar").value
+      );
+
+      if (jiwa <= 0) {
+        e.preventDefault();
+        alert("Jumlah jiwa harus lebih dari 0");
+        return false;
+      }
+
+      if (!jenisZakat) {
+        e.preventDefault();
+        alert("Pilih jenis zakat terlebih dahulu");
+        return false;
+      }
+
+      if (jumlahBayar <= 0) {
+        e.preventDefault();
+        alert("Jumlah bayar harus lebih dari 0");
+        return false;
+      }
+
+      return confirm("Apakah data yang dimasukkan sudah benar?");
+    });
+</script>
+
+<%- include('../layouts/footer') %>

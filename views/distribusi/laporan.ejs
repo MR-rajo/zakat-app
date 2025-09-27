@@ -1,0 +1,562 @@
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'distribusi' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">
+          <i class="fas fa-chart-bar mr-2 text-primary-600"></i>Laporan Distribusi Zakat
+        </h1>
+        <p class="text-gray-600 mt-1">Analisis dan statistik distribusi zakat kepada mustahik</p>
+      </div>
+      <div class="mt-4 sm:mt-0 flex space-x-3">
+        <button onclick="exportToExcel()" class="btn-secondary">
+          <i class="fas fa-file-excel mr-2"></i>Export Excel
+        </button>
+        <button onclick="printReport()" class="btn-secondary">
+          <i class="fas fa-print mr-2"></i>Cetak
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white shadow-sm rounded-lg mb-6">
+    <div class="p-6">
+      <form method="GET" action="/distribusi/laporan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div>
+          <label for="periode" class="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+          <select id="periode" name="periode" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
+                                                   focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+            <option value="all" <%= periode === 'all' ? 'selected' : '' %>>Semua Periode</option>
+            <option value="today" <%= periode === 'today' ? 'selected' : '' %>>Hari Ini</option>
+            <option value="week" <%= periode === 'week' ? 'selected' : '' %>>Minggu Ini</option>
+            <option value="month" <%= periode === 'month' ? 'selected' : '' %>>Bulan Ini</option>
+            <option value="year" <%= periode === 'year' ? 'selected' : '' %>>Tahun Ini</option>
+            <option value="custom" <%= periode === 'custom' ? 'selected' : '' %>>Kustom</option>
+          </select>
+        </div>
+
+        <div id="customDateRange" style="<%= periode === 'custom' ? '' : 'display: none;' %>">
+          <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Dari Tanggal</label>
+          <input type="date" id="start_date" name="start_date" value="<%= startDate || '' %>"
+                 class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
+                        focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div id="customDateRangeTo" style="<%= periode === 'custom' ? '' : 'display: none;' %>">
+          <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal</label>
+          <input type="date" id="end_date" name="end_date" value="<%= endDate || '' %>"
+                 class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
+                        focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+        </div>
+
+        <div>
+          <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select id="status" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
+                                                   focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+            <option value="">Semua Status</option>
+            <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="disalurkan" <%= status === 'disalurkan' ? 'selected' : '' %>>Disalurkan</option>
+            <option value="diterima" <%= status === 'diterima' ? 'selected' : '' %>>Diterima</option>
+            <option value="batal" <%= status === 'batal' ? 'selected' : '' %>>Batal</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori Mustahik</label>
+          <select id="kategori" name="kategori" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
+                                                      focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+            <option value="">Semua Kategori</option>
+            <option value="fakir" <%= kategori === 'fakir' ? 'selected' : '' %>>Fakir</option>
+            <option value="miskin" <%= kategori === 'miskin' ? 'selected' : '' %>>Miskin</option>
+            <option value="amil" <%= kategori === 'amil' ? 'selected' : '' %>>Amil</option>
+            <option value="mualaf" <%= kategori === 'mualaf' ? 'selected' : '' %>>Mualaf</option>
+            <option value="fisabilillah" <%= kategori === 'fisabilillah' ? 'selected' : '' %>>Fisabilillah</option>
+            <option value="ibnu_sabil" <%= kategori === 'ibnu_sabil' ? 'selected' : '' %>>Ibnu Sabil</option>
+            <option value="gharimin" <%= kategori === 'gharimin' ? 'selected' : '' %>>Gharimin</option>
+            <option value="riqab" <%= kategori === 'riqab' ? 'selected' : '' %>>Riqab</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="rt" class="block text-sm font-medium text-gray-700 mb-1">RT</label>
+          <select id="rt" name="rt" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
+                                          focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+            <option value="">Semua RT</option>
+            <% rtList.forEach(r => { %>
+            <option value="<%= r.id %>" <%= rt == r.id ? 'selected' : '' %>>RT <%= r.nama %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div class="flex items-end">
+          <button type="submit" class="btn-primary mr-2">
+            <i class="fas fa-search mr-2"></i>Filter
+          </button>
+          <a href="/distribusi/laporan" class="btn-secondary">
+            <i class="fas fa-undo mr-2"></i>Reset
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Summary Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-list text-white"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Distribusi</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= summary.totalDistribusi %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-seedling text-white"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Beras</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                <%= parseFloat(summary.totalBeras).toLocaleString('id-ID') %> kg
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-coins text-white"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Uang</dt>
+              <dd class="text-lg font-medium text-gray-900">
+                Rp <%= parseFloat(summary.totalUang).toLocaleString('id-ID') %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+              <i class="fas fa-users text-white"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Mustahik Aktif</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= summary.totalMustahik %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Status Distribution Chart -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">
+          <i class="fas fa-chart-pie mr-2 text-primary-600"></i>Distribusi Status
+        </h3>
+      </div>
+      <div class="p-6">
+        <canvas id="statusChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Category Distribution Chart -->
+    <div class="bg-white shadow-sm rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900">
+          <i class="fas fa-chart-bar mr-2 text-primary-600"></i>Distribusi per Kategori
+        </h3>
+      </div>
+      <div class="p-6">
+        <canvas id="categoryChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Trend -->
+  <div class="bg-white shadow-sm rounded-lg mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">
+        <i class="fas fa-chart-line mr-2 text-primary-600"></i>Tren Distribusi Bulanan
+      </h3>
+    </div>
+    <div class="p-6">
+      <canvas id="monthlyChart" width="800" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- Top Mustahik Recipients -->
+  <div class="bg-white shadow-sm rounded-lg mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">
+        <i class="fas fa-trophy mr-2 text-primary-600"></i>Top 10 Penerima Distribusi
+      </h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Ranking
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Mustahik
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Total Distribusi
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Total Beras
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Total Uang
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% topMustahik.forEach((m, index) => { %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <% if (index === 0) { %>
+                  <i class="fas fa-crown text-yellow-500 mr-2"></i>
+                <% } else if (index === 1) { %>
+                  <i class="fas fa-medal text-gray-400 mr-2"></i>
+                <% } else if (index === 2) { %>
+                  <i class="fas fa-medal text-yellow-600 mr-2"></i>
+                <% } else { %>
+                  <span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600 mr-2">
+                    <%= index + 1 %>
+                  </span>
+                <% } %>
+                <span class="text-sm font-medium text-gray-900">#<%= index + 1 %></span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  <div class="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                    <span class="text-xs font-bold text-white">
+                      <%= m.nama.charAt(0).toUpperCase() %>
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900"><%= m.nama %></div>
+                  <div class="text-sm text-gray-500">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                      <% if (m.kategori === 'fakir') { %>bg-red-100 text-red-800<% } 
+                         else if (m.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } 
+                         else if (m.kategori === 'amil') { %>bg-green-100 text-green-800<% } 
+                         else if (m.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } 
+                         else if (m.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } 
+                         else { %>bg-gray-100 text-gray-800<% } %>">
+                      <%= m.kategori.charAt(0).toUpperCase() + m.kategori.slice(1) %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <%= m.total_distribusi %> kali
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <i class="fas fa-seedling text-green-600 mr-1"></i>
+              <%= parseFloat(m.total_beras || 0).toLocaleString('id-ID') %> kg
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <i class="fas fa-coins text-yellow-600 mr-1"></i>
+              Rp <%= parseFloat(m.total_uang || 0).toLocaleString('id-ID') %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detailed Distribution Table -->
+  <div class="bg-white shadow-sm rounded-lg">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">
+        <i class="fas fa-table mr-2 text-primary-600"></i>Data Detail Distribusi
+        <span class="text-sm font-normal text-gray-500 ml-2">(<%= distributions.length %> dari <%= totalDistributions %> distribusi)</span>
+      </h3>
+    </div>
+    
+    <% if (distributions.length === 0) { %>
+    <div class="text-center py-12">
+      <i class="fas fa-chart-bar text-gray-400 text-4xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada data</h3>
+      <p class="text-gray-500">Tidak ada distribusi yang sesuai dengan filter yang dipilih</p>
+    </div>
+    <% } else { %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Tanggal
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Mustahik
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Jenis & Jumlah
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              PIC
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% distributions.forEach(d => { %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <%= new Date(d.tanggal_distribusi).toLocaleDateString('id-ID') %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-8 w-8">
+                  <div class="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
+                    <span class="text-xs font-bold text-white">
+                      <%= d.mustahik_nama.charAt(0).toUpperCase() %>
+                    </span>
+                  </div>
+                </div>
+                <div class="ml-3">
+                  <div class="text-sm font-medium text-gray-900"><%= d.mustahik_nama %></div>
+                  <div class="text-sm text-gray-500">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                      <% if (d.kategori === 'fakir') { %>bg-red-100 text-red-800<% } 
+                         else if (d.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } 
+                         else if (d.kategori === 'amil') { %>bg-green-100 text-green-800<% } 
+                         else if (d.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } 
+                         else if (d.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } 
+                         else { %>bg-gray-100 text-gray-800<% } %>">
+                      <%= d.kategori.charAt(0).toUpperCase() + d.kategori.slice(1) %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                <% if (d.jenis_zakat === 'beras') { %>
+                  <i class="fas fa-seedling text-green-600 mr-1"></i>
+                  <%= parseFloat(d.jumlah).toLocaleString('id-ID') %> kg Beras
+                <% } else { %>
+                  <i class="fas fa-coins text-yellow-600 mr-1"></i>
+                  Rp <%= parseFloat(d.jumlah).toLocaleString('id-ID') %>
+                <% } %>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                <% if (d.status === 'diterima') { %>bg-green-100 text-green-800<% } 
+                   else if (d.status === 'disalurkan') { %>bg-blue-100 text-blue-800<% } 
+                   else if (d.status === 'pending') { %>bg-yellow-100 text-yellow-800<% } 
+                   else { %>bg-red-100 text-red-800<% } %>">
+                <%= d.status.charAt(0).toUpperCase() + d.status.slice(1) %>
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= d.user_nama || 'System' %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Period filter change handler
+  document.getElementById('periode').addEventListener('change', function() {
+    const customDateRange = document.getElementById('customDateRange');
+    const customDateRangeTo = document.getElementById('customDateRangeTo');
+    
+    if (this.value === 'custom') {
+      customDateRange.style.display = 'block';
+      customDateRangeTo.style.display = 'block';
+    } else {
+      customDateRange.style.display = 'none';
+      customDateRangeTo.style.display = 'none';
+    }
+  });
+
+  // Charts
+  const statusData = <%- JSON.stringify(chartData.statusData) %>;
+  const categoryData = <%- JSON.stringify(chartData.categoryData) %>;
+  const monthlyData = <%- JSON.stringify(chartData.monthlyData) %>;
+
+  // Status Distribution Chart
+  const statusCtx = document.getElementById('statusChart').getContext('2d');
+  new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+      labels: statusData.labels,
+      datasets: [{
+        data: statusData.values,
+        backgroundColor: [
+          '#FDE047', // pending - yellow
+          '#3B82F6', // disalurkan - blue
+          '#10B981', // diterima - green
+          '#EF4444'  // batal - red
+        ],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+
+  // Category Distribution Chart
+  const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+  new Chart(categoryCtx, {
+    type: 'bar',
+    data: {
+      labels: categoryData.labels,
+      datasets: [{
+        label: 'Jumlah Distribusi',
+        data: categoryData.values,
+        backgroundColor: [
+          '#EF4444', // fakir - red
+          '#F97316', // miskin - orange
+          '#10B981', // amil - green
+          '#3B82F6', // mualaf - blue
+          '#8B5CF6', // fisabilillah - purple
+          '#06B6D4', // ibnu_sabil - cyan
+          '#F59E0B', // gharimin - amber
+          '#84CC16'  // riqab - lime
+        ],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+
+  // Monthly Trend Chart
+  const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+  new Chart(monthlyCtx, {
+    type: 'line',
+    data: {
+      labels: monthlyData.labels,
+      datasets: [
+        {
+          label: 'Beras (kg)',
+          data: monthlyData.beras,
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.4
+        },
+        {
+          label: 'Uang (ribu Rp)',
+          data: monthlyData.uang.map(v => v / 1000), // Convert to thousands
+          borderColor: '#F59E0B',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+});
+
+// Export functions
+function exportToExcel() {
+  const params = new URLSearchParams(window.location.search);
+  params.set('export', 'excel');
+  window.location.href = '/distribusi/laporan?' + params.toString();
+}
+
+function printReport() {
+  window.print();
+}
+</script>
+
+<%- include('../layouts/footer') %>

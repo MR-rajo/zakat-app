@@ -1,0 +1,324 @@
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50
+min-h-screen', currentPage: 'rt' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-center mb-4">
+      <a href="/rt" class="text-primary-600 hover:text-primary-800 mr-4">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1 class="text-3xl font-bold text-gray-900">
+        <i class="fas fa-eye mr-2 text-primary-600"></i>Detail <%= rt.nomor_rt
+        %>
+      </h1>
+    </div>
+    <p class="text-gray-600">
+      Informasi lengkap dan daftar muzakki RT <%= rt.nomor_rt %>
+    </p>
+  </div>
+
+  <!-- RT Info Card -->
+  <div class="bg-white shadow-sm rounded-lg mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Informasi RT</h2>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Nomor RT</dt>
+          <dd class="mt-1 text-lg font-semibold text-gray-900">
+            <%= rt.nomor_rt %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Ketua RT</dt>
+          <dd class="mt-1 text-lg font-semibold text-gray-900">
+            <%= rt.ketua_rt %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Keterangan</dt>
+          <dd class="mt-1 text-lg text-gray-900">
+            <%= rt.keterangan || '-' %>
+          </dd>
+        </div>
+      </div>
+
+      <div class="mt-6 flex space-x-3">
+        <a href="/rt/<%= rt.id %>/edit" class="btn-primary">
+          <i class="fas fa-edit mr-2"></i>Edit RT
+        </a>
+        <a href="/muzakki/create?rt_id=<%= rt.id %>" class="btn-secondary">
+          <i class="fas fa-user-plus mr-2"></i>Tambah Muzakki
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-users text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Total Muzakki
+              </dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= stats.total_muzakki %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-check-circle text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Lunas</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= stats.lunas %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-times-circle text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Belum Lunas
+              </dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                <%= stats.belum_lunas %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-coins text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Total Zakat
+              </dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                Rp <%= Math.floor(stats.total_zakat).toLocaleString('id-ID') %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div
+              class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center"
+            >
+              <i class="fas fa-hand-holding-heart text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Kembalian
+              </dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                Rp <%= stats.total_kembalian.toLocaleString('id-ID') %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Muzakki List -->
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div
+      class="px-6 py-4 border-b border-gray-200 flex justify-between items-center"
+    >
+      <h2 class="text-lg font-semibold text-gray-900">Daftar Muzakki</h2>
+      <a href="/muzakki/create?rt_id=<%= rt.id %>" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Tambah Muzakki
+      </a>
+    </div>
+
+    <% if (muzakkiList.length > 0) { %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Muzakki
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Jiwa & Zakat
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Pembayaran
+            </th>
+            <th
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Status
+            </th>
+            <th
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Aksi
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% muzakkiList.forEach(function(muzakki) { %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div
+                  class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center"
+                >
+                  <i class="fas fa-user text-primary-600"></i>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    <%= muzakki.nama %>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <%= muzakki.jenis_zakat === 'uang' ? 'Zakat Uang' : 'Zakat
+                    Beras' %>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                <div class="font-medium"><%= muzakki.jumlah_jiwa %> jiwa</div>
+                <div class="text-gray-500">
+                  Rp <%= muzakki.jumlah_zakat.toLocaleString('id-ID') %>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                <div class="font-medium">
+                  Rp <%= muzakki.jumlah_bayar.toLocaleString('id-ID') %>
+                </div>
+                <% if (muzakki.kembalian > 0) { %>
+                <div class="text-purple-600">
+                  Kembalian: Rp <%= muzakki.kembalian.toLocaleString('id-ID') %>
+                </div>
+                <% } %>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <% if (muzakki.status === 'lunas') { %>
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+              >
+                <i class="fas fa-check-circle mr-1"></i>Lunas
+              </span>
+              <% } else { %>
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+              >
+                <i class="fas fa-times-circle mr-1"></i>Belum Lunas
+              </span>
+              <% } %>
+            </td>
+            <td
+              class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+            >
+              <div class="flex items-center justify-end space-x-2">
+                <a
+                  href="/muzakki/<%= muzakki.id %>/edit"
+                  class="text-indigo-600 hover:text-indigo-900"
+                  title="Edit Muzakki"
+                >
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form
+                  method="POST"
+                  action="/muzakki/<%= muzakki.id %>/delete"
+                  class="inline"
+                >
+                  <button
+                    type="submit"
+                    class="text-red-600 hover:text-red-900"
+                    title="Hapus Muzakki"
+                    onclick="return confirm('Yakin ingin menghapus data muzakki <%= muzakki.nama %>?')"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } else { %>
+    <div class="text-center py-12">
+      <i class="fas fa-users text-gray-400 text-6xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Muzakki</h3>
+      <p class="text-gray-500 mb-4">RT ini belum memiliki data muzakki</p>
+      <a href="/muzakki/create?rt_id=<%= rt.id %>" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Tambah Muzakki Pertama
+      </a>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

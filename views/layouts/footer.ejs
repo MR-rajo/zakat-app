@@ -1,0 +1,107 @@
+    </main>
+
+    <!-- Footer -->
+    <% if (typeof user !== 'undefined' && user) { %>
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+      <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-sm text-gray-500">
+          © <%= new Date().getFullYear() %> Aplikasi Zakat Fitrah. Dibuat dengan
+          ❤️ untuk umat.
+        </div>
+      </div>
+    </footer>
+    <% } %>
+
+    <!-- Scripts -->
+    <script>
+      function toggleDropdown() {
+        const dropdown = document.getElementById("dropdown-menu");
+        dropdown.classList.toggle("hidden");
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("dropdown-menu");
+        const button = event.target.closest("button");
+        if (!button || !button.onclick) {
+          dropdown.classList.add("hidden");
+        }
+      });
+
+      // Auto hide flash messages
+      setTimeout(function () {
+        const flashMessages = document.querySelectorAll(
+          ".bg-green-100, .bg-red-100"
+        );
+        flashMessages.forEach(function (message) {
+          message.style.display = "none";
+        });
+      }, 5000);
+
+      // Form validation helpers
+      function validateForm(formId) {
+        const form = document.getElementById(formId);
+        const inputs = form.querySelectorAll("input[required]");
+        let isValid = true;
+
+        inputs.forEach(function (input) {
+          if (!input.value.trim()) {
+            input.classList.add("border-red-500");
+            isValid = false;
+          } else {
+            input.classList.remove("border-red-500");
+          }
+        });
+
+        return isValid;
+      }
+
+      // Number formatting
+      function formatRupiah(angka) {
+        const number_string = angka.replace(/[^,\d]/g, "").toString();
+        const split = number_string.split(",");
+        const sisa = split[0].length % 3;
+        let rupiah = split[0].substr(0, sisa);
+        const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+          const separator = sisa ? "." : "";
+          rupiah += separator + ribuan.join(".");
+        }
+
+        rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
+        return rupiah;
+      }
+
+      // Auto calculate zakat
+      function calculateZakat() {
+        const jumlahJiwa = parseInt(
+          document.getElementById("jumlah_jiwa")?.value || 0
+        );
+        const hargaBeras = parseInt(
+          document.getElementById("harga_beras")?.value || 0
+        );
+
+        if (jumlahJiwa > 0 && hargaBeras > 0) {
+          // 2.5 kg per jiwa, dihitung dalam gram lalu dikonversi ke rupiah
+          const totalZakat = jumlahJiwa * 2.5 * hargaBeras;
+          const zakatInput = document.getElementById("jumlah_zakat");
+          if (zakatInput) {
+            zakatInput.value = totalZakat;
+          }
+        }
+      }
+
+      // Initialize auto calculation if on muzakki form
+      document.addEventListener("DOMContentLoaded", function () {
+        const jumlahJiwaInput = document.getElementById("jumlah_jiwa");
+        const hargaBerasInput = document.getElementById("harga_beras");
+
+        if (jumlahJiwaInput && hargaBerasInput) {
+          jumlahJiwaInput.addEventListener("input", calculateZakat);
+          hargaBerasInput.addEventListener("input", calculateZakat);
+        }
+      });
+    </script>
+  </body>
+</html>
