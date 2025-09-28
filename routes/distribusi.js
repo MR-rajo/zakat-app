@@ -28,6 +28,12 @@ router.get("/", async (req, res) => {
       ORDER BY dz.created_at DESC
     `);
 
+    // ✅ Tambahkan query untuk menghitung total distribusi
+    const [countResult] = await db.execute(`
+      SELECT COUNT(*) as total FROM distribusi_zakat
+    `);
+    const total = countResult[0].total;
+
     // Get summary statistics
     const [stats] = await db.execute(`
       SELECT 
@@ -41,12 +47,16 @@ router.get("/", async (req, res) => {
       FROM distribusi_zakat
     `);
 
+    // ✅ total ikut dikirim agar bisa dipakai di index.ejs
     res.render("distribusi/index", {
       title: "Distribusi Zakat - Zakat Fitrah App",
       user: req.session.user,
-      distribusi,
+      distributions: distribusi,
       stats: stats[0],
+      total,
       search: req.query.search || "",
+      status: req.query.status || "",
+      jenis: req.query.jenis || "",
       currentPage: "distribusi",
       success: req.flash("success"),
       error: req.flash("error"),
@@ -76,8 +86,7 @@ router.get("/create", async (req, res) => {
       SELECT 
         SUM(jumlah_uang) as total_uang_tersedia,
         SUM(jumlah_beras_kg) as total_beras_tersedia
-      FROM muzakki 
-      WHERE status = 'lunas'
+      FROM muzakki
     `);
 
     // Get already distributed amounts
@@ -100,8 +109,9 @@ router.get("/create", async (req, res) => {
     res.render("distribusi/create", {
       title: "Tambah Distribusi Zakat - Zakat Fitrah App",
       user: req.session.user,
-      mustahikList,
-      availableZakat,
+      mustahiks: mustahikList,
+      stockInfo: availableZakat,
+      selectedMustahik: "",
       currentPage: "distribusi",
       success: req.flash("success"),
       error: req.flash("error"),

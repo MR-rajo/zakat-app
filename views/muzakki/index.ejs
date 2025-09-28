@@ -25,15 +25,19 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-green-600">
-        <%= muzakki.filter(m => m.jenis_zakat === 'beras').length %>
+        <%= Math.floor((muzakki || []).filter(m => m.jenis_zakat ===
+        'beras').reduce((total, m) => total + (Number(m.jumlah_beras_kg) || 0),
+        0)) %> kg
       </div>
-      <div class="text-sm text-gray-600">Zakat Beras</div>
+      <div class="text-sm text-gray-600">Jumlah Zakat Beras</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-blue-600">
-        <%= muzakki.filter(m => m.jenis_zakat === 'uang').length %>
+        Rp <%= Math.floor((muzakki || []).filter(m => m.jenis_zakat ===
+        'uang').reduce((total, m) => total + (Number(m.jumlah_bayar) || 0),
+        0)).toLocaleString('id-ID') %>
       </div>
-      <div class="text-sm text-gray-600">Zakat Uang</div>
+      <div class="text-sm text-gray-600">Jumlah Zakat Uang</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-yellow-600">
