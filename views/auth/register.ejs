@@ -9,145 +9,683 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <style>
+      /* Reset dan base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+      
+      /* Background animation */
+      .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+      
+      .bg-bubble {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 15s infinite linear;
+      }
+      
+      .bg-bubble:nth-child(1) {
+        width: 80px;
+        height: 80px;
+        top: 10%;
+        left: 10%;
+        animation-duration: 20s;
+      }
+      
+      .bg-bubble:nth-child(2) {
+        width: 120px;
+        height: 120px;
+        top: 60%;
+        left: 80%;
+        animation-duration: 25s;
+        animation-delay: -5s;
+      }
+      
+      .bg-bubble:nth-child(3) {
+        width: 60px;
+        height: 60px;
+        top: 80%;
+        left: 20%;
+        animation-duration: 18s;
+        animation-delay: -10s;
+      }
+      
+      .bg-bubble:nth-child(4) {
+        width: 100px;
+        height: 100px;
+        top: 20%;
+        left: 70%;
+        animation-duration: 22s;
+        animation-delay: -15s;
+      }
+      
+      @keyframes float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0.7;
+        }
+        50% {
+          transform: translateY(-100px) rotate(180deg);
+          opacity: 0.9;
+        }
+        100% {
+          transform: translateY(0) rotate(360deg);
+          opacity: 0.7;
+        }
+      }
+      
+      /* Register container */
+      .register-container {
+        width: 100%;
+        max-width: 480px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 40px 35px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: slideUp 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .register-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite linear;
+      }
+      
+      @keyframes slideUp {
+        from { 
+          opacity: 0; 
+          transform: translateY(40px) scale(0.95); 
+        }
+        to { 
+          opacity: 1; 
+          transform: translateY(0) scale(1); 
+        }
+      }
+      
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      
+      .logo-container {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .logo-container::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s ease;
+      }
+      
+      .logo-container:hover::after {
+        transform: translateX(100%);
+      }
+      
+      .logo-container:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+      }
+      
+      .logo-icon {
+        color: white;
+        font-size: 2.5rem;
+        z-index: 1;
+      }
+      
+      .title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+        background: linear-gradient(90deg, #10b981, #34d399);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+        color: #6b7280;
+        line-height: 1.5;
+      }
+      
+      /* Alert messages */
+      .alert {
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        animation: slideIn 0.5s ease-out;
+        border-left: 5px solid;
+      }
+      
+      .alert-success {
+        background-color: #f0fdf4;
+        color: #166534;
+        border-left-color: #22c55e;
+      }
+      
+      .alert-error {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-left-color: #ef4444;
+      }
+      
+      .alert-icon {
+        margin-right: 12px;
+        font-size: 1.2rem;
+      }
+      
+      @keyframes slideIn {
+        from { 
+          transform: translateX(-20px); 
+          opacity: 0; 
+        }
+        to { 
+          transform: translateX(0); 
+          opacity: 1; 
+        }
+      }
+      
+      /* Form styles */
+      .form-group {
+        margin-bottom: 24px;
+        position: relative;
+      }
+      
+      .form-label {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .form-label-icon {
+        margin-right: 8px;
+        width: 20px;
+        text-align: center;
+      }
+      
+      .form-input, .form-select {
+        width: 100%;
+        padding: 16px 18px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f9fafb;
+      }
+      
+      .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: #10b981;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        transform: translateY(-2px);
+      }
+      
+      .form-input:valid {
+        border-color: #10b981;
+      }
+      
+      .form-input:invalid:not(:focus):not(:placeholder-shown) {
+        border-color: #ef4444;
+      }
+      
+      .password-strength {
+        height: 4px;
+        border-radius: 2px;
+        margin-top: 8px;
+        background-color: #e5e7eb;
+        overflow: hidden;
+        position: relative;
+      }
+      
+      .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+      }
+      
+      .password-strength-weak {
+        background-color: #ef4444;
+        width: 33%;
+      }
+      
+      .password-strength-medium {
+        background-color: #f59e0b;
+        width: 66%;
+      }
+      
+      .password-strength-strong {
+        background-color: #10b981;
+        width: 100%;
+      }
+      
+      .password-hint {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-top: 5px;
+        display: none;
+      }
+      
+      /* Button styles */
+      .btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+      
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      }
+      
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+      
+      .btn-icon {
+        margin-right: 10px;
+        font-size: 1.1rem;
+      }
+      
+      .btn-loading {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Login link */
+      .login-link {
+        text-align: center;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+      }
+      
+      .login-text {
+        font-size: 0.95rem;
+        color: #6b7280;
+      }
+      
+      .login-link a {
+        color: #10b981;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      
+      .login-link a:hover {
+        color: #34d399;
+        text-decoration: underline;
+      }
+      
+      /* Footer */
+      .footer {
+        text-align: center;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+      }
+      
+      .footer-text {
+        font-size: 0.85rem;
+        color: #9ca3af;
+        line-height: 1.5;
+      }
+      
+      .footer-heart {
+        color: #ef4444;
+        display: inline-block;
+        animation: heartbeat 1.5s infinite;
+      }
+      
+      @keyframes heartbeat {
+        0% { transform: scale(1); }
+        5% { transform: scale(1.1); }
+        10% { transform: scale(1); }
+        15% { transform: scale(1.1); }
+        20% { transform: scale(1); }
+        100% { transform: scale(1); }
+      }
+      
+      /* Development badge */
+      .dev-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #f59e0b;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      /* Responsive improvements */
+      @media (max-width: 480px) {
+        .register-container {
+          padding: 30px 25px;
+          border-radius: 20px;
+        }
+        
+        .title {
+          font-size: 1.9rem;
+        }
+        
+        .logo-container {
+          width: 80px;
+          height: 80px;
+        }
+        
+        .logo-icon {
+          font-size: 2rem;
+        }
+        
+        .form-input, .form-select {
+          padding: 14px 16px;
+        }
+        
+        .btn {
+          padding: 14px;
+        }
+      }
+      
+      @media (max-width: 360px) {
+        .register-container {
+          padding: 25px 20px;
+        }
+        
+        .title {
+          font-size: 1.7rem;
+        }
+        
+        .subtitle {
+          font-size: 0.9rem;
+        }
+      }
+      
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        .register-container {
+          background: rgba(17, 24, 39, 0.95);
+          color: #f9fafb;
+        }
+        
+        .title {
+          background: linear-gradient(90deg, #34d399, #10b981);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        .subtitle {
+          color: #d1d5db;
+        }
+        
+        .form-label {
+          color: #e5e7eb;
+        }
+        
+        .form-input, .form-select {
+          background-color: #111827;
+          border-color: #374151;
+          color: #f9fafb;
+        }
+        
+        .form-input:focus, .form-select:focus {
+          background-color: #1f2937;
+        }
+        
+        .login-text {
+          color: #9ca3af;
+        }
+        
+        .footer-text {
+          color: #6b7280;
+        }
+        
+        .password-strength {
+          background-color: #374151;
+        }
+      }
+    </style>
   </head>
-  <body
-    class="bg-gradient-to-br from-primary-50 to-primary-100 min-h-screen flex items-center justify-center px-4"
-  >
-    <div class="max-w-md w-full space-y-8">
+  <body>
+    <!-- Background animation -->
+    <div class="bg-animation">
+      <div class="bg-bubble"></div>
+      <div class="bg-bubble"></div>
+      <div class="bg-bubble"></div>
+      <div class="bg-bubble"></div>
+    </div>
+    
+    <!-- Development badge -->
+    <div class="dev-badge">Development Mode</div>
+    
+    <!-- Register container -->
+    <div class="register-container">
       <!-- Header -->
-      <div class="text-center">
-        <div
-          class="mx-auto h-16 w-16 bg-primary-600 rounded-full flex items-center justify-center"
-        >
-          <i class="fas fa-mosque text-white text-2xl"></i>
+      <div class="header">
+        <div class="logo-container">
+          <i class="fas fa-mosque logo-icon"></i>
         </div>
-        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-          Registrasi User
-        </h2>
-        <p class="mt-2 text-sm text-gray-600">
-          Buat akun baru untuk sistem zakat (Development Mode)
-        </p>
+        <h1 class="title">Registrasi User</h1>
+        <p class="subtitle">Buat akun baru untuk sistem zakat (Development Mode)</p>
       </div>
 
       <!-- Flash Messages -->
       <% if (success_msg && success_msg.length > 0) { %>
-      <div class="alert-success">
-        <i class="fas fa-check-circle mr-2"></i><%= success_msg %>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle alert-icon"></i><%= success_msg %>
       </div>
-      <% } %> <% if (error_msg && error_msg.length > 0) { %>
-      <div class="alert-error">
-        <i class="fas fa-exclamation-circle mr-2"></i><%= error_msg %>
+      <% } %> 
+      <% if (error_msg && error_msg.length > 0) { %>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle alert-icon"></i><%= error_msg %>
       </div>
       <% } %>
 
       <!-- Register Form -->
-      <form class="mt-8 space-y-6 card" action="/auth/register" method="POST">
-        <div class="space-y-4">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">
-              <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              class="form-input mt-1"
-              placeholder="Masukkan nama lengkap"
-            />
-          </div>
-
-          <div>
-            <label
-              for="nomor_wa"
-              class="block text-sm font-medium text-gray-700"
-            >
-              <i class="fab fa-whatsapp mr-1 text-green-600"></i>Nomor WhatsApp
-            </label>
-            <input
-              id="nomor_wa"
-              name="nomor_wa"
-              type="text"
-              required
-              class="form-input mt-1"
-              placeholder="Contoh: 08123456789"
-              pattern="[0-9]{10,15}"
-              title="Masukkan nomor WhatsApp yang valid (10-15 digit)"
-            />
-          </div>
-
-          <div>
-            <label
-              for="password"
-              class="block text-sm font-medium text-gray-700"
-            >
-              <i class="fas fa-lock mr-1 text-gray-500"></i>Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              class="form-input mt-1"
-              placeholder="Minimal 6 karakter"
-              minlength="6"
-            />
-          </div>
-
-          <div>
-            <label
-              for="confirm_password"
-              class="block text-sm font-medium text-gray-700"
-            >
-              <i class="fas fa-lock mr-1 text-gray-500"></i>Konfirmasi Password
-            </label>
-            <input
-              id="confirm_password"
-              name="confirm_password"
-              type="password"
-              required
-              class="form-input mt-1"
-              placeholder="Ulangi password"
-            />
-          </div>
-
-          <div>
-            <label for="role" class="block text-sm font-medium text-gray-700">
-              <i class="fas fa-user-tag mr-1 text-gray-500"></i>Role
-            </label>
-            <select id="role" name="role" class="form-select mt-1">
-              <option value="panitia">Panitia</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+      <form class="register-form" action="/auth/register" method="POST">
+        <div class="form-group">
+          <label for="name" class="form-label">
+            <i class="fas fa-user form-label-icon" style="color: #6b7280;"></i>
+            Nama Lengkap
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            class="form-input"
+            placeholder="Masukkan nama lengkap"
+          />
         </div>
 
-        <div>
-          <button type="submit" class="w-full btn-primary text-lg py-3">
-            <i class="fas fa-user-plus mr-2"></i>Daftar
-          </button>
+        <div class="form-group">
+          <label for="nomor_wa" class="form-label">
+            <i class="fab fa-whatsapp form-label-icon" style="color: #25D366;"></i>
+            Nomor WhatsApp
+          </label>
+          <input
+            id="nomor_wa"
+            name="nomor_wa"
+            type="text"
+            required
+            class="form-input"
+            placeholder="Contoh: 08123456789"
+            pattern="[0-9]{10,15}"
+            title="Masukkan nomor WhatsApp yang valid (10-15 digit)"
+          />
         </div>
 
-        <div class="text-center">
-          <p class="text-sm text-gray-600">
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <i class="fas fa-lock form-label-icon" style="color: #6b7280;"></i>
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            class="form-input"
+            placeholder="Minimal 6 karakter"
+            minlength="6"
+          />
+          <div class="password-strength">
+            <div class="password-strength-bar" id="password-strength-bar"></div>
+          </div>
+          <div class="password-hint" id="password-hint"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password" class="form-label">
+            <i class="fas fa-lock form-label-icon" style="color: #6b7280;"></i>
+            Konfirmasi Password
+          </label>
+          <input
+            id="confirm_password"
+            name="confirm_password"
+            type="password"
+            required
+            class="form-input"
+            placeholder="Ulangi password"
+          />
+          <div class="password-match" id="password-match"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="role" class="form-label">
+            <i class="fas fa-user-tag form-label-icon" style="color: #6b7280;"></i>
+            Role
+          </label>
+          <select id="role" name="role" class="form-select">
+            <option value="panitia">Panitia</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="register-btn">
+          <i class="fas fa-user-plus btn-icon"></i>
+          <span>Daftar</span>
+          <div class="btn-loading"></div>
+        </button>
+
+        <div class="login-link">
+          <p class="login-text">
             Sudah punya akun?
-            <a
-              href="/auth/login"
-              class="font-medium text-primary-600 hover:text-primary-500"
-            >
-              Login di sini
-            </a>
+            <a href="/auth/login">Login di sini</a>
           </p>
         </div>
       </form>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p class="footer-text">
+          © <%= new Date().getFullYear() %> Aplikasi Zakat Fitrah<br />
+          Dibuat dengan <span class="footer-heart">❤️</span> untuk kemudahan pengelolaan zakat
+        </p>
+      </div>
     </div>
 
     <script>
       // Auto hide flash messages after 5 seconds
       setTimeout(function () {
-        const alerts = document.querySelectorAll(
-          ".alert-success, .alert-error"
-        );
+        const alerts = document.querySelectorAll(".alert");
         alerts.forEach(function (alert) {
           alert.style.opacity = "0";
           setTimeout(function () {
@@ -157,36 +695,135 @@
       }, 5000);
 
       // Format phone number input
-      document
-        .getElementById("nomor_wa")
-        .addEventListener("input", function (e) {
-          let value = e.target.value.replace(/[^\d]/g, "");
+      document.getElementById("nomor_wa").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/[^\d]/g, "");
 
-          // Add leading zero if not present and not starting with +62
-          if (
-            value.length > 0 &&
-            !value.startsWith("0") &&
-            !value.startsWith("62")
-          ) {
-            value = "0" + value;
-          }
+        // Add leading zero if not present and not starting with +62
+        if (
+          value.length > 0 &&
+          !value.startsWith("0") &&
+          !value.startsWith("62")
+        ) {
+          value = "0" + value;
+        }
 
-          e.target.value = value;
-        });
+        e.target.value = value;
+      });
 
       // Password confirmation validation
-      document
-        .getElementById("confirm_password")
-        .addEventListener("input", function (e) {
-          const password = document.getElementById("password").value;
-          const confirmPassword = e.target.value;
+      document.getElementById("confirm_password").addEventListener("input", function (e) {
+        const password = document.getElementById("password").value;
+        const confirmPassword = e.target.value;
+        const passwordMatch = document.getElementById("password-match");
 
+        if (confirmPassword.length > 0) {
           if (password !== confirmPassword) {
             e.target.setCustomValidity("Password tidak cocok");
+            passwordMatch.innerHTML = '<span style="color:#ef4444; font-size:0.8rem;">Password tidak cocok</span>';
+            e.target.style.borderColor = "#ef4444";
           } else {
             e.target.setCustomValidity("");
+            passwordMatch.innerHTML = '<span style="color:#10b981; font-size:0.8rem;">Password cocok</span>';
+            e.target.style.borderColor = "#10b981";
           }
+        } else {
+          passwordMatch.innerHTML = '';
+          e.target.style.borderColor = "#e5e7eb";
+        }
+      });
+      
+      // Password strength indicator
+      document.getElementById("password").addEventListener("input", function(e) {
+        const password = e.target.value;
+        const strengthBar = document.getElementById("password-strength-bar");
+        const passwordHint = document.getElementById("password-hint");
+        
+        // Reset classes
+        strengthBar.className = "password-strength-bar";
+        passwordHint.style.display = "none";
+        
+        if (password.length === 0) {
+          strengthBar.style.width = "0%";
+          return;
+        }
+        
+        // Calculate password strength
+        let strength = 0;
+        let hints = [];
+        
+        // Length check
+        if (password.length >= 8) strength += 1;
+        else hints.push("Minimal 8 karakter");
+        
+        // Contains lowercase
+        if (/[a-z]/.test(password)) strength += 1;
+        else hints.push("Gunakan huruf kecil");
+        
+        // Contains uppercase
+        if (/[A-Z]/.test(password)) strength += 1;
+        else hints.push("Gunakan huruf besar");
+        
+        // Contains numbers
+        if (/[0-9]/.test(password)) strength += 1;
+        else hints.push("Gunakan angka");
+        
+        // Contains special characters
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        else hints.push("Gunakan karakter khusus");
+        
+        // Update strength bar
+        if (strength <= 2) {
+          strengthBar.classList.add("password-strength-weak");
+          passwordHint.textContent = "Password lemah. " + hints.join(", ");
+        } else if (strength <= 3) {
+          strengthBar.classList.add("password-strength-medium");
+          passwordHint.textContent = "Password sedang. " + hints.join(", ");
+        } else {
+          strengthBar.classList.add("password-strength-strong");
+          passwordHint.textContent = "Password kuat!";
+        }
+        
+        passwordHint.style.display = "block";
+      });
+      
+      // Form submission loading state
+      document.querySelector('form').addEventListener('submit', function() {
+        const btn = document.getElementById('register-btn');
+        const btnText = btn.querySelector('span');
+        const btnIcon = btn.querySelector('.btn-icon');
+        const btnLoading = btn.querySelector('.btn-loading');
+        
+        btnText.textContent = 'Mendaftarkan...';
+        btnIcon.style.display = 'none';
+        btnLoading.style.display = 'block';
+        btn.disabled = true;
+      });
+      
+      // Add subtle animation to form elements on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        const formElements = document.querySelectorAll('.form-group, .btn, .login-link');
+        formElements.forEach((el, index) => {
+          el.style.animationDelay = `${index * 0.1}s`;
+          el.style.animation = 'fadeInUp 0.6s ease-out forwards';
+          el.style.opacity = '0';
         });
+        
+        // Add CSS for fadeInUp animation
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      });
     </script>
   </body>
 </html>
