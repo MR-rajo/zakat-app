@@ -5,9 +5,11 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const db = req.app.locals.db;
-    const [rows] = await db.execute(`
+    const [rtRows] = await db.execute(`
       SELECT 
         rt.*,
+        rw.nomor_rw,
+        rw.ketua_rw,
         COUNT(m.id) as total_muzakki,
         COALESCE(SUM(CASE 
           WHEN m.jenis_zakat = 'uang' THEN m.jumlah_uang 
@@ -26,15 +28,29 @@ router.get("/", async (req, res) => {
           END THEN 1 
         END) as muzakki_belum_lunas
       FROM rt 
+      LEFT JOIN rw ON rt.rw_id = rw.id
       LEFT JOIN muzakki m ON rt.id = m.rt_id 
       GROUP BY rt.id 
       ORDER BY rt.nomor_rt ASC
     `);
 
+    const [rwRows] = await db.execute(`
+      SELECT 
+        rw.*,
+        COUNT(DISTINCT rt.id) as total_rt,
+        COUNT(DISTINCT m.id) as total_muzakki
+      FROM rw 
+      LEFT JOIN rt ON rw.id = rt.rw_id 
+      LEFT JOIN muzakki m ON rt.id = m.rt_id 
+      GROUP BY rw.id 
+      ORDER BY rw.nomor_rw ASC
+    `);
+
     res.render("rt/index", {
       title: "Data RT - Zakat Fitrah App",
       user: req.session.user,
-      rtList: rows,
+      rtList: rtRows,
+      rwList: rwRows,
       success: req.flash("success"),
       error: req.flash("error"),
     });
@@ -46,23 +62,34 @@ router.get("/", async (req, res) => {
 });
 
 // GET /rt/create - Form tambah RT
-router.get("/create", (req, res) => {
-  res.render("rt/create", {
-    title: "Tambah RT - Zakat Fitrah App",
-    user: req.session.user,
-    error: req.flash("error"),
-  });
+router.get("/create", async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    const [rwRows] = await db.execute("SELECT id, nomor_rw, ketua_rw FROM rw ORDER BY nomor_rw ASC");
+
+    res.render("rt/create", {
+      title: "Tambah RT - Zakat Fitrah App",
+      user: req.session.user,
+      rwList: rwRows,
+      error: req.flash("error"),
+      success: req.flash("success"),
+    });
+  } catch (error) {
+    console.error("Error fetching RW data for RT create:", error);
+    req.flash("error", "Gagal mengambil data RW");
+    res.redirect("/rt");
+  }
 });
 
 // POST /rt/create - Simpan RT baru
 router.post("/create", async (req, res) => {
   try {
     const db = req.app.locals.db;
-    const { nomor_rt, ketua_rt, keterangan } = req.body;
+    const { rw_id, nomor_rt, ketua_rt, keterangan } = req.body;
 
     // Validasi input
-    if (!nomor_rt || !ketua_rt) {
-      req.flash("error", "Nomor RT dan Ketua RT harus diisi");
+    if (!rw_id || !nomor_rt || !ketua_rt) {
+      req.flash("error", "RW, Nomor RT dan Ketua RT harus diisi");
       return res.redirect("/rt/create");
     }
 
@@ -79,8 +106,8 @@ router.post("/create", async (req, res) => {
 
     // Insert RT baru
     await db.execute(
-      "INSERT INTO rt (nomor_rt, ketua_rt, keterangan) VALUES (?, ?, ?)",
-      [nomor_rt, ketua_rt, keterangan || null]
+      "INSERT INTO rt (rw_id, nomor_rt, ketua_rt, keterangan) VALUES (?, ?, ?, ?)",
+      [rw_id, nomor_rt, ketua_rt, keterangan || null]
     );
 
     req.flash("success", `RT ${nomor_rt} berhasil ditambahkan`);
@@ -96,20 +123,24 @@ router.post("/create", async (req, res) => {
 router.get("/:id/edit", async (req, res) => {
   try {
     const db = req.app.locals.db;
-    const [rows] = await db.execute("SELECT * FROM rt WHERE id = ?", [
+    const [rtRows] = await db.execute("SELECT * FROM rt WHERE id = ?", [
       req.params.id,
     ]);
 
-    if (rows.length === 0) {
+    if (rtRows.length === 0) {
       req.flash("error", "RT tidak ditemukan");
       return res.redirect("/rt");
     }
 
+    const [rwRows] = await db.execute("SELECT id, nomor_rw, ketua_rw FROM rw ORDER BY nomor_rw ASC");
+
     res.render("rt/edit", {
       title: "Edit RT - Zakat Fitrah App",
       user: req.session.user,
-      rt: rows[0],
+      rt: rtRows[0],
+      rwList: rwRows,
       error: req.flash("error"),
+      success: req.flash("success"),
     });
   } catch (error) {
     console.error("Error fetching RT for edit:", error);
@@ -122,11 +153,11 @@ router.get("/:id/edit", async (req, res) => {
 router.post("/:id/edit", async (req, res) => {
   try {
     const db = req.app.locals.db;
-    const { nomor_rt, ketua_rt, keterangan } = req.body;
+    const { rw_id, nomor_rt, ketua_rt, keterangan } = req.body;
 
     // Validasi input
-    if (!nomor_rt || !ketua_rt) {
-      req.flash("error", "Nomor RT dan Ketua RT harus diisi");
+    if (!rw_id || !nomor_rt || !ketua_rt) {
+      req.flash("error", "RW, Nomor RT dan Ketua RT harus diisi");
       return res.redirect(`/rt/${req.params.id}/edit`);
     }
 
@@ -143,8 +174,8 @@ router.post("/:id/edit", async (req, res) => {
 
     // Update RT
     await db.execute(
-      "UPDATE rt SET nomor_rt = ?, ketua_rt = ?, keterangan = ? WHERE id = ?",
-      [nomor_rt, ketua_rt, keterangan || null, req.params.id]
+      "UPDATE rt SET rw_id = ?, nomor_rt = ?, ketua_rt = ?, keterangan = ? WHERE id = ?",
+      [rw_id, nomor_rt, ketua_rt, keterangan || null, req.params.id]
     );
 
     req.flash("success", `RT ${nomor_rt} berhasil diperbarui`);

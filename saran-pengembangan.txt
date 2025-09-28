@@ -1,0 +1,27 @@
+Saran Pengembangan
+Berikut adalah beberapa saran untuk meningkatkan fungsionalitas dan skalabilitas:
+
+1. Perluasan Jenis Zakat
+Saat ini, tabel muzakki dan distribusi_zakat hanya mengakomodasi zakat fitrah (beras dan uang). Untuk mendukung pengelolaan zakat secara keseluruhan (zakat mal), kamu perlu menambahkan kolom atau tabel baru.
+
+Opsi 1: Tambah Kolom di Tabel muzakki: Tambahkan kolom-kolom untuk jenis zakat mal, seperti zakat_profesi, zakat_perdagangan, zakat_emas, dll. Namun, cara ini bisa membuat tabel muzakki sangat panjang dan kurang efisien.
+
+Opsi 2: Buat Tabel Transaksi Zakat Mal Terpisah: Buat tabel baru bernama zakat_mal_transaction atau sejenisnya.
+
+Tabel ini bisa memiliki kolom seperti muzakki_id, jenis_zakat_mal (enum: 'emas', 'perdagangan', 'profesi', 'pertanian'), jumlah_harta, jumlah_zakat_wajib, user_id, dll.
+
+Dengan cara ini, kamu bisa mencatat zakat fitrah dan zakat mal secara terpisah dan lebih terstruktur.
+
+2. Kategori Mustahik yang Lebih Detail
+Tabel mustahik sudah bagus, tapi untuk fakir dan miskin, kamu bisa menambahkan kolom yang mendeskripsikan kondisi mereka.
+
+Misalnya, kolom keterangan_kondisi yang berisi deskripsi singkat tentang mengapa mereka dikategorikan sebagai fakir atau miskin. Ini akan membantu panitia saat melakukan verifikasi.
+
+3. Penambahan Fitur Keuangan
+Untuk akuntabilitas yang lebih baik, kamu bisa menambahkan tabel-tabel berikut:
+
+kas_masuk: Mencatat semua penerimaan dana, baik dari zakat, infak, maupun sumber lain.
+
+kas_keluar: Mencatat semua pengeluaran dana, termasuk biaya operasional (misalnya, untuk amil) dan penyaluran zakat.
+
+log_activities: Untuk memantau setiap aktivitas penting yang dilakukan oleh users, misalnya siapa yang mengubah status distribusi, atau siapa yang menambahkan data mustahik.

@@ -107,6 +107,7 @@ const muzakkiRoutes = require("./routes/muzakki");
 const infakRoutes = require("./routes/infak");
 const laporanRoutes = require("./routes/laporan");
 const rtRoutes = require("./routes/rt");
+const rwRoutes = require("./routes/rw");
 const mustahikRoutes = require("./routes/mustahik");
 const distribusiRoutes = require("./routes/distribusi");
 
@@ -116,7 +117,8 @@ app.use("/users", isAuthenticated, isAdmin, usersRoutes);
 app.use("/muzakki", isAuthenticated, muzakkiRoutes);
 app.use("/infak", isAuthenticated, infakRoutes);
 app.use("/laporan", isAuthenticated, laporanRoutes);
-app.use("/rt", isAuthenticated, rtRoutes);
+app.use("/rt-rw", isAuthenticated, rtRoutes);
+app.use("/rw", isAuthenticated, rwRoutes);
 app.use("/mustahik", isAuthenticated, mustahikRoutes);
 app.use("/distribusi", isAuthenticated, distribusiRoutes);
 

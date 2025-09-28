@@ -1,39 +1,34 @@
-<%- include('../layouts/header', { title: 'Edit RT - Zakat Fitrah App',
+<%- include('../layouts/header', { title: 'Tambah RW - Zakat Fitrah App',
 bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
   <!-- Header -->
   <div class="mb-6">
     <div class="flex items-center mb-4">
-      <a href="/rt" class="text-primary-600 hover:text-primary-800 mr-4">
+      <a href="/rw" class="text-primary-600 hover:text-primary-800 mr-4">
         <i class="fas fa-arrow-left"></i>
       </a>
       <h1 class="text-3xl font-bold text-gray-900">
-        <i class="fas fa-edit mr-2 text-primary-600"></i>Edit RT
+        <i class="fas fa-plus mr-2 text-primary-600"></i>Tambah RW
       </h1>
     </div>
-    <p class="text-gray-600">Edit data RT <%= rt.nomor_rt %></p>
+    <p class="text-gray-600">Tambahkan data RW baru ke sistem</p>
   </div>
 
   <!-- Form -->
   <div class="bg-white shadow-sm rounded-lg overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-200">
-      <h2 class="text-lg font-semibold text-gray-900">Informasi RT</h2>
+      <h2 class="text-lg font-semibold text-gray-900">Informasi RW</h2>
     </div>
 
-    <form
-      method="POST"
-      action="/rt/<%= rt.id %>/edit"
-      class="p-6 space-y-6"
-      id="rt-form"
-    >
-      <!-- Pilih RW -->
+    <form method="POST" action="/rw/create" class="p-6 space-y-6" id="rw-form">
+      <!-- Nomor RW -->
       <div>
         <label
-          for="rw_id"
+          for="nomor_rw"
           class="block text-sm font-medium text-gray-700 mb-2"
         >
-          Pilih RW <span class="text-red-500">*</span>
+          Nomor RW <span class="text-red-500">*</span>
         </label>
         <div class="relative">
           <div
@@ -41,59 +36,27 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
           >
             <i class="fas fa-building text-gray-400"></i>
           </div>
-          <select
-            id="rw_id"
-            name="rw_id"
-            required
-            class="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-          >
-            <option value="">Pilih RW</option>
-            <% rwList.forEach(function(rw) { %>
-            <option value="<%= rw.id %>" <%= rt.rw_id == rw.id ? 'selected' : '' %>><%= rw.nomor_rw %> - <%= rw.ketua_rw %></option>
-            <% }); %>
-          </select>
-        </div>
-        <p class="mt-1 text-sm text-gray-500">
-          Pilih RW tempat RT ini berada
-        </p>
-      </div>
-
-      <!-- Nomor RT -->
-      <div>
-        <label
-          for="nomor_rt"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Nomor RT <span class="text-red-500">*</span>
-        </label>
-        <div class="relative">
-          <div
-            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-          >
-            <i class="fas fa-home text-gray-400"></i>
-          </div>
           <input
             type="text"
-            id="nomor_rt"
-            name="nomor_rt"
+            id="nomor_rw"
+            name="nomor_rw"
             required
-            value="<%= rt.nomor_rt %>"
-            placeholder="Contoh: RT 01, RT 02, dll"
+            placeholder="Contoh: RW 01, RW 02, dll"
             class="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
         <p class="mt-1 text-sm text-gray-500">
-          Masukkan nomor RT, contoh: RT 01, RT 02, RT 11, dll.
+          Masukkan nomor RW, contoh: RW 01, RW 02, RW 11, dll.
         </p>
       </div>
 
-      <!-- Ketua RT -->
+      <!-- Ketua RW -->
       <div>
         <label
-          for="ketua_rt"
+          for="ketua_rw"
           class="block text-sm font-medium text-gray-700 mb-2"
         >
-          Nama Ketua RT <span class="text-red-500">*</span>
+          Nama Ketua RW <span class="text-red-500">*</span>
         </label>
         <div class="relative">
           <div
@@ -103,15 +66,14 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
           </div>
           <input
             type="text"
-            id="ketua_rt"
-            name="ketua_rt"
+            id="ketua_rw"
+            name="ketua_rw"
             required
-            value="<%= rt.ketua_rt %>"
-            placeholder="Nama lengkap ketua RT"
+            placeholder="Nama lengkap ketua RW"
             class="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
-        <p class="mt-1 text-sm text-gray-500">Masukkan nama lengkap ketua RT</p>
+        <p class="mt-1 text-sm text-gray-500">Masukkan nama lengkap ketua RW</p>
       </div>
 
       <!-- Keterangan -->
@@ -132,14 +94,12 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
             id="keterangan"
             name="keterangan"
             rows="3"
-            placeholder="Catatan tambahan atau keterangan RT (opsional)"
+            placeholder="Catatan tambahan atau keterangan RW (opsional)"
             class="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-          >
-<%= rt.keterangan || '' %></textarea
-          >
+          ></textarea>
         </div>
         <p class="mt-1 text-sm text-gray-500">
-          Keterangan tambahan tentang RT (opsional)
+          Keterangan tambahan tentang RW (opsional)
         </p>
       </div>
 
@@ -147,31 +107,30 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
       <div
         class="flex items-center justify-between pt-6 border-t border-gray-200"
       >
-        <a href="/rt" class="btn-secondary">
+        <a href="/rw" class="btn-secondary">
           <i class="fas fa-times mr-2"></i>Batal
         </a>
         <button type="submit" class="btn-primary">
-          <i class="fas fa-save mr-2"></i>Simpan Perubahan
+          <i class="fas fa-save mr-2"></i>Simpan RW
         </button>
       </div>
     </form>
   </div>
 
-  <!-- Information -->
-  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+  <!-- Guidelines -->
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
     <div class="flex">
       <div class="flex-shrink-0">
-        <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+        <i class="fas fa-info-circle text-blue-400"></i>
       </div>
       <div class="ml-3">
-        <h3 class="text-sm font-medium text-yellow-800">Informasi Penting</h3>
-        <div class="mt-2 text-sm text-yellow-700">
+        <h3 class="text-sm font-medium text-blue-800">Panduan Pengisian</h3>
+        <div class="mt-2 text-sm text-blue-700">
           <ul class="list-disc space-y-1 ml-4">
-            <li>
-              Perubahan nomor RT akan mempengaruhi semua data muzakki di RT ini
-            </li>
-            <li>Pastikan nomor RT yang baru tidak bentrok dengan RT lain</li>
-            <li>Data yang sudah disimpan tidak dapat dikembalikan</li>
+            <li>Nomor RW harus unik dan belum terdaftar di sistem</li>
+            <li>Format nomor RW: RW 01, RW 02, RW 11, dst</li>
+            <li>Nama ketua RW akan digunakan untuk identifikasi</li>
+            <li>Keterangan bersifat opsional dan dapat diisi nanti</li>
           </ul>
         </div>
       </div>
@@ -180,16 +139,16 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
 </div>
 
 <script>
-  document.getElementById("rt-form").addEventListener("submit", function (e) {
+  document.getElementById("rw-form").addEventListener("submit", function (e) {
     e.preventDefault(); // Prevent default submit
-    const nomorRt = document.getElementById("nomor_rt").value.trim();
-    const ketuaRt = document.getElementById("ketua_rt").value.trim();
+    const nomorRw = document.getElementById("nomor_rw").value.trim();
+    const ketuaRw = document.getElementById("ketua_rw").value.trim();
 
-    if (!nomorRt || !ketuaRt) {
+    if (!nomorRw || !ketuaRw) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Nomor RT dan Nama Ketua RT harus diisi',
+        text: 'Nomor RW dan Nama Ketua RW harus diisi',
         confirmButtonText: 'OK'
       });
       return false;
@@ -197,7 +156,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
 
     Swal.fire({
       title: 'Konfirmasi Simpan',
-      text: 'Apakah perubahan data RT sudah benar?',
+      text: 'Apakah data RW yang dimasukkan sudah benar?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -211,17 +170,17 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
     });
   });
 
-  // Format input nomor RT
-  document.getElementById("nomor_rt").addEventListener("input", function (e) {
+  // Format input nomor RW
+  document.getElementById("nomor_rw").addEventListener("input", function (e) {
     let value = e.target.value.toUpperCase();
 
-    // Auto format RT if user types just numbers
+    // Auto format RW if user types just numbers
     if (/^\d+$/.test(value)) {
       const num = parseInt(value);
       if (num < 10) {
-        value = `RT 0${num}`;
+        value = `RW 0${num}`;
       } else {
-        value = `RT ${num}`;
+        value = `RW ${num}`;
       }
       e.target.value = value;
     }
@@ -250,4 +209,4 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
 </script>
 <% } %>
 
-<%- include('layouts/footer') %>
+<%- include('../layouts/footer') %>

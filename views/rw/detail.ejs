@@ -1,0 +1,285 @@
+<%- include('../layouts/header', { title: `Detail RW ${rw.nomor_rw} - Zakat Fitrah App`,
+bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-center mb-4">
+      <a href="/rw" class="text-primary-600 hover:text-primary-800 mr-4">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      <h1 class="text-3xl font-bold text-gray-900">
+        <i class="fas fa-building mr-2 text-primary-600"></i>Detail RW <%= rw.nomor_rw %>
+      </h1>
+    </div>
+    <p class="text-gray-600">Informasi lengkap RW dan daftar RT di bawahnya</p>
+  </div>
+
+  <!-- RW Info -->
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden mb-6">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">Informasi RW</h2>
+    </div>
+    <div class="p-6">
+      <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Nomor RW</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= rw.nomor_rw %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Ketua RW</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= rw.ketua_rw %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Keterangan</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= rw.keterangan || '-' %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Dibuat</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= new Date(rw.created_at).toLocaleDateString('id-ID', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            }) %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <div class="flex justify-end">
+        <a href="/rw/<%= rw.id %>/edit" class="btn-primary">
+          <i class="fas fa-edit mr-2"></i>Edit RW
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+              <i class="fas fa-home text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total RT</dt>
+              <dd class="text-lg font-semibold text-gray-900"><%= stats.total_rt %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+              <i class="fas fa-users text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Total Muzakki</dt>
+              <dd class="text-lg font-semibold text-gray-900"><%= stats.total_muzakki %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+              <i class="fas fa-coins text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500">Total Zakat</dt>
+              <dd class="text-lg font-semibold text-gray-900">
+                Rp <%= Math.floor(stats.total_zakat).toLocaleString('id-ID') %>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+              <i class="fas fa-check-circle text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Muzakki Lunas</dt>
+              <dd class="text-lg font-semibold text-gray-900"><%= stats.muzakki_lunas %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RT List -->
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900">Daftar RT di RW <%= rw.nomor_rw %></h2>
+      <a href="/rt/create" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Tambah RT
+      </a>
+    </div>
+
+    <% if (rtList.length > 0) { %>
+    <div class="overflow-x-auto px-4">
+      <table class="w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50 px-4">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RT</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ketua RT</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statistik</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Zakat</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% rtList.forEach(function(rt) { %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-home text-primary-600"></i>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900"><%= rt.nomor_rt %></div>
+                  <div class="text-sm text-gray-500">ID: <%= rt.id %></div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900"><%= rt.ketua_rt %></div>
+              <div class="text-sm text-gray-500">Ketua RT</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900"><%= rt.keterangan || '-' %></div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                <div class="flex items-center space-x-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <i class="fas fa-users mr-1"></i><%= rt.total_muzakki %> Muzakki
+                  </span>
+                </div>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                    <i class="fas fa-check mr-1"></i><%= rt.muzakki_lunas %> Lunas
+                  </span>
+                  <% if (rt.muzakki_belum_lunas > 0) { %>
+                  <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                    <i class="fas fa-times mr-1"></i><%= rt.muzakki_belum_lunas %> Belum
+                  </span>
+                  <% } %>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900">
+                Rp <%= Math.floor(rt.total_zakat).toLocaleString('id-ID') %>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <div class="flex items-center justify-end gap-4">
+                <a href="/rt/<%= rt.id %>/detail" class="text-blue-600 hover:text-blue-900" title="Detail RT">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a href="/rt/<%= rt.id %>/edit" class="text-indigo-600 hover:text-indigo-900" title="Edit RT">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form method="POST" action="/rt/<%= rt.id %>/delete" class="inline delete-rt-form" data-rt-id="<%= rt.id %>" data-rt-nomor="<%= rt.nomor_rt %>">
+                  <button type="button" class="text-red-600 hover:text-red-900 delete-rt-btn" title="Hapus RT">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% } else { %>
+    <div class="text-center py-12">
+      <i class="fas fa-home text-gray-400 text-6xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Data RT</h3>
+      <p class="text-gray-500 mb-4">RW ini belum memiliki RT. Tambahkan RT pertama.</p>
+      <a href="/rt/create" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Tambah RT Pertama
+      </a>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (error) { %>
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: '<%= error %>',
+    confirmButtonText: 'OK'
+  });
+</script>
+<% } %>
+
+<% if (success) { %>
+<script>
+  Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: '<%= success %>',
+    confirmButtonText: 'OK'
+  });
+</script>
+<% } %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delete-rt-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const form = this.closest('.delete-rt-form');
+        const rtNomor = form.getAttribute('data-rt-nomor');
+
+        Swal.fire({
+          title: 'Konfirmasi Hapus',
+          text: `Yakin ingin menghapus RT ${rtNomor}? Data ini tidak dapat dikembalikan.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Ya, Hapus',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<%- include('../layouts/footer') %>
