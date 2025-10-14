@@ -1,3 +1,5 @@
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'laporan' }) %>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
   <!-- Header -->
   <div class="mb-6">
@@ -20,15 +22,15 @@
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-green-600">
-        <%= laporanRT.reduce((total, rt) => total + (rt.total_beras_kg || 0),
-        0).toFixed(1) %> kg
+        <%= laporanRT.reduce((total, rt) => total +
+        (parseFloat(rt.total_beras_kg) || 0), 0).toFixed(1) %> kg
       </div>
       <div class="text-sm text-gray-600">Total Beras</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-blue-600">
-        Rp <%= laporanRT.reduce((total, rt) => total + (rt.total_terkumpul ||
-        0), 0).toLocaleString('id-ID') %>
+        Rp <%= laporanRT.reduce((total, rt) => total +
+        (parseFloat(rt.total_terkumpul) || 0), 0).toLocaleString('id-ID') %>
       </div>
       <div class="text-sm text-gray-600">Total Terkumpul</div>
     </div>
@@ -93,18 +95,21 @@
               </span>
             </td>
             <td>
-              <% if (rt.total_beras_kg > 0) { %>
+              <% if (rt.total_beras_kg && parseFloat(rt.total_beras_kg) > 0) {
+              %>
               <div class="font-medium text-green-600">
-                <%= rt.total_beras_kg.toFixed(1) %> kg
+                <%= parseFloat(rt.total_beras_kg).toFixed(1) %> kg
               </div>
               <% } else { %>
               <span class="text-gray-400">-</span>
               <% } %>
             </td>
             <td>
-              <% if (rt.total_uang_kewajiban > 0) { %>
+              <% if (rt.total_uang_kewajiban &&
+              parseFloat(rt.total_uang_kewajiban) > 0) { %>
               <div class="font-medium text-blue-600">
-                Rp <%= rt.total_uang_kewajiban.toLocaleString('id-ID') %>
+                Rp <%=
+                parseFloat(rt.total_uang_kewajiban).toLocaleString('id-ID') %>
               </div>
               <% } else { %>
               <span class="text-gray-400">-</span>
@@ -116,9 +121,10 @@
               </div>
             </td>
             <td>
-              <% if (rt.total_kembalian > 0) { %>
+              <% if (rt.total_kembalian && parseFloat(rt.total_kembalian) > 0) {
+              %>
               <div class="font-medium text-yellow-600">
-                Rp <%= rt.total_kembalian.toLocaleString('id-ID') %>
+                Rp <%= parseFloat(rt.total_kembalian).toLocaleString('id-ID') %>
               </div>
               <% } else { %>
               <span class="text-gray-400">-</span>
@@ -150,20 +156,23 @@
               0), 0) %> orang
             </td>
             <td class="font-bold text-green-600">
-              <%= laporanRT.reduce((total, rt) => total + (rt.total_beras_kg ||
-              0), 0).toFixed(1) %> kg
+              <%= laporanRT.reduce((total, rt) => total +
+              (parseFloat(rt.total_beras_kg) || 0), 0).toFixed(1) %> kg
             </td>
             <td class="font-bold text-blue-600">
               Rp <%= laporanRT.reduce((total, rt) => total +
-              (rt.total_uang_kewajiban || 0), 0).toLocaleString('id-ID') %>
+              (parseFloat(rt.total_uang_kewajiban) || 0),
+              0).toLocaleString('id-ID') %>
             </td>
             <td class="font-bold text-primary-600">
-              Rp <%= laporanRT.reduce((total, rt) => total + (rt.total_terkumpul
-              || 0), 0).toLocaleString('id-ID') %>
+              Rp <%= laporanRT.reduce((total, rt) => total +
+              (parseFloat(rt.total_terkumpul) || 0), 0).toLocaleString('id-ID')
+              %>
             </td>
             <td class="font-bold text-yellow-600">
-              Rp <%= laporanRT.reduce((total, rt) => total + (rt.total_kembalian
-              || 0), 0).toLocaleString('id-ID') %>
+              Rp <%= laporanRT.reduce((total, rt) => total +
+              (parseFloat(rt.total_kembalian) || 0), 0).toLocaleString('id-ID')
+              %>
             </td>
             <td></td>
           </tr>
@@ -187,23 +196,25 @@
         <div class="flex justify-between">
           <span class="text-gray-600">RT dengan Muzakki:</span>
           <span class="font-medium">
-            <%= laporanRT.filter(rt => rt.total_muzakki > 0).length %> RT
+            <%= laporanRT.filter(rt => (rt.total_muzakki || 0) > 0).length %> RT
           </span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Rata-rata per RT:</span>
           <span class="font-medium">
-            <%= laporanRT.length > 0 ? Math.round(laporanRT.reduce((total, rt)
-            => total + (rt.total_muzakki || 0), 0) / laporanRT.length) : 0 %>
-            muzakki
+            <% const totalMuzakki = laporanRT.reduce((total, rt) => total +
+            (parseInt(rt.total_muzakki) || 0), 0); const avgMuzakki =
+            laporanRT.length > 0 ? Math.round(totalMuzakki / laporanRT.length) :
+            0; %> <%= avgMuzakki %> muzakki
           </span>
         </div>
         <div class="flex justify-between border-t pt-3">
           <span class="text-gray-600">Status Pengumpulan:</span>
           <span class="font-medium text-green-600">
             <i class="fas fa-chart-line mr-1"></i>
-            <%= laporanRT.filter(rt => rt.total_muzakki > 0).length > 0 ?
-            'Aktif' : 'Belum Dimulai' %>
+            <% const rtWithMuzakki = laporanRT.filter(rt => (rt.total_muzakki ||
+            0) > 0).length; const status = rtWithMuzakki > 0 ? 'Aktif' : 'Belum
+            Dimulai'; %> <%= status %>
           </span>
         </div>
       </div>
@@ -232,3 +243,5 @@
     </div>
   </div>
 </div>
+
+<%- include('../layouts/footer') %>

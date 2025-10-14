@@ -1,0 +1,262 @@
+<%- include('../layouts/header', { title: 'Detail RT - Zakat Fitrah App',
+bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center">
+        <a href="/muzakki" class="text-primary-600 hover:text-primary-800 mr-4">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="text-3xl font-bold text-gray-900">
+          <i class="fas fa-users mr-2 text-primary-600"></i>Detail Muzakki RT
+          <%= rt.nomor_rt %>
+        </h1>
+      </div>
+      <div class="flex space-x-2">
+        <a href="/muzakki/create" class="btn-primary">
+          <i class="fas fa-plus mr-2"></i>Tambah Muzakki
+        </a>
+        <a href="/muzakki" class="btn-outline">
+          <i class="fas fa-list mr-2"></i>Kembali ke Daftar RT
+        </a>
+      </div>
+    </div>
+    <p class="text-gray-600">
+      Daftar lengkap muzakki di RT <%= rt.nomor_rt %> - <%= rt.ketua_rt %>
+    </p>
+  </div>
+
+  <!-- RT Info Card -->
+  <div class="card mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-map-marker-alt mr-2 text-primary-600"></i>Informasi
+          RT
+        </h3>
+        <div class="space-y-2">
+          <div>
+            <span class="text-sm font-medium text-gray-700">Nomor RT:</span>
+            <div class="text-lg font-bold text-primary-600">
+              <%= rt.nomor_rt %>
+            </div>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-gray-700">Ketua RT:</span>
+            <div class="font-medium text-gray-900"><%= rt.ketua_rt %></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-chart-bar mr-2 text-green-600"></i>Statistik Muzakki
+        </h3>
+        <div class="space-y-2">
+          <div>
+            <span class="text-sm font-medium text-gray-700"
+              >Total Data Muzakki:</span
+            >
+            <div class="text-lg font-bold text-blue-600">
+              <%= muzakki.length %> data
+            </div>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-gray-700"
+              >Total Nama Muzakki:</span
+            >
+            <div class="text-lg font-bold text-purple-600">
+              <%= muzakki.reduce((total, m) => total +
+              (parseInt(m.jumlah_muzakki) || 0), 0) %> orang
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-calculator mr-2 text-orange-600"></i>Total Zakat
+        </h3>
+        <div class="space-y-2">
+          <div>
+            <span class="text-sm font-medium text-gray-700">Total Jiwa:</span>
+            <div class="text-lg font-bold text-gray-800">
+              <%= muzakki.reduce((total, m) => total + (parseInt(m.jumlah_jiwa)
+              || 0), 0) %> jiwa
+            </div>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-gray-700"
+              >Total Kembalian:</span
+            >
+            <div class="text-lg font-bold text-yellow-600">
+              Rp <%= Math.floor(muzakki.reduce((total, m) => total +
+              (parseFloat(m.kembalian) || 0), 0)).toLocaleString('id-ID') %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="card">
+    <div class="table-responsive">
+      <% if (muzakki.length === 0) { %>
+      <div class="text-center py-12">
+        <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">
+          Belum ada data muzakki di RT <%= rt.nomor_rt %>
+        </h3>
+        <p class="text-gray-600 mb-6">
+          Mulai dengan menambahkan data muzakki untuk RT ini
+        </p>
+        <a href="/muzakki/create" class="btn-primary">
+          <i class="fas fa-plus mr-2"></i>Tambah Muzakki
+        </a>
+      </div>
+      <% } else { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Muzakki</th>
+            <th>Jumlah Jiwa</th>
+            <th>Jenis Zakat</th>
+            <th>Kewajiban</th>
+            <th>Jumlah Bayar</th>
+            <th>Kembalian</th>
+            <th>Pencatat</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% muzakki.forEach(function(item, index) { %>
+          <tr>
+            <td class="text-center">
+              <span
+                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-800 text-sm font-medium"
+              >
+                <%= index + 1 %>
+              </span>
+            </td>
+            <td>
+              <div class="font-medium text-gray-900">
+                <%= item.nama_muzakki_list || '-' %>
+              </div>
+              <div class="text-xs text-gray-500">
+                <%= item.jumlah_muzakki || 0 %> orang
+              </div>
+              <% if (item.catatan) { %>
+              <div class="text-xs text-gray-500 mt-1"><%= item.catatan %></div>
+              <% } %>
+            </td>
+            <td class="text-center">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+              >
+                <%= item.jumlah_jiwa %> jiwa
+              </span>
+            </td>
+            <td>
+              <% if (item.jenis_zakat === 'beras') { %>
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+              >
+                <i class="fas fa-seedling mr-1"></i>Beras
+              </span>
+              <% } else { %>
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                <i class="fas fa-coins mr-1"></i>Uang
+              </span>
+              <% } %>
+            </td>
+            <td>
+              <% if (item.jenis_zakat === 'beras') { %>
+              <div class="font-medium"><%= item.jumlah_beras_kg %> kg</div>
+              <% } else { %>
+              <div class="font-medium">
+                Rp <%= Math.floor(item.jumlah_uang).toLocaleString('id-ID') %>
+              </div>
+              <% } %>
+            </td>
+            <td>
+              <div class="font-medium text-green-600">
+                Rp <%= Math.floor(item.jumlah_bayar).toLocaleString('id-ID') %>
+              </div>
+            </td>
+            <td>
+              <% if (item.kembalian > 0) { %>
+              <div class="font-medium text-yellow-600 mb-2">
+                Rp <%= Math.floor(item.kembalian).toLocaleString('id-ID') %>
+              </div>
+              <form
+                method="POST"
+                action="/muzakki/<%= item.id %>/sedekahkan-kembalian"
+                class="inline"
+              >
+                <button
+                  type="submit"
+                  class="text-green-600 hover:text-green-900 text-xs"
+                  title="Sedekahkan Kembalian"
+                  onclick="return confirm('Sedekahkan kembalian sebagai infak?')"
+                >
+                  <i class="fas fa-hand-holding-heart mr-1"></i>Sedekahkan
+                </button>
+              </form>
+              <% } else { %>
+              <div class="text-gray-400">-</div>
+              <% } %>
+            </td>
+            <td>
+              <div class="text-sm text-gray-600">
+                <%= item.pencatat_name || '-' %>
+              </div>
+              <div class="text-xs text-gray-400">
+                <%= new Date(item.created_at).toLocaleDateString('id-ID') %>
+              </div>
+            </td>
+            <td>
+              <div class="flex gap-2">
+                <a
+                  href="/muzakki/<%= item.id %>"
+                  class="text-green-600 hover:text-green-900"
+                  title="Detail"
+                >
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a
+                  href="/muzakki/<%= item.id %>/edit"
+                  class="text-blue-600 hover:text-blue-900"
+                  title="Edit"
+                >
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form
+                  method="POST"
+                  action="/muzakki/<%= item.id %>?_method=DELETE"
+                  class="inline"
+                >
+                  <button
+                    type="submit"
+                    class="text-red-600 hover:text-red-900"
+                    title="Hapus"
+                    onclick="return confirm('Yakin ingin menghapus data muzakki ini?')"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

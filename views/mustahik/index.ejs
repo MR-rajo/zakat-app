@@ -4,7 +4,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
   <!-- Header -->
   <div class="mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">
           <i class="fas fa-user-friends mr-2 text-primary-600"></i>Data Mustahik
@@ -221,8 +221,9 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
       </a>
     </div>
     <% } else { %>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200" id="mustahikTable">
+    <!-- Desktop Table View -->
+    <div class="hidden md:block overflow-x-auto">
+      <table class="w-full divide-y divide-gray-200" id="mustahikTable">
         <thead class="bg-gray-50">
           <tr>
             <th
@@ -311,14 +312,14 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
               <div class="flex items-center justify-end space-x-2">
                 <a
                   href="/mustahik/detail/<%= m.id %>"
-                  class="text-blue-600 hover:text-blue-900 transition-colors duration-150"
+                  class="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-2 rounded-lg hover:bg-blue-50"
                   title="Lihat Detail"
                 >
                   <i class="fas fa-eye"></i>
                 </a>
                 <a
                   href="/mustahik/edit/<%= m.id %>"
-                  class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150"
+                  class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150 p-2 rounded-lg hover:bg-indigo-50"
                   title="Edit"
                 >
                   <i class="fas fa-edit"></i>
@@ -331,7 +332,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
                 >
                   <button
                     type="submit"
-                    class="text-red-600 hover:text-red-900 transition-colors duration-150"
+                    class="text-red-600 hover:text-red-900 transition-colors duration-150 p-2 rounded-lg hover:bg-red-50"
                     title="Hapus"
                   >
                     <i class="fas fa-trash"></i>
@@ -344,6 +345,115 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
         </tbody>
       </table>
     </div>
+
+    <!-- Mobile Card View -->
+    <div class="block md:hidden space-y-4">
+      <% mustahik.forEach(m => { %>
+      <div
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all duration-200"
+        data-category="<%= m.kategori %>"
+        data-rt="<%= m.rt_id || '' %>"
+      >
+        <div class="flex items-start justify-between">
+          <div class="flex items-center flex-1">
+            <div class="flex-shrink-0 h-12 w-12">
+              <div
+                class="h-12 w-12 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center shadow-sm"
+              >
+                <span class="text-sm font-medium text-white">
+                  <%= m.nama.charAt(0).toUpperCase() %>
+                </span>
+              </div>
+            </div>
+            <div class="ml-4 flex-1">
+              <h3 class="text-lg font-semibold text-gray-900 search-target">
+                <%= m.nama %>
+              </h3>
+              <div class="flex items-center text-sm text-gray-500 mt-1">
+                <% if (m.rt_nama) { %>
+                <i class="fas fa-home mr-1"></i>RT <%= m.rt_nama %> <% } else {
+                %> <i class="fas fa-minus mr-1"></i>Tidak ada RT <% } %>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 ml-4">
+            <a
+              href="/mustahik/detail/<%= m.id %>"
+              class="text-blue-600 hover:text-blue-900 transition-colors duration-150 p-2 rounded-lg hover:bg-blue-50"
+              title="Lihat Detail"
+            >
+              <i class="fas fa-eye"></i>
+            </a>
+            <a
+              href="/mustahik/edit/<%= m.id %>"
+              class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150 p-2 rounded-lg hover:bg-indigo-50"
+              title="Edit"
+            >
+              <i class="fas fa-edit"></i>
+            </a>
+            <form
+              method="POST"
+              action="/mustahik/delete/<%= m.id %>?_method=DELETE"
+              class="inline-block"
+              onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mustahik <%= m.nama %>?')"
+            >
+              <button
+                type="submit"
+                class="text-red-600 hover:text-red-900 transition-colors duration-150 p-2 rounded-lg hover:bg-red-50"
+                title="Hapus"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-4">
+          <div>
+            <p
+              class="text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Kategori
+            </p>
+            <div class="mt-1">
+              <span
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium <% if (m.kategori === 'fakir') { %>bg-red-100 text-red-800<% } else if (m.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } else if (m.kategori === 'amil') { %>bg-green-100 text-green-800<% } else if (m.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } else if (m.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } else { %>bg-gray-100 text-gray-800<% } %>"
+              >
+                <% if (m.kategori === 'fakir') { %>
+                <i class="fas fa-exclamation-triangle mr-1"></i>Fakir <% } else
+                if (m.kategori === 'miskin') { %>
+                <i class="fas fa-coins mr-1"></i>Miskin <% } else if (m.kategori
+                === 'amil') { %> <i class="fas fa-hands mr-1"></i>Amil <% } else
+                if (m.kategori === 'mualaf') { %>
+                <i class="fas fa-heart mr-1"></i>Mualaf <% } else if (m.kategori
+                === 'fisabilillah') { %>
+                <i class="fas fa-moon mr-1"></i>Fisabilillah <% } else if
+                (m.kategori === 'ibnu_sabil') { %>
+                <i class="fas fa-route mr-1"></i>Ibnu Sabil <% } else if
+                (m.kategori === 'gharimin') { %>
+                <i class="fas fa-credit-card mr-1"></i>Gharimin <% } else if
+                (m.kategori === 'riqab') { %>
+                <i class="fas fa-unlock mr-1"></i>Riqab <% } else { %>
+                <i class="fas fa-user mr-1"></i><%= m.kategori %> <% } %>
+              </span>
+            </div>
+          </div>
+          <div>
+            <p
+              class="text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Tanggal Daftar
+            </p>
+            <div class="mt-1 flex items-center text-sm text-gray-900">
+              <i class="fas fa-calendar mr-2 text-gray-400"></i>
+              <%= new Date(m.created_at).toLocaleDateString('id-ID', { day:
+              'numeric', month: 'short', year: 'numeric' }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
     <% } %>
   </div>
 </div>
@@ -352,13 +462,24 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
   // Search functionality
   document.getElementById("search").addEventListener("input", function () {
     const searchTerm = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#mustahikTable tbody tr");
+    const tableRows = document.querySelectorAll("#mustahikTable tbody tr");
+    const cardItems = document.querySelectorAll("[data-category]");
 
-    rows.forEach((row) => {
+    // Filter table rows
+    tableRows.forEach((row) => {
       const searchTarget = row.querySelector(".search-target");
       if (searchTarget) {
         const text = searchTarget.textContent.toLowerCase();
         row.style.display = text.includes(searchTerm) ? "" : "none";
+      }
+    });
+
+    // Filter card items
+    cardItems.forEach((card) => {
+      const searchTarget = card.querySelector(".search-target");
+      if (searchTarget) {
+        const text = searchTarget.textContent.toLowerCase();
+        card.style.display = text.includes(searchTerm) ? "" : "none";
       }
     });
   });
@@ -368,9 +489,11 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
     .getElementById("categoryFilter")
     .addEventListener("change", function () {
       const category = this.value;
-      const rows = document.querySelectorAll("#mustahikTable tbody tr");
+      const tableRows = document.querySelectorAll("#mustahikTable tbody tr");
+      const cardItems = document.querySelectorAll("[data-category]");
 
-      rows.forEach((row) => {
+      // Filter table rows
+      tableRows.forEach((row) => {
         const rowCategory = row.getAttribute("data-category");
         if (!category || rowCategory === category) {
           row.style.display = "";
@@ -378,19 +501,41 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
           row.style.display = "none";
         }
       });
+
+      // Filter card items
+      cardItems.forEach((card) => {
+        const cardCategory = card.getAttribute("data-category");
+        if (!category || cardCategory === category) {
+          card.style.display = "";
+        } else {
+          card.style.display = "none";
+        }
+      });
     });
 
   // RT filter
   document.getElementById("rtFilter").addEventListener("change", function () {
     const rtId = this.value;
-    const rows = document.querySelectorAll("#mustahikTable tbody tr");
+    const tableRows = document.querySelectorAll("#mustahikTable tbody tr");
+    const cardItems = document.querySelectorAll("[data-category]");
 
-    rows.forEach((row) => {
+    // Filter table rows
+    tableRows.forEach((row) => {
       const rowRt = row.getAttribute("data-rt");
       if (!rtId || rowRt === rtId) {
         row.style.display = "";
       } else {
         row.style.display = "none";
+      }
+    });
+
+    // Filter card items
+    cardItems.forEach((card) => {
+      const cardRt = card.getAttribute("data-rt");
+      if (!rtId || cardRt === rtId) {
+        card.style.display = "";
+      } else {
+        card.style.display = "none";
       }
     });
   });

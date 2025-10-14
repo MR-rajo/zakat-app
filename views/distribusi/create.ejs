@@ -54,11 +54,13 @@
         </label>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="relative">
-            <input type="radio" id="jenis_beras" name="jenis_zakat" value="beras" required
-                   class="sr-only peer">
-            <label for="jenis_beras" 
+            <label for="jenis_beras"
                    class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer
-                          hover:bg-gray-50 peer-checked:border-primary-500 peer-checked:bg-primary-50">
+                          hover:bg-gray-50 transition-all duration-200 checkbox-label">
+              <div class="flex-shrink-0 mr-3">
+                <input type="checkbox" id="jenis_beras" name="jenis_zakat" value="beras"
+                       class="w-5 h-5 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
+              </div>
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                   <i class="fas fa-seedling text-white"></i>
@@ -72,11 +74,13 @@
           </div>
 
           <div class="relative">
-            <input type="radio" id="jenis_uang" name="jenis_zakat" value="uang" required
-                   class="sr-only peer">
-            <label for="jenis_uang" 
+            <label for="jenis_uang"
                    class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer
-                          hover:bg-gray-50 peer-checked:border-primary-500 peer-checked:bg-primary-50">
+                          hover:bg-gray-50 transition-all duration-200 checkbox-label">
+              <div class="flex-shrink-0 mr-3">
+                <input type="checkbox" id="jenis_uang" name="jenis_zakat" value="uang"
+                       class="w-5 h-5 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
+              </div>
               <div class="flex-shrink-0">
                 <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
                   <i class="fas fa-coins text-white"></i>
@@ -232,30 +236,58 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Update jumlah input based on jenis zakat
-  jenisRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      if (this.value === 'beras') {
-        jumlahPrefix.textContent = '';
-        jumlahSuffix.textContent = 'kg';
-        jumlahInput.placeholder = 'Contoh: 2.5';
-        jumlahHelp.innerHTML = `
-          <i class="fas fa-seedling text-green-600 mr-1"></i>
-          Masukkan jumlah beras dalam kilogram (kg)
-        `;
-        jumlahInput.step = '0.1';
-        jumlahInput.min = '0.1';
-      } else if (this.value === 'uang') {
-        jumlahPrefix.textContent = 'Rp';
-        jumlahSuffix.textContent = '';
-        jumlahInput.placeholder = 'Contoh: 50000';
-        jumlahHelp.innerHTML = `
-          <i class="fas fa-coins text-yellow-600 mr-1"></i>
-          Masukkan jumlah uang dalam rupiah (Rp)
-        `;
-        jumlahInput.step = '1000';
-        jumlahInput.min = '1000';
+  const jenisCheckboxes = document.querySelectorAll('input[name="jenis_zakat"]');
+  jenisCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      // Ensure only one checkbox is selected at a time (radio-like behavior)
+      if (this.checked) {
+        jenisCheckboxes.forEach(cb => {
+          if (cb !== this) {
+            cb.checked = false;
+            // Remove active styling from unchecked labels
+            cb.closest('.checkbox-label').classList.remove('border-primary-500', 'bg-primary-50');
+          }
+        });
+        // Add active styling to checked label
+        this.closest('.checkbox-label').classList.add('border-primary-500', 'bg-primary-50');
+      } else {
+        // Remove active styling when unchecked
+        this.closest('.checkbox-label').classList.remove('border-primary-500', 'bg-primary-50');
       }
-      jumlahInput.value = '';
+
+      // Update input based on selected jenis
+      const selectedJenis = document.querySelector('input[name="jenis_zakat"]:checked');
+      if (selectedJenis) {
+        if (selectedJenis.value === 'beras') {
+          jumlahPrefix.textContent = '';
+          jumlahSuffix.textContent = 'kg';
+          jumlahInput.placeholder = 'Contoh: 2.5';
+          jumlahHelp.innerHTML = `
+            <i class="fas fa-seedling text-green-600 mr-1"></i>
+            Masukkan jumlah beras dalam kilogram (kg)
+          `;
+          jumlahInput.step = '0.1';
+          jumlahInput.min = '0.1';
+        } else if (selectedJenis.value === 'uang') {
+          jumlahPrefix.textContent = 'Rp';
+          jumlahSuffix.textContent = '';
+          jumlahInput.placeholder = 'Contoh: 50000';
+          jumlahHelp.innerHTML = `
+            <i class="fas fa-coins text-yellow-600 mr-1"></i>
+            Masukkan jumlah uang dalam rupiah (Rp)
+          `;
+          jumlahInput.step = '1000';
+          jumlahInput.min = '1000';
+        }
+        jumlahInput.value = '';
+      } else {
+        // Reset when no checkbox is selected
+        jumlahPrefix.textContent = '-';
+        jumlahSuffix.textContent = '-';
+        jumlahInput.placeholder = 'Masukkan jumlah';
+        jumlahHelp.textContent = 'Pilih jenis zakat terlebih dahulu untuk melihat format input';
+        jumlahInput.value = '';
+      }
     });
   });
 
@@ -344,5 +376,102 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<style>
+  .checkbox-label {
+    transition: all 0.2s ease-in-out;
+    border: 2px solid #d1d5db;
+  }
+  
+  .checkbox-label.border-primary-500 {
+    border-color: #10b981 !important;
+  }
+  
+  .checkbox-label.bg-primary-50 {
+    background-color: #f0fdf4 !important;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: #10b981;
+  }
+  
+  .checkbox-label input[type="checkbox"]:checked {
+    background-color: #10b981;
+    border-color: #10b981;
+  }
+  
+  .checkbox-label:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+  }
+  
+  .btn-primary {
+    background-color: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .btn-primary:hover {
+    background-color: #059669;
+    transform: translateY(-1px);
+  }
+  
+  .btn-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+  }
+  
+  /* Custom checkbox styling for better visibility */
+  input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.25rem;
+    border: 2px solid #d1d5db;
+    background-color: #ffffff;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  input[type="checkbox"]:checked {
+    background-color: #10b981;
+    border-color: #10b981;
+  }
+  
+  input[type="checkbox"]:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 0.875rem;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #10b981;
+  }
+</style>
 
 <%- include('../layouts/footer') %>

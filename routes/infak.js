@@ -9,7 +9,12 @@ router.get("/", async (req, res) => {
     // Get all infak with muzakki info
     const [infak] = await db.execute(`
             SELECT 
-                i.*,
+                i.id,
+                i.muzakki_id,
+                COALESCE(i.jumlah, 0) as jumlah,
+                i.keterangan,
+                i.created_at,
+                i.updated_at,
                 m.nama as muzakki_name,
                 r.nomor_rt
             FROM infak i

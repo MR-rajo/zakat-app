@@ -19,8 +19,8 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'infak' }) %>
   <div class="card mb-6">
     <div class="text-center">
       <div class="text-4xl font-bold text-primary-600 mb-2">
-        Rp <%= Math.floor(infak.reduce((total, item) => total + item.jumlah,
-        0)).toLocaleString('id-ID') %>
+        Rp <%= Math.floor(infak.reduce((total, item) => total +
+        (parseFloat(item.jumlah) || 0), 0)).toLocaleString('id-ID') %>
       </div>
       <div class="text-gray-600">Total Infak Terkumpul</div>
       <div class="text-sm text-gray-500 mt-1">
@@ -106,7 +106,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'infak' }) %>
             <td colspan="3" class="font-bold text-gray-900">Total Infak</td>
             <td class="font-bold text-primary-600 text-lg">
               Rp <%= Math.floor(infak.reduce((total, item) => total +
-              item.jumlah, 0)).toLocaleString('id-ID') %>
+              (parseFloat(item.jumlah) || 0), 0)).toLocaleString('id-ID') %>
             </td>
             <td></td>
           </tr>

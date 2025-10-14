@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/images/logo-dkm.png" type="image/x-icon" />
+    <title>Musholla Nurul Fitrah</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: "#f0f9ff",
+                100: "#e0f2fe",
+                200: "#bae6fd",
+                300: "#7dd3fc",
+                400: "#38bdf8",
+                500: "#0ea5e9",
+                600: "#0284c7",
+                700: "#0369a1",
+                800: "#075985",
+                900: "#0c4a6e",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <style>
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #059669 0%,
+          #0d9488 50%,
+          #0891b2 100%
+        );
+      }
+      .islamic-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      .floating-animation {
+        animation: floating 3s ease-in-out infinite;
+      }
+      @keyframes floating {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      .fade-in {
+        animation: fadeIn 1s ease-in;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .islamic-glow {
+        animation: islamicGlow 3s ease-in-out infinite alternate;
+      }
+      @keyframes islamicGlow {
+        from {
+          box-shadow: 0 0 30px rgba(16, 185, 129, 0.6),
+            0 0 60px rgba(16, 185, 129, 0.4);
+        }
+        to {
+          box-shadow: 0 0 40px rgba(16, 185, 129, 0.8),
+            0 0 80px rgba(16, 185, 129, 0.6);
+        }
+      }
+      .crescent-moon {
+        position: relative;
+      }
+      .crescent-moon::before {
+        content: "☪️";
+        font-size: 1.2em;
+        margin-right: 0.5rem;
+      }
+      .bismillah-text {
+        font-family: "Times New Roman", serif;
+        font-style: italic;
+        color: #065f46;
+        background: linear-gradient(45deg, #059669, #0d9488);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .slide-up {
+        animation: slideUp 0.8s ease-out;
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ===============================
+         CAROUSEL CUSTOM STYLES
+         =============================== */
+      .carousel-container {
+        position: relative;
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.15) 0%,
+          rgba(13, 148, 136, 0.1) 100%
+        );
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      }
+
+      .carousel-track {
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .carousel-slide {
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.1) 0%,
+          rgba(13, 148, 136, 0.05) 100%
+        );
+      }
+
+      .carousel-dot {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+      }
+
+      .carousel-dot:hover {
+        transform: scale(1.2);
+      }
+
+      .carousel-dot.active {
+        background: white !important;
+        transform: scale(1.25);
+      }
+
+      /* Carousel button hover effects */
+      #prevBtn:hover,
+      #nextBtn:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Card hover animations in carousel */
+      .carousel-slide .bg-white\/10:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Smooth transitions for all interactive elements */
+      .carousel-slide .bg-gradient-to-br {
+        transition: all 0.3s ease;
+      }
+
+      .carousel-slide .bg-gradient-to-br:hover {
+        transform: scale(1.05) rotateZ(2deg);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Auto-play indicator animation */
+      .auto-play-indicator {
+        animation: indicatorPulse 2s ease-in-out infinite;
+      }
+
+      @keyframes indicatorPulse {
+        0%,
+        100% {
+          opacity: 0.7;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive carousel adjustments */
+      @media (max-width: 768px) {
+        .carousel-slide {
+          padding: 1rem !important;
+        }
+
+        .carousel-slide .grid {
+          grid-template-columns: 1fr !important;
+          gap: 2rem !important;
+        }
+
+        .carousel-slide .order-2 {
+          order: 1 !important;
+        }
+
+        .carousel-slide .order-1 {
+          order: 2 !important;
+        }
+      }
+
+      /* ===============================
+         END CAROUSEL CUSTOM STYLES
+         =============================== */
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 islamic-pattern"
+  >
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-3">
+            <div class="bg-white p-2 rounded-lg shadow-md">
+              <img
+                src="/images/logo-dkm.png"
+                alt="Logo Musholla Nurul Fitrah"
+                class="w-8 h-8 object-contain"
+              />
+            </div>
+            <span class="text-xl font-bold text-gray-800"
+              >Musholla Nurul Fitrah</span
+            >
+          </div>
+
+          <div class="hidden md:flex items-center space-x-8">
+            <a
+              href="#home"
+              class="text-gray-700 hover:text-emerald-600 transition-colors crescent-moon"
+              >Beranda</a
+            >
+            <a
+              href="#features"
+              class="text-gray-700 hover:text-emerald-600 transition-colors"
+              >Fitur</a
+            >
+            <a
+              href="#stats"
+              class="text-gray-700 hover:text-emerald-600 transition-colors"
+              >Statistik</a
+            >
+            <a
+              href="#about"
+              class="text-gray-700 hover:text-emerald-600 transition-colors"
+              >Tentang</a
+            >
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <a
+              href="/auth/login"
+              class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-lg hover:shadow-xl islamic-glow"
+            >
+              <i class="fas fa-moon mr-2"></i>Masuk
+            </a>
+          </div>
+
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-btn"
+              class="text-gray-700 hover:text-primary-600"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+        <div class="px-4 py-3 space-y-3">
+          <a href="#home" class="block text-gray-700 hover:text-emerald-600"
+            >☪️ Beranda</a
+          >
+          <a href="#features" class="block text-gray-700 hover:text-emerald-600"
+            >⭐ Fitur</a
+          >
+          <a href="#stats" class="block text-gray-700 hover:text-emerald-600"
+            >📊 Statistik</a
+          >
+          <a href="#about" class="block text-gray-700 hover:text-emerald-600"
+            >🕌 Tentang</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      id="home"
+      class="min-h-screen flex items-center justify-center gradient-bg relative overflow-hidden"
+    >
+      <!-- Background decoration -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div
+          class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full floating-animation"
+        ></div>
+        <div
+          class="absolute -bottom-40 -left-40 w-80 h-80 bg-white opacity-10 rounded-full floating-animation"
+          style="animation-delay: 1s"
+        ></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center fade-in">
+          <!-- Bismillah -->
+          <div class="mb-8">
+            <p class="bismillah-text text-2xl md:text-3xl font-bold mb-6">
+              بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ
+            </p>
+            <p class="text-white/90 text-lg mb-4 italic">
+              "Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang"
+            </p>
+          </div>
+
+          <div class="mb-8">
+            <div
+              class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-2xl mb-6 floating-animation p-4 islamic-glow"
+            >
+              <img
+                src="/images/logo-dkm.png"
+                alt="Logo Musholla Nurul Fitrah"
+                class="w-16 h-16 object-contain"
+              />
+            </div>
+            <h1
+              class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight"
+            >
+              Berkah Ramadhan<br />
+              <span class="text-yellow-300">🌙 Zakat Fitrah ⭐</span>
+            </h1>
+            <p
+              class="text-xl md:text-xl text-white/90 mb-4 max-w-3xl mx-auto italic leading-relaxed"
+            >
+              "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ"
+            </p>
+            <p
+              class="text-lg md:text-lg text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed"
+            >
+              "Dan dirikanlah shalat, tunaikanlah zakat" - Al-Baqarah: 43<br />
+              Tunaikan zakat fitrah Anda dengan mudah dan transparan dalam
+              sistem digital yang berkah.
+            </p>
+            <div
+              class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <a
+                href="/auth/login"
+                class="bg-white text-emerald-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 islamic-glow"
+              >
+                <i class="fas fa-hands-praying mr-2"></i>🕌 Kelola Zakat
+              </a>
+              <a
+                href="#features"
+                class="glass-effect text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300"
+              >
+                <i class="fas fa-star-and-crescent mr-2"></i>✨ Lihat Fitur
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div
+        class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce"
+      >
+        <i class="fas fa-chevron-down text-2xl"></i>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section
+      id="features"
+      class="py-20 bg-gradient-to-br from-emerald-50 to-teal-50"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <div class="mb-6">
+            <span class="text-4xl">🌟</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Fitur Unggulan Zakat Digital
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            "خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ"<br />
+            <span class="text-sm italic text-emerald-600"
+              >"Sebaik-baik manusia adalah yang paling bermanfaat bagi
+              manusia"</span
+            >
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-emerald-500"
+          >
+            <div
+              class="bg-emerald-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+            >
+              <i class="fas fa-users text-emerald-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+              👥 Manajemen Muzakki
+            </h3>
+            <p class="text-gray-600">
+              Kelola data muzakki dengan mudah, termasuk informasi personal,
+              jumlah tanggungan, dan status pembayaran zakat sesuai syariat
+              Islam.
+            </p>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-teal-500"
+          >
+            <div
+              class="bg-teal-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+            >
+              <i class="fas fa-calculator text-teal-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+              🧮 Kalkulator Zakat Syar'i
+            </h3>
+            <p class="text-gray-600">
+              Hitung zakat fitrah secara otomatis berdasarkan nisab yang sesuai
+              dengan ketentuan syariat dan jenis zakat yang dipilih.
+            </p>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-cyan-500"
+          >
+            <div
+              class="bg-cyan-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+            >
+              <i class="fas fa-chart-bar text-cyan-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+              📊 Laporan Transparan
+            </h3>
+            <p class="text-gray-600">
+              Pantau perkembangan pengumpulan zakat dengan laporan detail yang
+              transparan dan akuntabel sesuai prinsip amanah.
+            </p>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-amber-500"
+          >
+            <div
+              class="bg-amber-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+            >
+              <i class="fas fa-hand-holding-heart text-amber-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+              💝 Manajemen Infak Sunnah
+            </h3>
+            <p class="text-gray-600">
+              Kelola infak dan sedekah sunnah dengan sistem yang transparan,
+              mengikuti anjuran Rasulullah SAW untuk berbagi kebaikan.
+            </p>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-rose-500"
+          >
+            <div
+              class="bg-rose-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+            >
+              <i class="fas fa-users-cog text-rose-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+              🤲 Manajemen Mustahik
+            </h3>
+            <p class="text-gray-600">
+              Kelola data mustahik (8 golongan penerima zakat) dan distribusi
+              sesuai dengan ketentuan Al-Quran dan As-Sunnah.
+            </p>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-l-4 border-indigo-500"
+          >
+            <div
+              class="bg-indigo-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+            >
+              <i class="fas fa-mosque text-indigo-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-4">
+              🕌 Manajemen Wilayah
+            </h3>
+            <p class="text-gray-600">
+              Organisir data berdasarkan RT/RW untuk memudahkan koordinasi
+              distribusi zakat di tingkat jamaah dan masyarakat.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Carousel Section -->
+    <section
+      class="py-16 bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 relative overflow-hidden islamic-pattern"
+    >
+      <!-- Background decoration -->
+      <div class="absolute inset-0">
+        <div
+          class="absolute top-10 left-10 w-64 h-64 bg-emerald-400 rounded-full opacity-10 blur-3xl animate-pulse"
+        ></div>
+        <div
+          class="absolute bottom-10 right-10 w-56 h-56 bg-teal-400 rounded-full opacity-10 blur-3xl animate-pulse"
+          style="animation-delay: 2s"
+        ></div>
+        <!-- Islamic geometric patterns -->
+        <div class="absolute top-20 right-20 text-6xl text-white opacity-5">
+          ☪️
+        </div>
+        <div class="absolute bottom-20 left-20 text-6xl text-white opacity-5">
+          🕌
+        </div>
+      </div>
+
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12">
+          <div class="mb-4">
+            <span class="text-4xl">🌟</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Fitur Unggulan Platform Zakat
+          </h2>
+          <p class="text-lg text-emerald-100 max-w-2xl mx-auto mb-4">
+            "وَمَا تُنفِقُوا مِنْ خَيْرٍ فَلِأَنفُسِكُمْ"
+          </p>
+          <p class="text-sm text-emerald-200 italic">
+            "Dan apa saja yang kamu infakkan dari kebaikan, maka itu untuk
+            dirimu sendiri" - Al-Baqarah: 272
+          </p>
+        </div>
+
+        <!-- Carousel Container -->
+        <div class="relative">
+          <div class="carousel-container overflow-hidden rounded-2xl">
+            <div
+              class="carousel-track flex transition-transform duration-500 ease-in-out"
+              id="carouselTrack"
+            >
+              <!-- Slide 1: Smart Dashboard -->
+              <div class="carousel-slide min-w-full">
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-6 lg:p-10"
+                >
+                  <div class="order-2 lg:order-1">
+                    <div
+                      class="bg-gradient-to-br from-emerald-400 to-teal-500 w-16 h-16 rounded-xl flex items-center justify-center mb-4 shadow-xl islamic-glow"
+                    >
+                      <i class="fas fa-chart-pie text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+                      📊 Dashboard Zakat Terpadu
+                    </h3>
+                    <p class="text-lg text-emerald-100 mb-6 leading-relaxed">
+                      Dashboard interaktif dengan visualisasi data real-time,
+                      grafik dinamis, dan insights mendalam untuk memantau
+                      perkembangan zakat fitrah sesuai syariat dengan mudah dan
+                      akurat.
+                    </p>
+                    <div class="space-y-3">
+                      <div class="flex items-center text-emerald-100">
+                        <i class="fas fa-mosque text-emerald-400 mr-3"></i>
+                        <span>☪️ Monitoring Syariah Compliant</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-check-circle text-emerald-400 mr-3"
+                        ></i>
+                        <span>📊 Grafik & Analitik Interaktif</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-hands-praying text-emerald-400 mr-3"
+                        ></i>
+                        <span>🤲 Laporan Amanah & Transparan</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="order-1 lg:order-2">
+                    <div class="relative">
+                      <div
+                        class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
+                      >
+                        <div class="grid grid-cols-2 gap-4">
+                          <div
+                            class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-4 text-center"
+                          >
+                            <div class="text-2xl font-bold text-white mb-1">
+                              1,250+
+                            </div>
+                            <div class="text-yellow-100 text-xs">
+                              Total Muzakki
+                            </div>
+                          </div>
+                          <div
+                            class="bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl p-4 text-center"
+                          >
+                            <div class="text-2xl font-bold text-white mb-1">
+                              3.5M
+                            </div>
+                            <div class="text-green-100 text-xs">
+                              Zakat Terkumpul
+                            </div>
+                          </div>
+                          <div
+                            class="bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl p-4 text-center"
+                          >
+                            <div class="text-2xl font-bold text-white mb-1">
+                              850+
+                            </div>
+                            <div class="text-purple-100 text-xs">Mustahik</div>
+                          </div>
+                          <div
+                            class="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl p-4 text-center"
+                          >
+                            <div class="text-2xl font-bold text-white mb-1">
+                              95%
+                            </div>
+                            <div class="text-blue-100 text-xs">
+                              Transparansi
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slide 2: AI Calculator -->
+              <div class="carousel-slide min-w-full">
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-6 lg:p-10"
+                >
+                  <div>
+                    <div class="relative">
+                      <div
+                        class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
+                      >
+                        <div class="text-center mb-4">
+                          <h4 class="text-xl font-bold text-white mb-3">
+                            🧮 Kalkulator Zakat AI
+                          </h4>
+                          <div
+                            class="bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl p-4"
+                          >
+                            <div class="text-3xl font-bold text-white mb-1">
+                              2.5 Kg
+                            </div>
+                            <div class="text-green-100 text-xs mb-3">
+                              Beras per Jiwa
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                              <div class="bg-white/20 rounded-lg p-2">
+                                <div class="text-white font-semibold text-xs">
+                                  Keluarga: 4 Jiwa
+                                </div>
+                              </div>
+                              <div class="bg-white/20 rounded-lg p-2">
+                                <div class="text-white font-semibold text-xs">
+                                  Total: 10 Kg
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="space-y-2">
+                          <div
+                            class="bg-white/20 rounded-lg p-2 flex justify-between"
+                          >
+                            <span class="text-white text-sm"
+                              >Beras Premium</span
+                            >
+                            <span class="text-green-300 font-semibold text-sm"
+                              >Rp 15,000/kg</span
+                            >
+                          </div>
+                          <div
+                            class="bg-white/20 rounded-lg p-2 flex justify-between"
+                          >
+                            <span class="text-white text-sm">Total Nilai</span>
+                            <span class="text-yellow-300 font-semibold text-sm"
+                              >Rp 150,000</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="bg-gradient-to-br from-emerald-400 to-green-500 w-16 h-16 rounded-xl flex items-center justify-center mb-4 shadow-xl"
+                    >
+                      <i class="fas fa-calculator text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+                      � Kalkulator Zakat Syar'i
+                    </h3>
+                    <p class="text-lg text-emerald-100 mb-6 leading-relaxed">
+                      Kalkulator zakat sesuai tuntunan syariah yang secara
+                      otomatis menghitung zakat fitrah berdasarkan nisab dan
+                      harga pasar terkini dengan akurasi tinggi sesuai fatwa
+                      ulama.
+                    </p>
+                    <div class="space-y-3">
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-star-and-crescent text-emerald-400 mr-3"
+                        ></i>
+                        <span>📖 Sesuai Nisab Syariah</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-check-circle text-emerald-400 mr-3"
+                        ></i>
+                        <span>💰 Update Harga Otomatis</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-hands-praying text-emerald-400 mr-3"
+                        ></i>
+                        <span>🤲 Rekomendasi Bijak</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slide 3: Digital Infak -->
+              <div class="carousel-slide min-w-full">
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-6 lg:p-10"
+                >
+                  <div class="order-2 lg:order-1">
+                    <div
+                      class="bg-gradient-to-br from-amber-400 to-orange-500 w-16 h-16 rounded-xl flex items-center justify-center mb-4 shadow-xl islamic-glow"
+                    >
+                      <i
+                        class="fas fa-hand-holding-heart text-white text-2xl"
+                      ></i>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+                      💝 Platform Infak Digital
+                    </h3>
+                    <p class="text-lg text-emerald-100 mb-6 leading-relaxed">
+                      Platform infak digital yang mengikuti sunnah Rasulullah
+                      SAW dengan pembayaran mudah, tracking transparan, dan
+                      laporan berkala untuk meningkatkan kepercayaan dan
+                      keberkahan.
+                    </p>
+                    <div class="space-y-3">
+                      <div class="flex items-center text-emerald-100">
+                        <i class="fas fa-qrcode text-amber-400 mr-3"></i>
+                        <span>📱 QR Code Payment Mudah</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i class="fas fa-check-circle text-amber-400 mr-3"></i>
+                        <span>👁️ Tracking Transparan</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i class="fas fa-chart-line text-amber-400 mr-3"></i>
+                        <span>📋 Laporan Keberkahan</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="order-1 lg:order-2">
+                    <div class="relative">
+                      <div
+                        class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
+                      >
+                        <div class="text-center mb-4">
+                          <h4 class="text-xl font-bold text-white mb-3">
+                            📱 Mobile Payment
+                          </h4>
+                          <div
+                            class="bg-gradient-to-br from-orange-400 to-red-500 rounded-xl p-4 mb-4"
+                          >
+                            <div
+                              class="w-24 h-24 bg-white rounded-xl mx-auto flex items-center justify-center mb-3"
+                            >
+                              <i
+                                class="fas fa-qrcode text-gray-700 text-4xl"
+                              ></i>
+                            </div>
+                            <div class="text-white font-semibold text-sm">
+                              Scan QR untuk Infak
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                          <div class="bg-blue-500 rounded-lg p-2 text-center">
+                            <i
+                              class="fas fa-mobile-alt text-white text-lg mb-1"
+                            ></i>
+                            <div class="text-white text-xs font-semibold">
+                              Mobile
+                            </div>
+                          </div>
+                          <div class="bg-green-500 rounded-lg p-2 text-center">
+                            <i
+                              class="fas fa-credit-card text-white text-lg mb-1"
+                            ></i>
+                            <div class="text-white text-xs font-semibold">
+                              Card
+                            </div>
+                          </div>
+                          <div class="bg-purple-500 rounded-lg p-2 text-center">
+                            <i
+                              class="fas fa-wallet text-white text-lg mb-1"
+                            ></i>
+                            <div class="text-white text-xs font-semibold">
+                              E-Wallet
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slide 4: Smart Distribution -->
+              <div class="carousel-slide min-w-full">
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center p-6 lg:p-10"
+                >
+                  <div>
+                    <div class="relative">
+                      <div
+                        class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-xl"
+                      >
+                        <div class="text-center mb-4">
+                          <h4 class="text-xl font-bold text-white mb-3">
+                            🗺️ Smart Mapping
+                          </h4>
+                          <div
+                            class="bg-gradient-to-br from-indigo-400 to-purple-500 rounded-xl p-4"
+                          >
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                              <div
+                                class="bg-white/20 rounded-lg p-3 text-center"
+                              >
+                                <div class="text-xl font-bold text-white">
+                                  12
+                                </div>
+                                <div class="text-indigo-100 text-xs">
+                                  RT Active
+                                </div>
+                              </div>
+                              <div
+                                class="bg-white/20 rounded-lg p-3 text-center"
+                              >
+                                <div class="text-xl font-bold text-white">
+                                  3
+                                </div>
+                                <div class="text-indigo-100 text-xs">
+                                  RW Total
+                                </div>
+                              </div>
+                            </div>
+                            <div class="space-y-2">
+                              <div
+                                class="bg-white/20 rounded-lg p-2 flex justify-between items-center"
+                              >
+                                <span class="text-white text-xs">RT 001</span>
+                                <span
+                                  class="bg-green-400 text-white text-xs px-2 py-1 rounded"
+                                  >Complete</span
+                                >
+                              </div>
+                              <div
+                                class="bg-white/20 rounded-lg p-2 flex justify-between items-center"
+                              >
+                                <span class="text-white text-xs">RT 002</span>
+                                <span
+                                  class="bg-yellow-400 text-white text-xs px-2 py-1 rounded"
+                                  >Progress</span
+                                >
+                              </div>
+                              <div
+                                class="bg-white/20 rounded-lg p-2 flex justify-between items-center"
+                              >
+                                <span class="text-white text-xs">RT 003</span>
+                                <span
+                                  class="bg-blue-400 text-white text-xs px-2 py-1 rounded"
+                                  >Planning</span
+                                >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      class="bg-gradient-to-br from-indigo-400 to-purple-500 w-16 h-16 rounded-xl flex items-center justify-center mb-4 shadow-xl islamic-glow"
+                    >
+                      <i class="fas fa-mosque text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">
+                      � Jaringan Distribusi Syariah
+                    </h3>
+                    <p class="text-lg text-emerald-100 mb-6 leading-relaxed">
+                      Sistem distribusi sesuai syariat dengan pemetaan mustahik
+                      real-time, koordinasi RT/RW yang efisien, dan algoritma
+                      pemerataan yang adil sesuai tuntunan Islam.
+                    </p>
+                    <div class="space-y-3">
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-map-marked-alt text-indigo-400 mr-3"
+                        ></i>
+                        <span>🗺️ Pemetaan Wilayah Akurat</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i class="fas fa-users text-indigo-400 mr-3"></i>
+                        <span>🤝 Koordinasi RT/RW</span>
+                      </div>
+                      <div class="flex items-center text-emerald-100">
+                        <i
+                          class="fas fa-balance-scale text-indigo-400 mr-3"
+                        ></i>
+                        <span>⚖️ Distribusi Adil & Merata</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carousel Navigation -->
+          <div class="flex justify-center items-center mt-6 space-x-3">
+            <button
+              id="prevBtn"
+              class="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all duration-300 hover:scale-110"
+            >
+              <i class="fas fa-chevron-left text-lg"></i>
+            </button>
+
+            <!-- Dots indicator -->
+            <div class="flex space-x-2">
+              <button
+                class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300"
+                data-slide="0"
+              ></button>
+              <button
+                class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300"
+                data-slide="1"
+              ></button>
+              <button
+                class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300"
+                data-slide="2"
+              ></button>
+              <button
+                class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300"
+                data-slide="3"
+              ></button>
+            </div>
+
+            <button
+              id="nextBtn"
+              class="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all duration-300 hover:scale-110"
+            >
+              <i class="fas fa-chevron-right text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Auto-play indicator -->
+          <div class="text-center mt-4">
+            <div
+              class="inline-flex items-center bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full"
+            >
+              <div
+                class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse mr-2"
+              ></div>
+              <span class="text-white/80 text-xs"
+                >☪️ Auto-play Berkah • Klik untuk jeda</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section
+      id="stats"
+      class="py-20 bg-gradient-to-r from-emerald-600 to-teal-800"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <div class="mb-6">
+            <span class="text-4xl">🌙</span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Dampak Zakat Fitrah yang Berkah
+          </h2>
+          <p class="text-xl text-white/90 max-w-2xl mx-auto mb-4">
+            "إِنَّمَا الصَّدَقَاتُ لِلْفُقَرَاءِ وَالْمَسَاكِينِ"
+          </p>
+          <p class="text-sm text-emerald-100 italic">
+            "Sesungguhnya zakat-zakat itu, hanyalah untuk orang-orang fakir,
+            orang-orang miskin..." - At-Taubah: 60
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="text-center slide-up">
+            <div
+              class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl islamic-glow"
+            >
+              <div class="text-4xl md:text-5xl font-bold text-yellow-300 mb-2">
+                1,250+
+              </div>
+              <div class="text-white font-semibold text-lg mb-1">
+                👥 Muzakki
+              </div>
+              <div class="text-white/80 text-sm">Pembayar Zakat</div>
+            </div>
+          </div>
+
+          <div class="text-center slide-up" style="animation-delay: 0.1s">
+            <div
+              class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl islamic-glow"
+            >
+              <div class="text-4xl md:text-5xl font-bold text-emerald-300 mb-2">
+                3,500+
+              </div>
+              <div class="text-white font-semibold text-lg mb-1">🤲 Jiwa</div>
+              <div class="text-white/80 text-sm">Dibantu Zakat</div>
+            </div>
+          </div>
+
+          <div class="text-center slide-up" style="animation-delay: 0.2s">
+            <div
+              class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl islamic-glow"
+            >
+              <div class="text-4xl md:text-5xl font-bold text-teal-300 mb-2">
+                850+
+              </div>
+              <div class="text-white font-semibold text-lg mb-1">
+                🕌 Mustahik
+              </div>
+              <div class="text-white/80 text-sm">Penerima Manfaat</div>
+            </div>
+          </div>
+
+          <div class="text-center slide-up" style="animation-delay: 0.3s">
+            <div
+              class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl islamic-glow"
+            >
+              <div class="text-4xl md:text-5xl font-bold text-cyan-300 mb-2">
+                95%
+              </div>
+              <div class="text-white font-semibold text-lg mb-1">
+                ✨ Transparansi
+              </div>
+              <div class="text-white/80 text-sm">Pelaporan Amanah</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-12">
+          <p class="text-white/90 text-lg">
+            "وَالَّذِينَ فِي أَمْوَالِهِمْ حَقٌّ مَّعْلُومٌ * لِّلسَّائِلِ
+            وَالْمَحْرُومِ"<br />
+            <span class="text-sm italic text-emerald-200">
+              "Dan pada harta-harta mereka ada hak untuk orang miskin yang
+              meminta dan orang miskin yang tidak mendapat bagian" - Al-Ma'arij:
+              24-25
+            </span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Tentang Sistem Zakat Fitrah Syar'i
+            </h2>
+            <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+              "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ" - Sistem Manajemen
+              Zakat Fitrah adalah platform digital yang dirancang khusus sesuai
+              tuntunan syariat Islam untuk membantu masjid, komunitas, dan
+              lembaga zakat dalam mengelola zakat fitrah secara amanah,
+              transparan, dan berkah.
+            </p>
+            <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+              Dengan mengintegrasikan teknologi modern dan nilai-nilai Islam,
+              sistem ini memungkinkan pengelolaan yang terstruktur sesuai
+              Al-Quran dan As-Sunnah, mulai dari pendataan muzakki, perhitungan
+              nisab yang tepat, hingga distribusi kepada 8 golongan mustahik.
+            </p>
+
+            <div class="space-y-4">
+              <div class="flex items-center space-x-3">
+                <div class="bg-emerald-100 p-2 rounded-lg">
+                  <i class="fas fa-mosque text-emerald-600"></i>
+                </div>
+                <span class="text-gray-700 font-medium"
+                  >🕌 Sesuai Syariat Islam</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div class="bg-emerald-100 p-2 rounded-lg">
+                  <i class="fas fa-hand-holding-heart text-emerald-600"></i>
+                </div>
+                <span class="text-gray-700 font-medium"
+                  >🤲 Laporan Amanah & Transparan</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div class="bg-emerald-100 p-2 rounded-lg">
+                  <i class="fas fa-shield-alt text-emerald-600"></i>
+                </div>
+                <span class="text-gray-700 font-medium"
+                  >🔒 Keamanan Data Terjamin</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div class="bg-emerald-100 p-2 rounded-lg">
+                  <i class="fas fa-mobile-alt text-emerald-600"></i>
+                </div>
+                <span class="text-gray-700 font-medium"
+                  >📱 Responsive & User Friendly</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="relative">
+            <div
+              class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-3xl p-8 text-white shadow-2xl"
+            >
+              <div class="text-center">
+                <div
+                  class="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 p-3 islamic-glow"
+                >
+                  <img
+                    src="/images/logo-dkm.png"
+                    alt="Logo Musholla Nurul Fitrah"
+                    class="w-12 h-12 object-contain"
+                  />
+                </div>
+                <h3 class="text-2xl font-bold mb-4">🕌 Amanah & Berkah</h3>
+                <p class="text-white/90 text-lg leading-relaxed mb-4">
+                  "بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ"
+                </p>
+                <p class="text-white/80 text-base leading-relaxed">
+                  "Menunaikan zakat fitrah kini lebih mudah dengan sistem yang
+                  amanah dan transparan. Membantu umat dalam menjalankan
+                  kewajiban dengan teknologi yang diberkahi Allah SWT."
+                </p>
+              </div>
+            </div>
+
+            <!-- Floating elements -->
+            <div
+              class="absolute -top-6 -right-6 w-24 h-24 bg-emerald-300 rounded-full opacity-20 floating-animation"
+            ></div>
+            <div
+              class="absolute -bottom-6 -left-6 w-32 h-32 bg-teal-300 rounded-full opacity-20 floating-animation"
+              style="animation-delay: 1s"
+            ></div>
+            <!-- Islamic decorative elements -->
+            <div class="absolute top-4 right-4 text-2xl opacity-10">☪️</div>
+            <div class="absolute bottom-4 left-4 text-2xl opacity-10">🕌</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Features Showcase Section -->
+    <section
+      id="quick-actions"
+      class="py-20 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 relative overflow-hidden islamic-pattern"
+    >
+      <!-- Background decorations -->
+      <div class="absolute inset-0">
+        <div
+          class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-emerald-200 to-teal-200 rounded-full opacity-20 blur-3xl"
+        ></div>
+        <div
+          class="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-br from-emerald-200 to-cyan-200 rounded-full opacity-20 blur-3xl"
+        ></div>
+        <!-- Islamic symbols -->
+        <div
+          class="absolute top-10 right-20 text-6xl text-emerald-200 opacity-20"
+        >
+          ☪️
+        </div>
+        <div
+          class="absolute bottom-10 left-20 text-6xl text-teal-200 opacity-20"
+        >
+          🕌
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-20">
+          <div
+            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-6 shadow-xl islamic-glow"
+          >
+            <i class="fas fa-star-and-crescent text-white text-2xl"></i>
+          </div>
+          <h2
+            class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-emerald-900 to-teal-900 bg-clip-text text-transparent mb-6"
+          >
+            Kelola Zakat dengan Berkah
+          </h2>
+          <p
+            class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-4"
+          >
+            "وَمَا تُنفِقُوا مِنْ شَيْءٍ فَإِنَّ اللَّهَ بِهِ عَلِيمٌ"
+          </p>
+          <p class="text-sm text-emerald-600 italic">
+            "Dan apa saja yang kamu nafkahkan, maka Allah mengetahuinya" -
+            Al-Baqarah: 273
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Muzakki Management - Enhanced Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
+            ></div>
+            <div
+              class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-white/50"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div
+                  class="bg-gradient-to-br from-emerald-500 to-teal-500 w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg islamic-glow"
+                >
+                  <i class="fas fa-users text-white text-2xl"></i>
+                </div>
+                <div class="bg-emerald-100 px-3 py-1 rounded-full">
+                  <span class="text-emerald-600 text-sm font-semibold"
+                    >Berkah</span
+                  >
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                � Data Muzakki Syar'i
+              </h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Kelola database muzakki sesuai syariat dengan riwayat pembayaran
+                yang amanah, notifikasi menjelang Ramadhan, dan analisis per
+                wilayah yang transparan.
+              </p>
+              <div class="flex items-center justify-between">
+                <a
+                  href="/muzakki"
+                  class="inline-flex items-center text-emerald-600 font-bold hover:text-emerald-700 transition-colors duration-200 group"
+                >
+                  <span>🕌 Kelola Data</span>
+                  <i
+                    class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-200"
+                  ></i>
+                </a>
+                <div class="flex items-center space-x-1">
+                  <div
+                    class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"
+                  ></div>
+                  <span class="text-xs text-gray-500">Amanah</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zakat Calculator - Enhanced Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-green-400 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
+            ></div>
+            <div
+              class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-white/50"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div
+                  class="bg-gradient-to-br from-emerald-500 to-green-500 w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg islamic-glow"
+                >
+                  <i class="fas fa-calculator text-white text-2xl"></i>
+                </div>
+                <div class="bg-green-100 px-3 py-1 rounded-full">
+                  <span class="text-green-600 text-sm font-semibold"
+                    >Syar'i</span
+                  >
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                🧮 Kalkulator Nisab
+              </h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Perhitungan zakat sesuai nisab syariah dengan standar beras
+                premium, estimasi harga terkini, dan rekomendasi distribusi yang
+                adil sesuai Al-Quran.
+              </p>
+              <div class="flex items-center justify-between">
+                <a
+                  href="/muzakki/create"
+                  class="inline-flex items-center text-green-600 font-bold hover:text-green-700 transition-colors duration-200 group"
+                >
+                  <span>🤲 Hitung Zakat</span>
+                  <i
+                    class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-200"
+                  ></i>
+                </a>
+                <div class="flex items-center space-x-1">
+                  <div
+                    class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"
+                  ></div>
+                  <span class="text-xs text-gray-500">Nisab</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Dashboard - Enhanced Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
+            ></div>
+            <div
+              class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-white/50"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div
+                  class="bg-gradient-to-br from-teal-500 to-cyan-500 w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg islamic-glow"
+                >
+                  <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <div class="bg-teal-100 px-3 py-1 rounded-full">
+                  <span class="text-teal-600 text-sm font-semibold"
+                    >Amanah</span
+                  >
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                📊 Dashboard Transparansi
+              </h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Visualisasi data amanah dengan grafik interaktif, prediksi
+                pengumpulan berdasar sejarah, dan insights berbasis data yang
+                terpercaya.
+              </p>
+              <div class="flex items-center justify-between">
+                <a
+                  href="/laporan"
+                  class="inline-flex items-center text-teal-600 font-bold hover:text-teal-700 transition-colors duration-200 group"
+                >
+                  <span>👁️ Lihat Laporan</span>
+                  <i
+                    class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-200"
+                  ></i>
+                </a>
+                <div class="flex items-center space-x-1">
+                  <div
+                    class="w-2 h-2 bg-teal-400 rounded-full animate-pulse"
+                  ></div>
+                  <span class="text-xs text-gray-500">Real-time</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Infak Management - Enhanced Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-400 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
+            ></div>
+            <div
+              class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-white/50"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div
+                  class="bg-gradient-to-br from-amber-500 to-orange-500 w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg islamic-glow"
+                >
+                  <i class="fas fa-hand-holding-heart text-white text-2xl"></i>
+                </div>
+                <div class="bg-orange-100 px-3 py-1 rounded-full">
+                  <span class="text-orange-600 text-sm font-semibold"
+                    >Sunnah</span
+                  >
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                💝 Infak Sunnah Digital
+              </h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Platform infak mengikuti sunnah Rasulullah SAW dengan sistem
+                pembayaran mudah, tracking transparansi, dan laporan keberkahan
+                ke donatur.
+              </p>
+              <div class="flex items-center justify-between">
+                <a
+                  href="/infak"
+                  class="inline-flex items-center text-orange-600 font-bold hover:text-orange-700 transition-colors duration-200 group"
+                >
+                  <span>💫 Kelola Infak</span>
+                  <i
+                    class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-200"
+                  ></i>
+                </a>
+                <div class="flex items-center space-x-1">
+                  <div
+                    class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"
+                  ></div>
+                  <span class="text-xs text-gray-500">Berkah</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mustahik Distribution - Enhanced Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-rose-400 to-red-400 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
+            ></div>
+            <div
+              class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-white/50"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div
+                  class="bg-gradient-to-br from-rose-500 to-red-500 w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg islamic-glow"
+                >
+                  <i class="fas fa-users-line text-white text-2xl"></i>
+                </div>
+                <div class="bg-rose-100 px-3 py-1 rounded-full">
+                  <span class="text-rose-600 text-sm font-semibold"
+                    >8 Golongan</span
+                  >
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                🤝 8 Golongan Mustahik
+              </h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Sistem distribusi sesuai Al-Quran dengan verifikasi digital 8
+                golongan mustahik, algoritma pemerataan yang adil, dan tracking
+                bantuan real-time.
+              </p>
+              <div class="flex items-center justify-between">
+                <a
+                  href="/mustahik"
+                  class="inline-flex items-center text-rose-600 font-bold hover:text-rose-700 transition-colors duration-200 group"
+                >
+                  <span>🎯 Kelola Penerima</span>
+                  <i
+                    class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-200"
+                  ></i>
+                </a>
+                <div class="flex items-center space-x-1">
+                  <div
+                    class="w-2 h-2 bg-rose-400 rounded-full animate-pulse"
+                  ></div>
+                  <span class="text-xs text-gray-500">Syar'i</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Regional Management - Enhanced Card -->
+          <div class="group relative">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-xl"
+            ></div>
+            <div
+              class="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 border border-white/50"
+            >
+              <div class="flex items-center justify-between mb-6">
+                <div
+                  class="bg-gradient-to-br from-indigo-500 to-purple-500 w-20 h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg islamic-glow"
+                >
+                  <i class="fas fa-mosque text-white text-2xl"></i>
+                </div>
+                <div class="bg-indigo-100 px-3 py-1 rounded-full">
+                  <span class="text-indigo-600 text-sm font-semibold"
+                    >Jamaah</span
+                  >
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                � Manajemen Jamaah
+              </h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Pemetaan wilayah jamaah dengan koordinasi RT/RW berbasis masjid,
+                optimasi distribusi per daerah, dan gotong royong digital antar
+                tetangga.
+              </p>
+              <div class="flex items-center justify-between">
+                <a
+                  href="/rt"
+                  class="inline-flex items-center text-indigo-600 font-bold hover:text-indigo-700 transition-colors duration-200 group"
+                >
+                  <span>🏘️ Kelola Wilayah</span>
+                  <i
+                    class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-200"
+                  ></i>
+                </a>
+                <div class="flex items-center space-x-1">
+                  <div
+                    class="w-2 h-2 bg-indigo-400 rounded-full animate-pulse"
+                  ></div>
+                  <span class="text-xs text-gray-500">Gotong Royong</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Premium Call to Action -->
+        <div class="text-center mt-20">
+          <div
+            class="relative bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-12 text-white shadow-2xl overflow-hidden islamic-pattern"
+          >
+            <!-- Animated background elements -->
+            <div class="absolute inset-0 opacity-20">
+              <div
+                class="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-pulse"
+              ></div>
+              <div
+                class="absolute bottom-10 right-10 w-32 h-32 bg-white rounded-full animate-pulse"
+                style="animation-delay: 1s"
+              ></div>
+              <div
+                class="absolute top-1/2 left-1/4 w-16 h-16 bg-yellow-300 rounded-full animate-bounce"
+                style="animation-delay: 2s"
+              ></div>
+            </div>
+
+            <div class="relative z-10">
+              <div class="flex items-center justify-center mb-8">
+                <div
+                  class="bg-white/20 backdrop-blur-sm rounded-full p-4 mr-4 islamic-glow"
+                >
+                  <i class="fas fa-star-and-crescent text-3xl"></i>
+                </div>
+                <div class="text-left">
+                  <h3 class="text-3xl md:text-4xl font-bold mb-2">
+                    � Bergabunglah dengan Berkah
+                  </h3>
+                  <p class="text-xl text-emerald-100">
+                    Platform Zakat Digital Syar'i
+                  </p>
+                </div>
+              </div>
+
+              <p
+                class="text-xl mb-4 text-emerald-100 max-w-3xl mx-auto leading-relaxed"
+              >
+                "وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ"
+              </p>
+              <p
+                class="text-lg mb-8 text-teal-100 max-w-3xl mx-auto leading-relaxed"
+              >
+                "Dan tolong-menolonglah kamu dalam (mengerjakan) kebajikan dan
+                takwa" - Al-Maidah: 2<br />
+                Lebih dari
+                <span class="font-bold text-yellow-300">10,000+ jamaah</span>
+                telah mempercayai platform kami. Bergabunglah dengan komunitas
+                zakat digital terbesar yang berkah! 🇮🇩
+              </p>
+
+              <!-- Stats badges -->
+              <div class="flex flex-wrap justify-center gap-4 mb-10">
+                <div
+                  class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+                >
+                  <span class="text-sm font-semibold">🚀 Setup 2 Menit</span>
+                </div>
+                <div
+                  class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+                >
+                  <span class="text-sm font-semibold">🔒 100% Amanah</span>
+                </div>
+                <div
+                  class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+                >
+                  <span class="text-sm font-semibold">📱 Mobile Friendly</span>
+                </div>
+                <div
+                  class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full"
+                >
+                  <span class="text-sm font-semibold">� Gratis Berkah</span>
+                </div>
+              </div>
+
+              <div
+                class="flex flex-col sm:flex-row gap-6 justify-center items-center"
+              >
+                <a
+                  href="/auth/login"
+                  class="group bg-white text-emerald-600 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 transform islamic-glow"
+                >
+                  <i
+                    class="fas fa-mosque mr-3 group-hover:scale-110 transition-transform duration-200"
+                  ></i>
+                  🕌 Masuk ke Platform
+                  <span
+                    class="ml-2 group-hover:translate-x-1 inline-block transition-transform duration-200"
+                    >→</span
+                  >
+                </a>
+                <a
+                  href="/auth/register"
+                  class="group glass-effect text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all duration-300 border-2 border-white/30 hover:border-white/50"
+                >
+                  <i
+                    class="fas fa-hands-praying mr-3 group-hover:scale-110 transition-transform duration-200"
+                  ></i>
+                  🤲 Daftar Berkah
+                  <span
+                    class="ml-2 group-hover:translate-x-1 inline-block transition-transform duration-200"
+                    >☪️</span
+                  >
+                </a>
+              </div>
+
+              <!-- Trust indicators -->
+              <div class="mt-8 pt-8 border-t border-white/20">
+                <p class="text-sm text-emerald-200 mb-4">
+                  Dipercaya oleh Umat:
+                </p>
+                <div
+                  class="flex flex-wrap justify-center items-center gap-6 text-sm text-emerald-200"
+                >
+                  <span class="flex items-center">
+                    <i class="fas fa-mosque mr-2"></i>🕌 500+ Masjid
+                  </span>
+                  <span class="flex items-center">
+                    <i class="fas fa-users mr-2"></i>👥 1000+ RT/RW
+                  </span>
+                  <span class="flex items-center">
+                    <i class="fas fa-hand-holding-heart mr-2"></i>🏛️ 50+ Lembaga
+                    Zakat
+                  </span>
+                  <span class="flex items-center">
+                    <i class="fas fa-star-and-crescent mr-2"></i>🌍 100+ Kota
+                    Berkah
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="bg-white p-2 rounded-lg">
+                <img
+                  src="/images/logo-dkm.png"
+                  alt="Logo Musholla Nurul Fitrah"
+                  class="w-6 h-6 object-contain"
+                />
+              </div>
+              <span class="text-xl font-bold">Musholla Nurul Fitrah</span>
+            </div>
+            <p class="text-gray-400 leading-relaxed">
+              "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ" - Sistem manajemen
+              zakat fitrah digital sesuai syariat Islam yang membantu masyarakat
+              dalam menunaikan kewajiban zakat dengan amanah, mudah dan berkah.
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-bold mb-4">🌟 Fitur Syar'i</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>🕌
+                Manajemen Muzakki
+              </li>
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>🧮
+                Kalkulator Nisab
+              </li>
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>📊
+                Laporan Transparansi
+              </li>
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>🤲 8
+                Golongan Mustahik
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-bold mb-4">🤝 Bantuan Umat</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>📖
+                Panduan Syariah
+              </li>
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>🙋‍♂️ FAQ
+                Zakat
+              </li>
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>💬
+                Dukungan Teknis
+              </li>
+              <li>
+                <i class="fas fa-chevron-right text-emerald-500 mr-2"></i>📞
+                Kontak Ustadz
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400"
+        >
+          <p class="mb-2">"بَارَكَ اللهُ فِيكُمْ" - Semoga Allah memberkahi</p>
+          <p>
+            &copy; 2024 Sistem Manajemen Zakat Fitrah Syar'i. Hak cipta
+            dilindungi Allah SWT.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Navbar scroll effect
+      window.addEventListener("scroll", function () {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 50) {
+          navbar.classList.add("bg-white", "shadow-lg");
+        } else {
+          navbar.classList.remove("bg-white", "shadow-lg");
+        }
+      });
+
+      // Mobile menu toggle
+      const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      mobileMenuBtn.addEventListener("click", function () {
+        mobileMenu.classList.toggle("hidden");
+      });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Close mobile menu when clicking outside
+      document.addEventListener("click", function (e) {
+        if (
+          !mobileMenuBtn.contains(e.target) &&
+          !mobileMenu.contains(e.target)
+        ) {
+          mobileMenu.classList.add("hidden");
+        }
+      });
+
+      // Close mobile menu when clicking on links
+      mobileMenu.addEventListener("click", function (e) {
+        if (e.target.tagName === "A") {
+          mobileMenu.classList.add("hidden");
+        }
+      });
+
+      // ===============================
+      // CAROUSEL FUNCTIONALITY
+      // ===============================
+      let currentSlide = 0;
+      const totalSlides = 4;
+      let autoPlayInterval;
+      let isAutoPlaying = true;
+
+      const carouselTrack = document.getElementById("carouselTrack");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const dots = document.querySelectorAll(".carousel-dot");
+
+      // Update carousel position
+      function updateCarousel() {
+        const translateX = -currentSlide * 100;
+        carouselTrack.style.transform = `translateX(${translateX}%)`;
+
+        // Update dots
+        dots.forEach((dot, index) => {
+          if (index === currentSlide) {
+            dot.classList.remove("bg-white/50");
+            dot.classList.add("bg-white", "scale-125");
+          } else {
+            dot.classList.remove("bg-white", "scale-125");
+            dot.classList.add("bg-white/50");
+          }
+        });
+      }
+
+      // Next slide function
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+      }
+
+      // Previous slide function
+      function prevSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+      }
+
+      // Go to specific slide
+      function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+      }
+
+      // Auto-play functionality
+      function startAutoPlay() {
+        autoPlayInterval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+        isAutoPlaying = true;
+      }
+
+      function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+        isAutoPlaying = false;
+      }
+
+      // Event listeners
+      nextBtn.addEventListener("click", () => {
+        nextSlide();
+        stopAutoPlay(); // Stop auto-play when user interacts
+      });
+
+      prevBtn.addEventListener("click", () => {
+        prevSlide();
+        stopAutoPlay(); // Stop auto-play when user interacts
+      });
+
+      // Dot navigation
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+          goToSlide(index);
+          stopAutoPlay(); // Stop auto-play when user interacts
+        });
+      });
+
+      // Pause auto-play on hover, resume on mouse leave
+      const carouselContainer = document.querySelector(".carousel-container");
+      carouselContainer.addEventListener("mouseenter", stopAutoPlay);
+      carouselContainer.addEventListener("mouseleave", () => {
+        if (!isAutoPlaying) {
+          startAutoPlay();
+        }
+      });
+
+      // Touch/swipe support for mobile
+      let startX = 0;
+      let endX = 0;
+
+      carouselContainer.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+      });
+
+      carouselContainer.addEventListener("touchend", (e) => {
+        endX = e.changedTouches[0].clientX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = startX - endX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swipe left - next slide
+            nextSlide();
+          } else {
+            // Swipe right - previous slide
+            prevSlide();
+          }
+          stopAutoPlay();
+        }
+      }
+
+      // Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") {
+          prevSlide();
+          stopAutoPlay();
+        } else if (e.key === "ArrowRight") {
+          nextSlide();
+          stopAutoPlay();
+        }
+      });
+
+      // Initialize carousel
+      updateCarousel();
+      startAutoPlay();
+
+      // Pause/resume auto-play when clicking the indicator
+      document
+        .querySelector(".text-center.mt-6")
+        .addEventListener("click", () => {
+          if (isAutoPlaying) {
+            stopAutoPlay();
+            document.querySelector(".text-center.mt-6 span").textContent =
+              "🤲 Dijeda • Klik untuk melanjutkan";
+            document
+              .querySelector(".text-center.mt-6 .w-2")
+              .classList.remove("animate-pulse");
+            document
+              .querySelector(".text-center.mt-6 .w-2")
+              .classList.add("bg-red-400");
+          } else {
+            startAutoPlay();
+            document.querySelector(".text-center.mt-6 span").textContent =
+              "☪️ Auto-play Berkah • Klik untuk jeda";
+            document
+              .querySelector(".text-center.mt-6 .w-2")
+              .classList.add("animate-pulse");
+            document
+              .querySelector(".text-center.mt-6 .w-2")
+              .classList.remove("bg-red-400");
+            document
+              .querySelector(".text-center.mt-6 .w-2")
+              .classList.add("bg-emerald-400");
+          }
+        });
+
+      // ===============================
+      // END CAROUSEL FUNCTIONALITY
+      // ===============================
+    </script>
+  </body>
+</html>

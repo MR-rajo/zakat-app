@@ -17,8 +17,14 @@ router.get("/", async (req, res) => {
   try {
     const db = req.app.locals.db;
 
-    // Get distribusi with mustahik and user info
-    const [distribusi] = await db.execute(`
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20; // items per page
+    const offset = (page - 1) * limit;
+
+    // Get distribusi with mustahik and user info with pagination
+    const [distribusi] = await db.execute(
+      `
       SELECT dz.*, m.nama as mustahik_nama, m.kategori as mustahik_kategori,
              r.nomor_rt as rt_nama, u.name as user_nama
       FROM distribusi_zakat dz
@@ -26,13 +32,16 @@ router.get("/", async (req, res) => {
       LEFT JOIN rt r ON m.rt_id = r.id
       LEFT JOIN users u ON dz.user_id = u.id
       ORDER BY dz.created_at DESC
-    `);
+      LIMIT ${limit} OFFSET ${offset}
+    `
+    );
 
     // ✅ Tambahkan query untuk menghitung total distribusi
     const [countResult] = await db.execute(`
       SELECT COUNT(*) as total FROM distribusi_zakat
     `);
     const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
 
     // Get summary statistics
     const [stats] = await db.execute(`
@@ -54,6 +63,8 @@ router.get("/", async (req, res) => {
       distributions: distribusi,
       stats: stats[0],
       total,
+      page,
+      totalPages,
       search: req.query.search || "",
       status: req.query.status || "",
       jenis: req.query.jenis || "",
@@ -146,8 +157,7 @@ router.post("/create", async (req, res) => {
     const [zakatStats] = await db.execute(`
       SELECT 
         SUM(CASE WHEN jenis_zakat = 'uang' THEN jumlah_uang ELSE jumlah_beras_kg END) as total_tersedia
-      FROM muzakki 
-      WHERE status = 'lunas'
+      FROM muzakki
     `);
 
     const [distributedStats] = await db.execute(

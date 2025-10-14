@@ -36,19 +36,102 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
           </select>
         </div>
 
-        <!-- Nama Muzakki -->
-        <div>
-          <label for="nama" class="block text-sm font-medium text-gray-700">
-            <i class="fas fa-user mr-1 text-gray-500"></i>Nama Muzakki *
-          </label>
-          <input
-            type="text"
-            id="nama"
-            name="nama"
-            required
-            class="form-input mt-1"
-            placeholder="Masukkan nama lengkap muzakki"
-          />
+        <!-- Data Identitas Muzakki -->
+        <div class="md:col-span-2">
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-md font-semibold text-gray-800">
+                <i class="fas fa-id-card mr-2 text-blue-600"></i>Data Identitas
+                Muzakki
+              </h3>
+            </div>
+
+            <!-- Container untuk semua section muzakki -->
+            <div id="muzakkiContainer">
+              <!-- Section Muzakki Pertama -->
+              <div class="muzakki-section" data-index="0">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="text-sm font-medium text-gray-700">
+                    <i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki
+                    #1
+                  </h4>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <!-- Nama Muzakki -->
+                  <div class="md:col-span-3">
+                    <label
+                      for="nama_0"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap
+                      Muzakki *
+                    </label>
+                    <input
+                      type="text"
+                      id="nama_0"
+                      name="muzakki[0][nama]"
+                      required
+                      class="form-input mt-1"
+                      placeholder="Masukkan nama lengkap muzakki"
+                    />
+                  </div>
+
+                  <!-- Bin/Binti -->
+                  <div>
+                    <label
+                      for="bin_binti_0"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      <i class="fas fa-venus-mars mr-1 text-gray-500"></i
+                      >Bin/Binti
+                    </label>
+                    <select
+                      id="bin_binti_0"
+                      name="muzakki[0][bin_binti]"
+                      class="form-select mt-1"
+                    >
+                      <option value="">Pilih</option>
+                      <option value="bin">Bin (Anak Laki-laki)</option>
+                      <option value="binti">Binti (Anak Perempuan)</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">
+                      Bin untuk laki-laki, Binti untuk perempuan
+                    </p>
+                  </div>
+
+                  <!-- Nama Orang Tua -->
+                  <div class="md:col-span-2">
+                    <label
+                      for="nama_orang_tua_0"
+                      class="block text-sm font-medium text-gray-700"
+                    >
+                      <i class="fas fa-users mr-1 text-gray-500"></i>Nama Orang
+                      Tua
+                    </label>
+                    <input
+                      type="text"
+                      id="nama_orang_tua_0"
+                      name="muzakki[0][nama_orang_tua]"
+                      class="form-input mt-1"
+                      placeholder="Masukkan nama ayah atau ibu sesuai bin/binti"
+                    />
+                    <p class="text-xs text-gray-500 mt-1">
+                      Nama ayah jika "bin", nama ibu jika "binti"
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            id="addMuzakkiBtn"
+            class="bg-green-600 text-white mt-4 text-sm px-3 py-1"
+            onclick="addMuzakkiSection()"
+          >
+            <i class="fas fa-plus mr-1"></i>Tambah Muzakki
+          </button>
         </div>
 
         <!-- Jumlah Jiwa -->
@@ -64,13 +147,14 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
             id="jumlah_jiwa"
             name="jumlah_jiwa"
             required
-            min="1"
-            class="form-input mt-1"
-            placeholder="Jumlah jiwa yang ditanggung"
-            onchange="calculateZakat()"
+            min="0"
+            class="form-input mt-1 bg-gray-100 cursor-not-allowed"
+            placeholder="0"
+            readonly
+            title="Otomatis terisi sesuai jumlah muzakki"
           />
           <p class="text-xs text-gray-500 mt-1">
-            Jumlah jiwa yang ditanggung zakatnya
+            Jumlah jiwa akan otomatis terisi sesuai jumlah muzakki yang diinput
           </p>
         </div>
 
@@ -128,16 +212,28 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
             <i class="fas fa-money-bill-wave mr-1 text-gray-500"></i>Jumlah
             Bayar (Rp) *
           </label>
-          <input
-            type="number"
-            id="jumlah_bayar"
-            name="jumlah_bayar"
-            required
-            min="0"
-            step="0.01"
-            class="form-input mt-1"
-            placeholder="Masukkan jumlah yang dibayarkan dalam rupiah"
-          />
+          <div class="relative mt-1">
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+              <span class="text-gray-500 font-medium">Rp</span>
+            </div>
+            <input
+              type="text"
+              id="jumlah_bayar_display"
+              class="form-input pl-12 pr-4"
+              placeholder="0"
+              oninput="handleRupiahInput(this)"
+              onblur="finalizeRupiahInput(this)"
+              onfocus="prepareRupiahInput(this)"
+            />
+            <input
+              type="hidden"
+              id="jumlah_bayar"
+              name="jumlah_bayar"
+              required
+            />
+          </div>
           <p class="text-xs text-gray-500 mt-1">
             Jika lebih dari kewajiban, selisihnya akan menjadi kembalian yang
             bisa disedekahkan
@@ -199,6 +295,44 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
 </div>
 
 <script>
+  // Global variable untuk tracking jumlah muzakki
+  let muzakkiCount = 1;
+
+  // Function untuk menghitung dan mengupdate jumlah jiwa otomatis
+  function updateJumlahJiwa() {
+    const muzakkiSections = document.querySelectorAll(".muzakki-section");
+    let totalJiwa = 0;
+
+    // Hitung jumlah muzakki yang memiliki nama (tidak kosong)
+    muzakkiSections.forEach((section) => {
+      const namaInput = section.querySelector(
+        `input[name^="muzakki"][name$="[nama]"]`
+      );
+      if (namaInput && namaInput.value.trim() !== "") {
+        totalJiwa++;
+      }
+    });
+
+    // Update field jumlah_jiwa
+    const jumlahJiwaInput = document.getElementById("jumlah_jiwa");
+    jumlahJiwaInput.value = totalJiwa;
+
+    // Update visual indicator
+    if (totalJiwa > 0) {
+      jumlahJiwaInput.classList.remove("bg-gray-100");
+      jumlahJiwaInput.classList.add("bg-green-50", "border-green-200");
+    } else {
+      jumlahJiwaInput.classList.remove("bg-green-50", "border-green-200");
+      jumlahJiwaInput.classList.add("bg-gray-100");
+    }
+
+    // Trigger perhitungan zakat
+    calculateZakat();
+
+    // Debug log
+    console.log(`Total muzakki dengan nama: ${totalJiwa}`);
+  }
+
   // Enhanced calculate zakat function
   function calculateZakat() {
     const jiwa = parseInt(document.getElementById("jumlah_jiwa").value) || 0;
@@ -223,16 +357,280 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
     }
   }
 
+  // Function untuk menambah section muzakki baru
+  function addMuzakkiSection() {
+    const container = document.getElementById("muzakkiContainer");
+    const newIndex = muzakkiCount;
+
+    // HTML untuk section muzakki baru
+    const newSection = `
+      <div class="muzakki-section border-t pt-4 mt-4" data-index="${newIndex}">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-sm font-medium text-gray-700">
+            <i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki #${
+              newIndex + 1
+            }
+          </h4>
+          <button
+            type="button"
+            class="text-red-600 hover:text-red-800 text-sm"
+            onclick="removeMuzakkiSection(${newIndex})"
+          >
+            <i class="fas fa-trash mr-1"></i>Hapus
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <!-- Nama Muzakki -->
+          <div class="md:col-span-3">
+            <label
+              for="nama_${newIndex}"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap Muzakki *
+            </label>
+            <input
+              type="text"
+              id="nama_${newIndex}"
+              name="muzakki[${newIndex}][nama]"
+              required
+              class="form-input mt-1"
+              placeholder="Masukkan nama lengkap muzakki"
+            />
+          </div>
+
+          <!-- Bin/Binti -->
+          <div>
+            <label
+              for="bin_binti_${newIndex}"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <i class="fas fa-venus-mars mr-1 text-gray-500"></i>Bin/Binti
+            </label>
+            <select
+              id="bin_binti_${newIndex}"
+              name="muzakki[${newIndex}][bin_binti]"
+              class="form-select mt-1"
+            >
+              <option value="">Pilih</option>
+              <option value="bin">Bin (Anak Laki-laki)</option>
+              <option value="binti">Binti (Anak Perempuan)</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">
+              Bin untuk laki-laki, Binti untuk perempuan
+            </p>
+          </div>
+
+          <!-- Nama Orang Tua -->
+          <div class="md:col-span-2">
+            <label
+              for="nama_orang_tua_${newIndex}"
+              class="block text-sm font-medium text-gray-700"
+            >
+              <i class="fas fa-users mr-1 text-gray-500"></i>Nama Orang Tua
+            </label>
+            <input
+              type="text"
+              id="nama_orang_tua_${newIndex}"
+              name="muzakki[${newIndex}][nama_orang_tua]"
+              class="form-input mt-1"
+              placeholder="Masukkan nama ayah atau ibu sesuai bin/binti"
+            />
+            <p class="text-xs text-gray-500 mt-1">
+              Nama ayah jika "bin", nama ibu jika "binti"
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Tambahkan section baru ke container
+    container.insertAdjacentHTML("beforeend", newSection);
+
+    // Setup event listener untuk input nama yang baru dibuat
+    const newNameInput = document.getElementById(`nama_${newIndex}`);
+    if (newNameInput) {
+      newNameInput.addEventListener("input", function () {
+        updateJumlahJiwa();
+      });
+    }
+
+    // Update counter
+    muzakkiCount++;
+
+    // Update visibility tombol tambah (maksimal 5 muzakki)
+    updateAddButtonVisibility();
+
+    // Update jumlah jiwa
+    updateJumlahJiwa();
+
+    // Scroll ke section yang baru ditambahkan
+    const newSectionElement = container.lastElementChild;
+    newSectionElement.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  // Function untuk menghapus section muzakki
+  function removeMuzakkiSection(index) {
+    if (confirm("Apakah Anda yakin ingin menghapus data muzakki ini?")) {
+      const section = document.querySelector(`[data-index="${index}"]`);
+      if (section) {
+        section.remove();
+        muzakkiCount--;
+        updateAddButtonVisibility();
+        updateMuzakkiNumbers();
+        updateJumlahJiwa(); // Update jumlah jiwa setelah hapus
+      }
+    }
+  }
+
+  // Function untuk update nomor muzakki setelah penghapusan
+  function updateMuzakkiNumbers() {
+    const sections = document.querySelectorAll(".muzakki-section");
+    sections.forEach((section, index) => {
+      const title = section.querySelector("h4");
+      if (title) {
+        title.innerHTML = `<i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki #${
+          index + 1
+        }`;
+      }
+    });
+  }
+
+  // Function untuk mengatur visibility tombol tambah
+  function updateAddButtonVisibility() {
+    const addBtn = document.getElementById("addMuzakkiBtn");
+    const sections = document.querySelectorAll(".muzakki-section");
+
+    if (sections.length >= 5) {
+      addBtn.style.display = "none";
+    } else {
+      addBtn.style.display = "inline-flex";
+    }
+  }
+
+  // Rupiah formatting functions
+  function formatToRupiah(number) {
+    if (!number || number === 0) return "0";
+    return new Intl.NumberFormat("id-ID").format(number);
+  }
+
+  function parseFromRupiah(rupiahString) {
+    if (!rupiahString) return 0;
+    // Remove all non-numeric characters
+    const cleanNumber = rupiahString.replace(/[^\d]/g, "");
+    return parseInt(cleanNumber) || 0;
+  }
+
+  // Handle rupiah input in real-time
+  function handleRupiahInput(input) {
+    // Get current cursor position
+    const cursorPosition = input.selectionStart;
+    const oldValue = input.value;
+
+    // Extract numbers only
+    const numericValue = input.value.replace(/[^\d]/g, "");
+    const numberValue = parseInt(numericValue) || 0;
+
+    // Format to rupiah
+    const formattedValue = formatToRupiah(numberValue);
+
+    // Update display input
+    input.value = formattedValue;
+
+    // Update hidden input
+    document.getElementById("jumlah_bayar").value = numberValue;
+
+    // Restore cursor position (approximate)
+    const newLength = formattedValue.length;
+    const oldLength = oldValue.length;
+    const newCursorPosition = cursorPosition + (newLength - oldLength);
+
+    setTimeout(() => {
+      input.setSelectionRange(newCursorPosition, newCursorPosition);
+    }, 0);
+  }
+
+  // Prepare input when focused
+  function prepareRupiahInput(input) {
+    const hiddenValue = document.getElementById("jumlah_bayar").value;
+    if (hiddenValue && hiddenValue !== "0") {
+      // Show raw number for easier editing
+      input.value = hiddenValue;
+      // Select all for easy replacement
+      setTimeout(() => input.select(), 50);
+    }
+  }
+
+  // Finalize input when focus is lost
+  function finalizeRupiahInput(input) {
+    const numericValue = parseFromRupiah(input.value);
+    const formattedValue = formatToRupiah(numericValue);
+
+    // Update both inputs
+    input.value = formattedValue;
+    document.getElementById("jumlah_bayar").value = numericValue;
+  }
+
+  // Add event listeners when document is ready
+  document.addEventListener("DOMContentLoaded", function () {
+    const displayInput = document.getElementById("jumlah_bayar_display");
+
+    // Prevent non-numeric input
+    displayInput.addEventListener("keypress", function (e) {
+      // Allow: backspace, delete, tab, escape, enter, and numbers
+      if (
+        !/[\d]/.test(e.key) &&
+        ![
+          "Backspace",
+          "Delete",
+          "Tab",
+          "ArrowLeft",
+          "ArrowRight",
+          "Enter",
+        ].includes(e.key)
+      ) {
+        e.preventDefault();
+      }
+    });
+
+    // Handle paste events
+    displayInput.addEventListener("paste", function (e) {
+      e.preventDefault();
+      const pastedText = (e.clipboardData || window.clipboardData).getData(
+        "text"
+      );
+      const numericValue = pastedText.replace(/[^\d]/g, "");
+      if (numericValue) {
+        this.value = numericValue;
+        handleRupiahInput(this);
+      }
+    });
+
+    // Setup event listener untuk input nama muzakki pertama
+    const firstNameInput = document.getElementById("nama_0");
+    if (firstNameInput) {
+      firstNameInput.addEventListener("input", function () {
+        updateJumlahJiwa();
+      });
+    }
+
+    // Initialize jumlah jiwa dengan menghitung muzakki yang ada
+    setTimeout(() => {
+      updateJumlahJiwa();
+    }, 100);
+  });
+
   // Form validation
   document
     .getElementById("muzakkiForm")
     .addEventListener("submit", function (e) {
       const jiwa = parseInt(document.getElementById("jumlah_jiwa").value);
       const jenisZakat = document.getElementById("jenis_zakat").value;
-      const jumlahBayar = parseFloat(
+      const jumlahBayar = parseInt(
         document.getElementById("jumlah_bayar").value
       );
 
+      // Validasi basic fields
       if (jiwa <= 0) {
         e.preventDefault();
         alert("Jumlah jiwa harus lebih dari 0");
@@ -245,13 +643,43 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
         return false;
       }
 
-      if (jumlahBayar <= 0) {
+      if (jumlahBayar <= 0 || isNaN(jumlahBayar)) {
         e.preventDefault();
         alert("Jumlah bayar harus lebih dari 0");
         return false;
       }
 
-      return confirm("Apakah data yang dimasukkan sudah benar?");
+      // Validasi semua section muzakki
+      const muzakkiSections = document.querySelectorAll(".muzakki-section");
+      let hasEmptyName = false;
+      let emptyNameIndex = -1;
+
+      muzakkiSections.forEach((section, index) => {
+        const namaInput = section.querySelector(
+          `input[name^="muzakki"][name$="[nama]"]`
+        );
+        if (!namaInput.value.trim()) {
+          hasEmptyName = true;
+          emptyNameIndex = index + 1;
+        }
+      });
+
+      if (hasEmptyName) {
+        e.preventDefault();
+        alert(`Nama muzakki #${emptyNameIndex} tidak boleh kosong`);
+        return false;
+      }
+
+      // Konfirmasi final
+      const muzakkiCount = muzakkiSections.length;
+      const confirmMessage =
+        `Apakah data yang dimasukkan sudah benar?\n\n` +
+        `- Jumlah Muzakki: ${muzakkiCount} orang\n` +
+        `- Jumlah Jiwa: ${jiwa} jiwa\n` +
+        `- Jenis Zakat: ${jenisZakat}\n` +
+        `- Jumlah Bayar: Rp ${jumlahBayar.toLocaleString("id-ID")}`;
+
+      return confirm(confirmMessage);
     });
 </script>
 

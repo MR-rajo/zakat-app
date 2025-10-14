@@ -45,7 +45,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Middleware
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true })); // Changed to true to support complex objects
 app.use(express.json());
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
@@ -218,12 +218,53 @@ app.get("/dashboard", isAuthenticated, async (req, res) => {
   }
 });
 
-// Home route - redirect to dashboard if authenticated
-app.get("/", (req, res) => {
+// Home route - landing page
+app.get("/", async (req, res) => {
   if (req.session.user) {
     res.redirect("/dashboard");
   } else {
-    res.redirect("/auth/login");
+    try {
+      const db = req.app.locals.db;
+
+      // Get some basic statistics for the landing page
+      const [statsResult] = await db.execute(`
+        SELECT
+          COUNT(DISTINCT m.id) as total_muzakki,
+          COALESCE(SUM(CASE 
+            WHEN m.jenis_zakat = 'uang' THEN m.jumlah_uang 
+            ELSE m.jumlah_beras_kg * 12000 
+          END), 0) as total_zakat_terkumpul,
+          COUNT(DISTINCT m.rt_id) as total_rt_aktif
+        FROM muzakki m
+      `);
+
+      const [infakResult] = await db.execute(`
+        SELECT COALESCE(SUM(jumlah), 0) as total_infak FROM infak
+      `);
+
+      const stats = {
+        ...statsResult[0],
+        total_infak: infakResult[0].total_infak,
+      };
+
+      res.render("home", {
+        title: "Sistem Manajemen Zakat Fitrah",
+        stats: stats || {},
+        layout: false, // Gunakan layout khusus untuk home
+      });
+    } catch (error) {
+      console.error("Home page error:", error);
+      res.render("home", {
+        title: "Sistem Manajemen Zakat Fitrah",
+        stats: {
+          total_muzakki: 0,
+          total_zakat_terkumpul: 0,
+          total_rt_aktif: 0,
+          total_infak: 0,
+        },
+        layout: false,
+      });
+    }
   }
 });
 

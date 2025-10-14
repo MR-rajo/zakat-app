@@ -19,39 +19,34 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
     <div class="card text-center">
       <div class="text-3xl font-bold text-primary-600">
-        <%= muzakki.length %>
+        <%= stats.total_muzakki_records || 0 %>
       </div>
-      <div class="text-sm text-gray-600">Total Muzakki</div>
+      <div class="text-sm text-gray-600">Total Data Muzakki</div>
+    </div>
+    <div class="card text-center">
+      <div class="text-3xl font-bold text-purple-600">
+        <%= stats.total_nama_muzakki_all || 0 %>
+      </div>
+      <div class="text-sm text-gray-600">Total Nama Muzakki</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-green-600">
-        <%= Math.floor((muzakki || []).filter(m => m.jenis_zakat ===
-        'beras').reduce((total, m) => total + (Number(m.jumlah_beras_kg) || 0),
-        0)) %> kg
+        <%= Math.floor(stats.total_beras_all || 0) %> kg
       </div>
-      <div class="text-sm text-gray-600">Jumlah Zakat Beras</div>
+      <div class="text-sm text-gray-600">Total Zakat Beras</div>
     </div>
     <div class="card text-center">
       <div class="text-3xl font-bold text-blue-600">
-        Rp <%= Math.floor((muzakki || []).filter(m => m.jenis_zakat ===
-        'uang').reduce((total, m) => total + (Number(m.jumlah_bayar) || 0),
-        0)).toLocaleString('id-ID') %>
+        Rp <%= Math.floor(stats.total_uang_all || 0).toLocaleString('id-ID') %>
       </div>
-      <div class="text-sm text-gray-600">Jumlah Zakat Uang</div>
-    </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-yellow-600">
-        Rp <%= Math.floor((muzakki || []).reduce((total, m) => total +
-        (Number(m.kembalian) || 0), 0)).toLocaleString('id-ID') %>
-      </div>
-      <div class="text-sm text-gray-600">Total Kembalian</div>
+      <div class="text-sm text-gray-600">Total Zakat Uang</div>
     </div>
   </div>
 
   <!-- Data Table -->
   <div class="card">
     <div class="table-responsive">
-      <% if (muzakki.length === 0) { %>
+      <% if (rtData.length === 0) { %>
       <div class="text-center py-12">
         <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
         <h3 class="text-xl font-medium text-gray-900 mb-2">
@@ -69,129 +64,86 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
         <thead>
           <tr>
             <th>RT</th>
-            <th>Nama Muzakki</th>
-            <th>Jumlah Jiwa</th>
-            <th>Jenis Zakat</th>
-            <th>Kewajiban</th>
-            <th>Jumlah Bayar</th>
-            <th>Kembalian</th>
-            <th>Pencatat</th>
+            <th>Ketua RT</th>
+            <th>Total Data Muzakki</th>
+            <th>Total Nama Muzakki</th>
+            <th>Total Jiwa</th>
+            <th>Total Beras</th>
+            <th>Total Uang</th>
+            <th>Total Kembalian</th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
-          <% muzakki.forEach(function(item) { %>
+          <% rtData.forEach(function(rt) { %>
           <tr>
             <td>
-              <div class="font-medium"><%= item.nomor_rt || '-' %></div>
-              <div class="text-xs text-gray-500">
-                <%= item.ketua_rt || '-' %>
+              <div class="font-medium text-lg text-primary-600">
+                RT <%= rt.nomor_rt %>
               </div>
             </td>
             <td>
-              <div class="font-medium text-gray-900"><%= item.nama %></div>
-              <% if (item.catatan) { %>
-              <div class="text-xs text-gray-500"><%= item.catatan %></div>
-              <% } %>
+              <div class="font-medium text-gray-900">
+                <%= rt.ketua_rt || '-' %>
+              </div>
+            </td>
+            <td class="text-center">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                <%= rt.total_muzakki || 0 %> data
+              </span>
+            </td>
+            <td class="text-center">
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+              >
+                <%= rt.total_nama_muzakki || 0 %> orang
+              </span>
             </td>
             <td class="text-center">
               <span
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
               >
-                <%= item.jumlah_jiwa %> jiwa
+                <%= rt.total_jiwa || 0 %> jiwa
               </span>
             </td>
-            <td>
-              <% if (item.jenis_zakat === 'beras') { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-              >
-                <i class="fas fa-seedling mr-1"></i>Beras
-              </span>
-              <% } else { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-              >
-                <i class="fas fa-coins mr-1"></i>Uang
-              </span>
-              <% } %>
-            </td>
-            <td>
-              <% if (item.jenis_zakat === 'beras') { %>
-              <div class="font-medium"><%= item.jumlah_beras_kg %> kg</div>
-              <% } else { %>
-              <div class="font-medium">
-                Rp <%= Math.floor(item.jumlah_uang).toLocaleString('id-ID') %>
-              </div>
-              <% } %>
-            </td>
-            <td>
+            <td class="text-center">
+              <% if (rt.total_beras > 0) { %>
               <div class="font-medium text-green-600">
-                Rp <%= Math.floor(item.jumlah_bayar).toLocaleString('id-ID') %>
+                <%= Math.floor(rt.total_beras).toLocaleString('id-ID') %> kg
               </div>
+              <% } else { %>
+              <div class="text-gray-400">-</div>
+              <% } %>
             </td>
-            <td>
-              <% if (item.kembalian > 0) { %>
-              <div class="font-medium text-yellow-600 mb-2">
-                Rp <%= Math.floor(item.kembalian).toLocaleString('id-ID') %>
+            <td class="text-center">
+              <% if (rt.total_uang > 0) { %>
+              <div class="font-medium text-blue-600">
+                Rp <%= Math.floor(rt.total_uang).toLocaleString('id-ID') %>
               </div>
-              <form
-                method="POST"
-                action="/muzakki/<%= item.id %>/sedekahkan-kembalian"
-                class="inline"
-              >
-                <button
-                  type="submit"
-                  class="text-green-600 hover:text-green-900 text-xs"
-                  title="Sedekahkan Kembalian"
-                  onclick="return confirm('Sedekahkan kembalian sebagai infak?')"
-                >
-                  <i class="fas fa-hand-holding-heart mr-1"></i>Sedekahkan
-                </button>
-              </form>
+              <% } else { %>
+              <div class="text-gray-400">-</div>
+              <% } %>
+            </td>
+            <td class="text-center">
+              <% if (rt.total_kembalian > 0) { %>
+              <div class="font-medium text-yellow-600">
+                Rp <%= Math.floor(rt.total_kembalian).toLocaleString('id-ID') %>
+              </div>
               <% } else { %>
               <div class="text-gray-400">-</div>
               <% } %>
             </td>
             <td>
-              <div class="text-sm text-gray-600">
-                <%= item.pencatat_name || '-' %>
-              </div>
-              <div class="text-xs text-gray-400">
-                <%= new Date(item.created_at).toLocaleDateString('id-ID') %>
-              </div>
-            </td>
-            <td>
-              <div class="flex gap-4">
+              <div class="flex gap-2">
                 <a
-                  href="/muzakki/<%= item.id %>"
-                  class="text-green-600 hover:text-green-900"
-                  title="Detail"
+                  href="/muzakki/rt/<%= rt.rt_id %>"
+                  class="btn-sm bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+                  title="Detail Muzakki RT <%= rt.nomor_rt %>"
                 >
-                  <i class="fas fa-eye"></i>
+                  <i class="fas fa-eye mr-1"></i>Detail
                 </a>
-                <a
-                  href="/muzakki/<%= item.id %>/edit"
-                  class="text-blue-600 hover:text-blue-900"
-                  title="Edit"
-                >
-                  <i class="fas fa-edit"></i>
-                </a>
-
-                <form
-                  method="POST"
-                  action="/muzakki/<%= item.id %>?_method=DELETE"
-                  class="inline"
-                >
-                  <button
-                    type="submit"
-                    class="text-red-600 hover:text-red-900"
-                    title="Hapus"
-                    onclick="return confirm('Yakin ingin menghapus data <%= item.nama %>?')"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </form>
               </div>
             </td>
           </tr>

@@ -88,6 +88,13 @@
         right: 0;
         z-index: 999;
       }
+
+       .logo-gradient {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
       
       /* Smooth scrolling */
       html {
@@ -97,6 +104,107 @@
       /* Ensure content doesn't overlap with fixed navbar */
       .content-with-fixed-navbar {
         margin-top: 0;
+      }
+
+       /* Logo container improvements */
+      .logo-container {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+      
+      .logo-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 90px;
+        height: 90px;
+        border-radius: 8px;
+        padding: 2px;
+        flex-shrink: 0;
+      }
+      
+      .logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      
+      .logo-text {
+        white-space: nowrap;
+        font-weight: 700;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+       /* Ensure proper spacing for all screen sizes */
+      @media (max-width: 767px) {
+        .navbar-content {
+          padding: 0 16px;
+        }
+        
+        .logo-text {
+          font-size: 1.1rem;
+        }
+        
+        .logo-wrapper {
+          width: 36px;
+          height: 36px;
+          margin-right: 10px;
+        }
+        
+        .desktop-menu {
+          margin-left: 20px;
+        }
+        
+        .desktop-menu-items {
+          gap: 6px;
+        }
+        
+        .nav-link-item {
+          padding: 6px 12px;
+          font-size: 0.875rem;
+        }
+      }
+      
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .navbar-content {
+          padding: 0 20px;
+        }
+        
+        .desktop-menu {
+          margin-left: 24px;
+        }
+        
+        .desktop-menu-items {
+          gap: 6px;
+        }
+        
+        .nav-link-item {
+          padding: 8px 14px;
+          font-size: 0.9rem;
+        }
+      }
+      
+      @media (min-width: 1024px) and (max-width: 1279px) {
+        .desktop-menu-items {
+          gap: 8px;
+        }
+        
+        .nav-link-item {
+          padding: 8px 16px;
+        }
+      }
+      
+      @media (min-width: 1280px) {
+        .desktop-menu-items {
+          gap: 12px;
+        }
+        
+        .nav-link-item {
+          padding: 8px 18px;
+        }
       }
     </style>
   </head>
@@ -108,14 +216,15 @@
         <div class="flex justify-between h-16">
           <!-- Logo and Desktop Menu -->
           <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <a href="/dashboard" class="text-white font-bold text-xl lg:text-2xl logo-gradient flex items-center">
-                <div class="bg-white/10 p-2 rounded-lg mr-3 backdrop-blur-sm">
-                  <i class="fas fa-mosque text-white"></i>
-                </div>
-                <span class="">E - Zakat</span>
-              </a>
-            </div>
+           <!-- Logo -->
+          <div class="logo-container">
+            <a href="/dashboard" class="flex items-center">
+              <div class="logo-wrapper">
+                <img src="/images/logo.png" alt="Logo Zakat" class="logo-img">
+              </div>
+              <span class="logo-text logo-gradient">Zakat - App</span>
+            </a>
+          </div>
             
             <!-- Desktop Navigation -->
             <div class="hidden md:block ml-10">
