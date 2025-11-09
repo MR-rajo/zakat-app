@@ -13,487 +13,532 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <style>
-      *{
+      * {
         text-decoration: none;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
       
-      /* Custom styles for navigation */
-      .nav-link-active {
-        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      /* Sidebar Styles */
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        background: linear-gradient(180deg, #1eaf2f 0%, #16a127 50%, #0f8a1f 100%);
+        padding: 20px 0;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
       }
       
-      .nav-link {
+      .sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .sidebar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      
+      .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+      }
+      
+      .sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      
+      .sidebar-hidden {
+        transform: translateX(-100%);
+      }
+      
+      /* Logo in Sidebar */
+      .sidebar-logo {
+        padding: 0 20px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 20px;
+      }
+      
+      .sidebar-logo-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 10px;
+      }
+      
+      .sidebar-logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      
+      .sidebar-logo-text {
+        text-align: center;
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      
+      /* Sidebar Navigation */
+      .sidebar-nav {
+        padding: 0 10px;
+      }
+      
+      .sidebar-nav-item {
+        margin-bottom: 5px;
+      }
+      
+      .sidebar-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
         transition: all 0.3s ease;
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+      
+      .sidebar-nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        transform: translateX(5px);
+      }
+      
+      .sidebar-nav-link-active {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+      
+      .sidebar-nav-icon {
+        width: 20px;
+        margin-right: 12px;
+        text-align: center;
+      }
+      
+      /* Top Navbar */
+      .top-navbar {
+        position: fixed;
+        top: 0;
+        left: 260px;
+        right: 0;
+        height: 70px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 30px;
+        transition: left 0.3s ease;
+      }
+      
+      .top-navbar-mobile {
+        left: 0;
+      }
+      
+      .navbar-brand {
+        display: none;
+        align-items: center;
+        color: #1eaf2f;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+      
+      .navbar-brand-logo {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
+      
+      /* Hamburger Menu */
+      .hamburger-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #1eaf2f;
+        cursor: pointer;
+        padding: 5px;
+        transition: all 0.3s ease;
+      }
+      
+      .hamburger-btn:hover {
+        color: #16a127;
+      }
+      
+      /* User Dropdown */
+      .user-dropdown-container {
         position: relative;
-        border-bottom: 3px solid transparent;
       }
       
-      .nav-link:hover {
-        background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      }
-      
-      .logo-gradient {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      .mobile-menu-enter {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      
-      .mobile-menu-enter-active {
-        opacity: 1;
-        transform: translateY(0);
+      .user-dropdown-btn {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 50px;
+        cursor: pointer;
         transition: all 0.3s ease;
+      }
+      
+      .user-dropdown-btn:hover {
+        background: #e9ecef;
+      }
+      
+      .user-avatar {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #1eaf2f 0%, #0f8a1f 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        margin-right: 10px;
+      }
+      
+      .user-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+        margin-right: 8px;
       }
       
       .user-dropdown {
-        backdrop-filter: blur(10px);
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 220px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
         z-index: 1050;
       }
       
-      .nav-bg {
-        background: linear-gradient(135deg, #1eaf2f 0%, #1eaf2f 50%, #1eaf2f 100%);
-        backdrop-filter: blur(10px);
+      .user-dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
       }
       
-      /* Fixed navbar styles */
-      .navbar-fixed {
+      .user-dropdown-header {
+        padding: 15px;
+        border-bottom: 1px solid #e9ecef;
+      }
+      
+      .user-dropdown-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+      }
+      
+      .user-dropdown-phone {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 2px;
+      }
+      
+      .user-dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        color: #495057;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+      }
+      
+      .user-dropdown-item:hover {
+        background: #f8f9fa;
+        color: #1eaf2f;
+      }
+      
+      .user-dropdown-item i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+      }
+      
+      .user-dropdown-item.logout:hover {
+        background: #fff5f5;
+        color: #dc3545;
+      }
+      
+      /* Main Content */
+      .main-content {
+        margin-left: 260px;
+        margin-top: 70px;
+        padding: 30px;
+        min-height: calc(100vh - 70px);
+        transition: margin-left 0.3s ease;
+      }
+      
+      .main-content-full {
+        margin-left: 0;
+      }
+      
+      /* Sidebar Overlay for Mobile */
+      .sidebar-overlay {
+        display: none;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        z-index: 1000;
-      }
-      
-      /* Body padding to compensate for fixed navbar */
-      .body-with-navbar {
-        padding-top: 64px; /* Height of navbar */
-      }
-      
-      /* Mobile menu positioning for fixed navbar */
-      #mobile-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
         z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
-
-       .logo-gradient {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+      
+      .sidebar-overlay.show {
+        display: block;
+        opacity: 1;
+      }
+      
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        
+        .sidebar.show {
+          transform: translateX(0);
+        }
+        
+        .top-navbar {
+          left: 0;
+        }
+        
+        .navbar-brand {
+          display: flex;
+        }
+        
+        .hamburger-btn {
+          display: block;
+        }
+        
+        .main-content {
+          margin-left: 0;
+        }
+        
+        .user-name {
+          display: none;
+        }
       }
       
       /* Smooth scrolling */
       html {
         scroll-behavior: smooth;
       }
-      
-      /* Ensure content doesn't overlap with fixed navbar */
-      .content-with-fixed-navbar {
-        margin-top: 0;
-      }
-
-       /* Logo container improvements */
-      .logo-container {
-        display: flex;
-        align-items: center;
-        height: 100%;
-      }
-      
-      .logo-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 90px;
-        height: 90px;
-        border-radius: 8px;
-        padding: 2px;
-        flex-shrink: 0;
-      }
-      
-      .logo-img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: block;
-      }
-      
-      .logo-text {
-        white-space: nowrap;
-        font-weight: 700;
-        font-size: 1.5rem;
-        line-height: 1;
-      }
-
-       /* Ensure proper spacing for all screen sizes */
-      @media (max-width: 767px) {
-        .navbar-content {
-          padding: 0 16px;
-        }
-        
-        .logo-text {
-          font-size: 1.1rem;
-        }
-        
-        .logo-wrapper {
-          width: 36px;
-          height: 36px;
-          margin-right: 10px;
-        }
-        
-        .desktop-menu {
-          margin-left: 20px;
-        }
-        
-        .desktop-menu-items {
-          gap: 6px;
-        }
-        
-        .nav-link-item {
-          padding: 6px 12px;
-          font-size: 0.875rem;
-        }
-      }
-      
-      @media (min-width: 768px) and (max-width: 1023px) {
-        .navbar-content {
-          padding: 0 20px;
-        }
-        
-        .desktop-menu {
-          margin-left: 24px;
-        }
-        
-        .desktop-menu-items {
-          gap: 6px;
-        }
-        
-        .nav-link-item {
-          padding: 8px 14px;
-          font-size: 0.9rem;
-        }
-      }
-      
-      @media (min-width: 1024px) and (max-width: 1279px) {
-        .desktop-menu-items {
-          gap: 8px;
-        }
-        
-        .nav-link-item {
-          padding: 8px 16px;
-        }
-      }
-      
-      @media (min-width: 1280px) {
-        .desktop-menu-items {
-          gap: 12px;
-        }
-        
-        .nav-link-item {
-          padding: 8px 18px;
-        }
-      }
     </style>
   </head>
-  <body class="<%= bodyClass || 'bg-gray-50 min-h-screen' %> <%= (typeof user !== 'undefined' && user) ? 'body-with-navbar' : '' %>">
-    <!-- Navigation -->
+  <body class="<%= bodyClass || 'bg-gray-50' %>">
+    <!-- Sidebar Overlay -->
     <% if (typeof user !== 'undefined' && user) { %>
-    <nav class="nav-bg shadow-2xl navbar-fixed py-[1.2rem]">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <!-- Logo and Desktop Menu -->
-          <div class="flex items-center">
-           <!-- Logo -->
-          <div class="logo-container">
-            <a href="/dashboard" class="flex items-center">
-              <div class="logo-wrapper">
-                <img src="/images/logo.png" alt="Logo Zakat" class="logo-img">
-              </div>
-              <span class="logo-text logo-gradient">Zakat - App</span>
-            </a>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Logo in Sidebar -->
+      <div class="sidebar-logo">
+        <a href="/dashboard">
+          <div class="sidebar-logo-wrapper">
+            <img src="/images/logo.png" alt="Logo Zakat" class="sidebar-logo-img">
           </div>
-            
-            <!-- Desktop Navigation -->
-            <div class="hidden md:block ml-10">
-              <div class="flex items-baseline space-x-1">
-                <a href="/dashboard" 
-                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-tachometer-alt mr-2"></i>
-                  <span>Dashboard</span>
-                </a>
-                <a href="/rt-rw" 
-                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'rt') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-home mr-2"></i>
-                  <span>Data RW/RT</span>
-                </a>
-                <a href="/muzakki" 
-                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'muzakki') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-users mr-2"></i>
-                  <span>Muzakki</span>
-                </a>
-                <a href="/mustahik" 
-                   class="nav-link text-white no-underline px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'mustahik') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-user-friends mr-2"></i>
-                  <span>Mustahik</span>
-                </a>
-                <a href="/distribusi" 
-                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'distribusi') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-share-alt mr-2"></i>
-                  <span>Distribusi</span>
-                </a>
-                <a href="/infak" 
-                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'infak') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-hand-holding-heart mr-2"></i>
-                  <span>Infak</span>
-                </a>
-                <a href="/laporan" 
-                   class="nav-link text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center <%= (typeof currentPage !== 'undefined' && currentPage === 'laporan') ? 'nav-link-active' : '' %>">
-                  <i class="fas fa-chart-bar mr-2"></i>
-                  <span>Laporan</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mobile menu button and User menu -->
-          <div class="flex items-center space-x-3">
-            <!-- Mobile menu button -->
-            <div class="md:hidden">
-              <button
-                type="button"
-                class="text-white hover:text-gray-200 focus:outline-none focus:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all duration-200"
-                onclick="toggleMobileMenu()"
-                id="mobile-menu-button"
-              >
-                <span class="sr-only">Open main menu</span>
-                <i class="fas fa-bars text-lg" id="menu-icon"></i>
-              </button>
-            </div>
-
-            <!-- User menu -->
-            <div class="relative">
-              <button
-                type="button"
-                class="focus:outline-none focus:text-gray-200 flex items-center p-2 rounded-lg hover:bg-white/10 transition-all duration-200"
-                onclick="toggleDropdown()"
-              >
-                <div class="p-1 rounded-full mr-2 backdrop-blur-sm">
-                  <i class="fas fa-user text-sm"></i>
-                </div>
-                <span class="hidden sm:block text-sm font-medium"><%= (user && user.name) ? user.name.split(' ')[0] : 'User' %></span>
-                <i class="fas fa-chevron-down ml-2 text-xs"></i>
-              </button>
-              
-              <div
-                id="dropdown-menu"
-                class="origin-top-right absolute right-0 mt-6 w-56 rounded-xl shadow-2xl user-dropdown ring-1 ring-black ring-opacity-5 hidden transform transition-all duration-200"
-              >
-                <div class="py-2">
-                  <div class="px-4 py-3 border-b border-gray-100">
-                    <div class="font-semibold text-gray-800"><%= (user && user.name) ? user.name : 'User' %></div>
-                    <div class="text-sm text-gray-500"><%= (user && user.nomor_wa) ? user.nomor_wa : 'No Phone' %></div>
-                  </div>
-                  <a
-                    href="/users/profile"
-                    class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
-                  >
-                    <i class="fas fa-user mr-3 text-blue-500"></i>Profile Saya
-                  </a>
-                  <form method="POST" action="/auth/logout" class="block">
-                    <button
-                      type="submit"
-                      class="w-full flex items-center text-left px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-150"
-                    >
-                      <i class="fas fa-sign-out-alt mr-3 text-red-500"></i>Keluar
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div class="sidebar-logo-text">Zakat - App</div>
+        </a>
+      </div>
+      
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-item">
+          <a href="/dashboard" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-tachometer-alt sidebar-nav-icon"></i>
+            <span>Dashboard</span>
+          </a>
         </div>
-
-        <!-- Mobile Navigation Menu -->
-        <div class="md:hidden hidden" id="mobile-menu">
-          <div class="px-2 pt-2 pb-3 space-y-1 bg-white/5 backdrop-blur-sm rounded-lg mt-2 mb-4">
-            <a href="/dashboard" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
-            </a>
-            <a href="/rt" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'rt') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-home mr-3"></i>Data RT
-            </a>
-            <a href="/muzakki" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'muzakki') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-users mr-3"></i>Muzakki
-            </a>
-            <a href="/mustahik" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'mustahik') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-user-friends mr-3"></i>Mustahik
-            </a>
-            <a href="/distribusi" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'distribusi') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-share-alt mr-3"></i>Distribusi
-            </a>
-            <a href="/infak" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'infak') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-hand-holding-heart mr-3"></i>Infak
-            </a>
-            <a href="/laporan" 
-               class="nav-link text-white flex items-center px-4 py-3 rounded-lg text-base font-medium <%= (typeof currentPage !== 'undefined' && currentPage === 'laporan') ? 'nav-link-active' : '' %>">
-              <i class="fas fa-chart-bar mr-3"></i>Laporan
-            </a>
+        
+        <div class="sidebar-nav-item">
+          <a href="/rt-rw" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'rt') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-home sidebar-nav-icon"></i>
+            <span>Data RW/RT</span>
+          </a>
+        </div>
+        
+        <div class="sidebar-nav-item">
+          <a href="/muzakki" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'muzakki') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-users sidebar-nav-icon"></i>
+            <span>Muzakki</span>
+          </a>
+        </div>
+        
+        <div class="sidebar-nav-item">
+          <a href="/mustahik" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'mustahik') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-user-friends sidebar-nav-icon"></i>
+            <span>Mustahik</span>
+          </a>
+        </div>
+        
+        <div class="sidebar-nav-item">
+          <a href="/distribusi" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'distribusi') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-share-alt sidebar-nav-icon"></i>
+            <span>Distribusi</span>
+          </a>
+        </div>
+        
+        <div class="sidebar-nav-item">
+          <a href="/infak" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'infak') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-hand-holding-heart sidebar-nav-icon"></i>
+            <span>Infak</span>
+          </a>
+        </div>
+        
+        <div class="sidebar-nav-item">
+          <a href="/laporan" class="sidebar-nav-link <%= (typeof currentPage !== 'undefined' && currentPage === 'laporan') ? 'sidebar-nav-link-active' : '' %>">
+            <i class="fas fa-chart-bar sidebar-nav-icon"></i>
+            <span>Laporan</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+    
+    <!-- Top Navbar -->
+    <nav class="top-navbar" id="topNavbar">
+      <!-- Hamburger Menu (Mobile Only) -->
+      <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      
+      <!-- Logo for Mobile -->
+      <div class="navbar-brand">
+        <img src="/images/logo.png" alt="Logo" class="navbar-brand-logo">
+        <span>Zakat - App</span>
+      </div>
+      
+      <!-- User Dropdown -->
+      <div class="user-dropdown-container">
+        <button class="user-dropdown-btn" onclick="toggleUserDropdown()">
+          <div class="user-avatar">
+            <%= (user && user.name) ? user.name.charAt(0).toUpperCase() : 'U' %>
           </div>
+          <span class="user-name"><%= (user && user.name) ? user.name : 'User' %></span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <div class="user-dropdown-name"><%= (user && user.name) ? user.name : 'User' %></div>
+            <div class="user-dropdown-phone"><%= (user && user.nomor_wa) ? user.nomor_wa : 'No Phone' %></div>
+          </div>
+          <a href="/users/profile" class="user-dropdown-item">
+            <i class="fas fa-user"></i>
+            <span>Profile Saya</span>
+          </a>
+          <form method="POST" action="/auth/logout">
+            <button type="submit" class="user-dropdown-item logout">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Keluar</span>
+            </button>
+          </form>
         </div>
       </div>
     </nav>
     <% } %>
 
-    <!-- Flash Messages -->
-    <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
-    <div
-      class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mx-4 mt-4"
-    >
-      <div class="flex items-center">
-        <i class="fas fa-check-circle mr-2"></i><%= success %>
-      </div>
-    </div>
-    <% } %> <% if (typeof error !== 'undefined' && error && error.length > 0) {
-    %>
-    <div
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 mt-4"
-    >
-      <div class="flex items-center">
-        <i class="fas fa-exclamation-circle mr-2"></i><%= error %>
-      </div>
-    </div>
-    <% } %>
-
     <!-- Main Content -->
     <% if (typeof user !== 'undefined' && user) { %>
-    <main class="py-4">
+    <main class="main-content" id="mainContent">
+      <!-- Flash Messages -->
+      <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div class="flex items-center">
+          <i class="fas fa-check-circle mr-2"></i><%= success %>
+        </div>
+      </div>
+      <% } %>
+      <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div class="flex items-center">
+          <i class="fas fa-exclamation-circle mr-2"></i><%= error %>
+        </div>
+      </div>
+      <% } %>
     <% } else { %>
     <main class="py-0">
     <% } %>
 
     <script>
-      // Toggle mobile menu
-      function toggleMobileMenu() {
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuIcon = document.getElementById('menu-icon');
+      // Toggle Sidebar (Mobile)
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
         
-        if (mobileMenu.classList.contains('hidden')) {
-          mobileMenu.classList.remove('hidden');
-          mobileMenu.classList.add('mobile-menu-enter-active');
-          menuIcon.className = 'fas fa-times text-lg';
-        } else {
-          mobileMenu.classList.add('hidden');
-          mobileMenu.classList.remove('mobile-menu-enter-active');
-          menuIcon.className = 'fas fa-bars text-lg';
+        if (sidebar && overlay) {
+          sidebar.classList.toggle('show');
+          overlay.classList.toggle('show');
         }
       }
 
-      // Toggle user dropdown
-      function toggleDropdown() {
-        const dropdown = document.getElementById('dropdown-menu');
-        if (dropdown.classList.contains('hidden')) {
-          dropdown.classList.remove('hidden');
-          dropdown.style.opacity = '0';
-          dropdown.style.transform = 'translateY(-10px)';
-          
-          setTimeout(() => {
-            dropdown.style.opacity = '1';
-            dropdown.style.transform = 'translateY(0)';
-          }, 10);
-        } else {
-          dropdown.style.opacity = '0';
-          dropdown.style.transform = 'translateY(-10px)';
-          
-          setTimeout(() => {
-            dropdown.classList.add('hidden');
-          }, 200);
+      // Toggle User Dropdown
+      function toggleUserDropdown() {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+          dropdown.classList.toggle('show');
         }
       }
 
       // Close dropdown when clicking outside
       document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('dropdown-menu');
-        const userButton = event.target.closest('[onclick="toggleDropdown()"]');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileButton = event.target.closest('[onclick="toggleMobileMenu()"]');
+        const userDropdownContainer = event.target.closest('.user-dropdown-container');
+        const userDropdown = document.getElementById('userDropdown');
         
-        if (!userButton && dropdown && !dropdown.classList.contains('hidden')) {
-          dropdown.style.opacity = '0';
-          dropdown.style.transform = 'translateY(-10px)';
-          setTimeout(() => {
-            dropdown.classList.add('hidden');
-          }, 200);
-        }
-        
-        if (!mobileButton && mobileMenu && !mobileMenu.classList.contains('hidden')) {
-          mobileMenu.classList.add('hidden');
-          mobileMenu.classList.remove('mobile-menu-enter-active');
-          document.getElementById('menu-icon').className = 'fas fa-bars text-lg';
+        if (!userDropdownContainer && userDropdown && userDropdown.classList.contains('show')) {
+          userDropdown.classList.remove('show');
         }
       });
 
-      // Close mobile menu when window is resized to desktop size
+      // Close sidebar when resizing to desktop
       window.addEventListener('resize', function() {
-        if (window.innerWidth >= 768) {
-          const mobileMenu = document.getElementById('mobile-menu');
-          const menuIcon = document.getElementById('menu-icon');
-          if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('mobile-menu-enter-active');
-            if (menuIcon) {
-              menuIcon.className = 'fas fa-bars text-lg';
-            }
+        if (window.innerWidth > 768) {
+          const sidebar = document.getElementById('sidebar');
+          const overlay = document.getElementById('sidebarOverlay');
+          if (sidebar && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
           }
         }
       });
 
-      // Ensure navbar stays on top and handles scroll
-      window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar-fixed');
-        if (navbar) {
-          if (window.scrollY > 10) {
-            navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
-          } else {
-            navbar.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
-          }
-        }
-      });
-
-      // Close mobile menu when clicking a link
+      // Auto hide flash messages after 5 seconds
       document.addEventListener('DOMContentLoaded', function() {
-        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
-        mobileMenuLinks.forEach(link => {
-          link.addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            const menuIcon = document.getElementById('menu-icon');
-            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-              mobileMenu.classList.add('hidden');
-              mobileMenu.classList.remove('mobile-menu-enter-active');
-              if (menuIcon) {
-                menuIcon.className = 'fas fa-bars text-lg';
-              }
-            }
+        setTimeout(function() {
+          const flashMessages = document.querySelectorAll('.bg-green-100, .bg-red-100');
+          flashMessages.forEach(function(message) {
+            message.style.transition = 'opacity 0.5s';
+            message.style.opacity = '0';
+            setTimeout(() => message.remove(), 500);
           });
-        });
+        }, 5000);
       });
     </script>
   </body>
