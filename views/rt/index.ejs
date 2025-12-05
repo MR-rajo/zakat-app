@@ -1,178 +1,844 @@
 <%- include('../layouts/header', { title: 'Data RW & RT - Zakat Fitrah App',
-bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
+bodyClass: 'bg-gray-50', currentPage: 'rt' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h1 class="text-3xl font-bold text-gray-900">
-        <i class="fas fa-building mr-2 text-primary-600"></i>Data RW & RT
-      </h1>
-      <p class="text-gray-600 mt-1">Kelola data Rukun Warga (RW) dan Rukun Tetangga (RT)</p>
-    </div>
-    <div class="flex gap-4 mx-5">
-      <a href="/rw" class="btn-primary">
-        <i class="fas fa-plus mr-2"></i>Kelola RW
-      </a>
-      <a href="/rt/create" class="btn-primary">
-        <i class="fas fa-plus mr-2"></i>Tambah RT
-      </a>
+<div class="page-wrapper">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="header-content-wrapper">
+      <div class="header-left-section">
+        <div class="header-icon-box">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="header-text-box">
+          <h1 class="header-title-text">Data RW & RT</h1>
+          <p class="header-subtitle-text">Kelola data Rukun Warga (RW) dan Rukun Tetangga (RT)</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="/rw" class="btn-action btn-action-primary">
+          <i class="fas fa-building mr-2"></i>
+          <span>Kelola RW</span>
+        </a>
+        <a href="/rt/create" class="btn-action btn-action-secondary">
+          <i class="fas fa-plus mr-2"></i>
+          <span>Tambah RT</span>
+        </a>
+      </div>
     </div>
   </div>
 
   <!-- Statistics Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-primary-600">
-        <%= rwList.length %>
+  <div class="stats-container">
+    <div class="stat-box stat-box-primary">
+      <div class="stat-icon-wrapper stat-icon-primary">
+        <i class="fas fa-building"></i>
       </div>
-      <div class="text-sm text-gray-600">Total RW</div>
+      <div class="stat-content-box">
+        <div class="stat-value-text"><%= rwList.length %></div>
+        <div class="stat-label-text">Total RW</div>
+      </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-green-600">
-        <%= rwList.reduce((sum, rw) => sum + (rw.total_rt || 0), 0) %>
+
+    <div class="stat-box stat-box-success">
+      <div class="stat-icon-wrapper stat-icon-success">
+        <i class="fas fa-home"></i>
       </div>
-      <div class="text-sm text-gray-600">Total RT</div>
+      <div class="stat-content-box">
+        <div class="stat-value-text"><%= rwList.reduce((sum, rw) => sum + (rw.total_rt || 0), 0) %></div>
+        <div class="stat-label-text">Total RT</div>
+      </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-blue-600">
-        <%= rwList.reduce((sum, rw) => sum + (rw.total_muzakki || 0), 0) %>
+
+    <div class="stat-box stat-box-info">
+      <div class="stat-icon-wrapper stat-icon-info">
+        <i class="fas fa-users"></i>
       </div>
-      <div class="text-sm text-gray-600">Total Muzakki</div>
+      <div class="stat-content-box">
+        <div class="stat-value-text"><%= rwList.reduce((sum, rw) => sum + (rw.total_muzakki || 0), 0) %></div>
+        <div class="stat-label-text">Total Muzakki</div>
+      </div>
+      <div class="stat-decoration"></div>
     </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-yellow-600">
-        Rp <%= Math.floor(rtList.reduce((sum, rt) => sum + (rt.total_zakat || 0), 0)).toLocaleString('id-ID') %>
+
+    <div class="stat-box stat-box-warning">
+      <div class="stat-icon-wrapper stat-icon-warning">
+        <i class="fas fa-coins"></i>
       </div>
-      <div class="text-sm text-gray-600">Total Zakat</div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">Rp <%= Math.floor(rtList.reduce((sum, rt) => sum + (rt.total_zakat || 0), 0)).toLocaleString('id-ID') %></div>
+        <div class="stat-label-text">Total Zakat</div>
+      </div>
+      <div class="stat-decoration"></div>
     </div>
   </div>
 
-  <!-- RT Table -->
-  <div class="card">
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h2 class="text-xl font-semibold text-gray-900">Daftar RT</h2>
-        <p class="text-gray-600 mt-1">Kelola data Rukun Tetangga (RT)</p>
+  <!-- RT Table Section -->
+  <div class="table-section">
+    <div class="table-header-wrapper">
+      <div class="table-header-left">
+        <div class="table-header-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        <div class="table-header-text">
+          <h2 class="table-title">Daftar RT</h2>
+          <p class="table-subtitle">Kelola data Rukun Tetangga (RT)</p>
+        </div>
+      </div>
+      <div class="table-header-right">
+        <span class="table-badge">
+          <i class="fas fa-list"></i>
+          <%= rtList.length %> RT
+        </span>
       </div>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-content-wrapper">
       <% if (rtList.length === 0) { %>
-      <div class="text-center py-12">
-        <i class="fas fa-home text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-900 mb-2">Belum ada data RT</h3>
-        <p class="text-gray-600 mb-6">Mulai dengan menambahkan data RT pertama</p>
-        <a href="/rt/create" class="btn-primary">
-          <i class="fas fa-plus mr-2"></i>Tambah RT
-        </a>
-      </div>
+        <div class="empty-state-box">
+          <div class="empty-state-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <h3 class="empty-state-title">Belum ada data RT</h3>
+          <p class="empty-state-desc">Mulai dengan menambahkan data RT pertama</p>
+          <a href="/rt/create" class="btn-empty-state">
+            <i class="fas fa-plus mr-2"></i>
+            Tambah RT
+          </a>
+        </div>
       <% } else { %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>RW</th>
-            <th>RT</th>
-            <th>Ketua RT</th>
-            <th>Keterangan</th>
-            <th>Statistik</th>
-            <th>Total Zakat</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% rtList.forEach(function(rt) { %>
-          <tr>
-            <td>
-              <div class="font-medium"><%= rt.nomor_rw || '-' %></div>
-              <div class="text-xs text-gray-500">Ketua: <%= rt.ketua_rw || '-' %></div>
-            </td>
-            <td>
-              <div class="font-medium text-gray-900"><%= rt.nomor_rt %></div>
-              <div class="text-xs text-gray-500">ID: <%= rt.id %></div>
-            </td>
-            <td>
-              <div class="font-medium text-gray-900"><%= rt.ketua_rt %></div>
-              <div class="text-xs text-gray-500">Ketua RT</div>
-            </td>
-            <td>
-              <div class="text-sm text-gray-900">
-                <%= rt.keterangan || '-' %>
-              </div>
-            </td>
-            <td>
-              <div class="text-sm text-gray-900">
-                <div class="flex items-center space-x-3">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    <i class="fas fa-users mr-1"></i><%= rt.total_muzakki %>
-                    Muzakki
-                  </span>
-                </div>
-                <div class="flex items-center space-x-2 mt-2">
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <i class="fas fa-check mr-1"></i><%= rt.muzakki_lunas %>
-                    Lunas
-                  </span>
-                  <% if (rt.muzakki_belum_lunas > 0) { %>
-                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <i class="fas fa-times mr-1"></i><%= rt.muzakki_belum_lunas
-                    %> Belum
-                  </span>
-                  <% } %>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="font-medium text-gray-900">
-                Rp <%= Math.floor(rt.total_zakat).toLocaleString('id-ID') %>
-              </div>
-            </td>
-            <td>
-              <div class="flex gap-4">
-                <a
-                  href="/rt/<%= rt.id %>/detail"
-                  class="text-blue-600 hover:text-blue-900"
-                  title="Detail RT"
-                >
-                  <i class="fas fa-eye"></i>
-                </a>
-                <a
-                  href="/rt/<%= rt.id %>/edit"
-                  class="text-indigo-600 hover:text-indigo-900"
-                  title="Edit RT"
-                >
-                  <i class="fas fa-edit"></i>
-                </a>
-                <form
-                  method="POST"
-                  action="/rt/<%= rt.id %>/delete"
-                  class="inline"
-                  id="delete-form-<%= rt.id %>"
-                >
-                  <button
-                    type="button"
-                    class="text-red-600 hover:text-red-900"
-                    title="Hapus RT"
-                    data-nomor="<%= rt.nomor_rt %>"
-                    data-id="<%= rt.id %>"
-                    onclick="confirmDeleteRT(this)"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-      </table>
+        <div class="table-responsive-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>RW</th>
+                <th>RT</th>
+                <th>Ketua RT</th>
+                <th>Keterangan</th>
+                <th>Statistik</th>
+                <th>Total Zakat</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% rtList.forEach(function(rt, index) { %>
+                <tr class="table-row-animated" style="animation-delay: <%= index * 0.05 %>s;">
+                  <td>
+                    <div class="cell-content-primary">
+                      <div class="rw-badge">
+                        <i class="fas fa-building"></i>
+                        <%= rt.nomor_rw || '-' %>
+                      </div>
+                      <div class="cell-subtitle">Ketua: <%= rt.ketua_rw || '-' %></div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-content-primary">
+                      <div class="rt-number">RT <%= rt.nomor_rt %></div>
+                      <div class="cell-subtitle">ID: <%= rt.id %></div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-content-primary">
+                      <div class="ketua-name"><%= rt.ketua_rt %></div>
+                      <div class="cell-subtitle">Ketua RT</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-content-secondary">
+                      <%= rt.keterangan || '-' %>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="stats-badges-wrapper">
+                      <span class="badge-stat badge-stat-primary">
+                        <i class="fas fa-users"></i>
+                        <%= rt.total_muzakki %> Muzakki
+                      </span>
+                      <div class="stats-badges-row">
+                        <span class="badge-stat-sm badge-success">
+                          <i class="fas fa-check"></i>
+                          <%= rt.muzakki_lunas %> Lunas
+                        </span>
+                        <% if (rt.muzakki_belum_lunas > 0) { %>
+                          <span class="badge-stat-sm badge-danger">
+                            <i class="fas fa-times"></i>
+                            <%= rt.muzakki_belum_lunas %> Belum
+                          </span>
+                        <% } %>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="amount-display">
+                      Rp <%= Math.floor(rt.total_zakat).toLocaleString('id-ID') %>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="action-buttons-group">
+                      <a href="/rt/<%= rt.id %>/detail" class="btn-icon btn-icon-info" title="Detail RT">
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <a href="/rt/<%= rt.id %>/edit" class="btn-icon btn-icon-primary" title="Edit RT">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <form method="POST" action="/rt/<%= rt.id %>/delete" class="inline-form" id="delete-form-<%= rt.id %>">
+                        <button type="button" class="btn-icon btn-icon-danger" title="Hapus RT" data-nomor="<%= rt.nomor_rt %>" data-id="<%= rt.id %>" onclick="confirmDeleteRT(this)">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
     </div>
-    <% } %>
   </div>
 </div>
 
-<%- include('../layouts/footer') %>
+<!-- Modern Styles -->
+<style>
+  /* Page Wrapper */
+  .page-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
 
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-animation 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-animation {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+
+  .header-content-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-text-box {
+    color: white;
+  }
+
+  .header-title-text {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: white;
+  }
+
+  .header-subtitle-text {
+    font-size: 16px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-action-primary {
+    background: white;
+    color: #1EAF2F;
+  }
+
+  .btn-action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background: #f8f8f8;
+  }
+
+  .btn-action-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+  }
+
+  .btn-action-secondary:hover {
+    transform: translateY(-2px);
+    background: white;
+    color: #1EAF2F;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Statistics Container */
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-box {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-box:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.1;
+  }
+
+  .stat-box-primary .stat-decoration {
+    background: #1EAF2F;
+  }
+
+  .stat-box-success .stat-decoration {
+    background: #10b981;
+  }
+
+  .stat-box-info .stat-decoration {
+    background: #3b82f6;
+  }
+
+  .stat-box-warning .stat-decoration {
+    background: #f59e0b;
+  }
+
+  .stat-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-icon-primary {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  }
+
+  .stat-icon-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .stat-icon-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  .stat-icon-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .stat-content-box {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-value-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label-text {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  /* Table Section */
+  .table-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .table-header-wrapper {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 24px 28px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .table-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .table-header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .table-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  .table-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .table-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #d1fae5;
+    color: #065f46;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .table-content-wrapper {
+    padding: 28px;
+  }
+
+  /* Empty State */
+  .empty-state-box {
+    text-align: center;
+    padding: 60px 24px;
+  }
+
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: #9ca3af;
+  }
+
+  .empty-state-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-state-desc {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0 0 28px 0;
+  }
+
+  .btn-empty-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(30, 175, 47, 0.3);
+  }
+
+  .btn-empty-state:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 175, 47, 0.4);
+  }
+
+  /* Data Table */
+  .table-responsive-wrapper {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead tr {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .data-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeInRow 0.5s ease forwards;
+  }
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .data-table tbody tr:hover {
+    background: linear-gradient(to right, #f0fdf4, #dcfce7);
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(30, 175, 47, 0.1);
+  }
+
+  .data-table td {
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  /* Table Cell Content */
+  .cell-content-primary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cell-content-secondary {
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .rw-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    width: fit-content;
+  }
+
+  .rt-number {
+    font-weight: 600;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .ketua-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .cell-subtitle {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  /* Badges */
+  .stats-badges-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .badge-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .badge-stat-primary {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .stats-badges-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .badge-stat-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .amount-display {
+    font-weight: 700;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  /* Action Buttons */
+  .action-buttons-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .inline-form {
+    display: inline;
+  }
+
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  .btn-icon-info {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .btn-icon-info:hover {
+    background: #3b82f6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-icon-primary {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .btn-icon-primary:hover {
+    background: #1EAF2F;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 175, 47, 0.4);
+  }
+
+  .btn-icon-danger {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .btn-icon-danger:hover {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-wrapper {
+      padding: 16px;
+    }
+
+    .page-header {
+      padding: 24px;
+    }
+
+    .header-content-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-title-text {
+      font-size: 24px;
+    }
+
+    .header-actions {
+      width: 100%;
+    }
+
+    .btn-action {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+
+    .table-content-wrapper {
+      padding: 16px;
+    }
+
+    .data-table {
+      font-size: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 10px 8px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .table-header-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .action-buttons-group {
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+  }
+
+  /* Utility Classes */
+  .mr-2 {
+    margin-right: 8px;
+  }
+</style>
+
+<!-- JavaScript -->
 <script>
   function confirmDeleteRT(btn) {
     const nomor = btn.dataset.nomor;
@@ -182,10 +848,15 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
       text: `Yakin ingin menghapus RT ${nomor}? Data ini tidak dapat dikembalikan.`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: #6b7280',
       confirmButtonText: 'Ya, Hapus',
-      cancelButtonText: 'Batal'
+      cancelButtonText: 'Batal',
+      customClass: {
+        popup: 'swal-custom-popup',
+        confirmButton: 'swal-custom-confirm',
+        cancelButton: 'swal-custom-cancel'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         document.getElementById(`delete-form-${id}`).submit();
@@ -193,22 +864,19 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
     });
   }
 
-  function confirmDeleteRW(btn) {
-    const nomor = btn.dataset.nomor;
-    const id = btn.dataset.id;
-    Swal.fire({
-      title: 'Konfirmasi Hapus',
-      text: `Yakin ingin menghapus RW ${nomor}? Data ini tidak dapat dikembalikan.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Ya, Hapus',
-      cancelButtonText: 'Batal'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        document.getElementById(`delete-rw-form-${id}`).submit();
-      }
+  // Add entrance animations on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const statBoxes = document.querySelectorAll('.stat-box');
+    statBoxes.forEach((box, index) => {
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        box.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      }, index * 100);
     });
-  }
+  });
 </script>
+
+<%- include('../layouts/footer') %>

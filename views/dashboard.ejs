@@ -1,642 +1,1008 @@
 <%- include('layouts/header', { title: 'Dashboard - Zakat Fitrah App',
 bodyClass: 'bg-gray-50', currentPage: 'dashboard' }) %>
 
-<!-- Dashboard Container with Enhanced Design -->
-<div class="space-y-6">
-  <!-- Enhanced Header Section -->
-  <div
-    class="relative dashboard-gradient-header rounded-2xl shadow-xl overflow-hidden"
-  >
-    <div class="absolute inset-0 bg-black opacity-10"></div>
-    <div
-      class="absolute top-0 right-0 transform translate-x-16 -translate-y-8 animate-float"
-    >
-      <div class="w-40 h-40 bg-white opacity-10 rounded-full"></div>
-    </div>
-    <div
-      class="absolute bottom-0 left-0 transform -translate-x-8 translate-y-8 animate-float"
-      style="animation-delay: 1.5s"
-    >
-      <div class="w-32 h-32 bg-white opacity-10 rounded-full"></div>
-    </div>
-    <div class="relative px-6 py-8 sm:px-8 sm:py-10">
-      <div
-        class="flex flex-col sm:flex-row items-start sm:items-center justify-between"
-      >
-        <div>
-          <div class="flex items-center mb-2">
-            <div class="bg-white/20 p-3 rounded-xl mr-4 backdrop-blur-sm">
-              <i class="fas fa-tachometer-alt text-white text-xl"></i>
-            </div>
-            <h1 class="text-3xl sm:text-4xl font-bold text-white">Dashboard</h1>
-          </div>
-          <p class="text-blue-100 text-lg">
-            Selamat datang kembali,
-            <span class="font-semibold text-white"
-              ><%= (user && user.name) ? user.name : 'User' %></span
-            >
-          </p>
-          <p class="text-blue-200 text-sm mt-1">
-            Kelola data zakat fitrah dengan mudah dan efisien
+<!-- Dashboard Container with Modern Design -->
+<div class="dashboard-wrapper">
+  <!-- Modern Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="header-icon-wrapper">
+          <i class="fas fa-tachometer-alt"></i>
+        </div>
+        <div class="header-text">
+          <h1 class="header-title">Dashboard</h1>
+          <p class="header-subtitle">
+            Selamat datang, <span class="header-name"><%= (user && user.name) ? user.name : 'User' %></span>
           </p>
         </div>
-        <div class="mt-4 sm:mt-0">
-          <div class="text-right">
-            <div class="text-blue-200 text-sm">Hari ini</div>
-            <div class="text-white font-semibold" id="current-date"></div>
-          </div>
+      </div>
+      <div class="header-right">
+        <div class="date-badge">
+          <i class="fas fa-calendar-alt"></i>
+          <span id="current-date">Loading...</span>
         </div>
       </div>
     </div>
+    <div class="header-decoration"></div>
   </div>
 
-  <!-- Enhanced Stats Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+  <!-- Stats Cards Grid - Revamped -->
+  <div class="stats-grid">
     <!-- Total Muzakki Card -->
-    <div
-      class="group bg-white overflow-hidden shadow-lg rounded-2xl card-hover-effect border border-gray-100"
-    >
-      <div class="card-gradient-blue p-4">
-        <div class="flex items-center justify-between">
-          <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-            <i class="fas fa-users text-white text-lg"></i>
-          </div>
-          <div class="text-white/80 text-right">
-            <div class="text-2xl sm:text-3xl font-bold text-white">
-              <%= stats.totalMuzakki || 0 %>
-            </div>
-          </div>
+    <div class="stat-card stat-card-blue">
+      <div class="stat-card-header">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
         </div>
+        <div class="stat-badge">Aktif</div>
       </div>
-      <div class="p-4">
-        <h3 class="text-gray-700 font-semibold text-base">Total Muzakki</h3>
-        <p class="text-gray-500 text-sm mt-1">Terdaftar dalam sistem</p>
-        <div class="mt-3 flex items-center">
-          <div
-            class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium"
-          >
-            <i class="fas fa-arrow-up mr-1"></i>Aktif
-          </div>
-        </div>
+      <div class="stat-content">
+        <div class="stat-value"><%= stats.total_muzakki || 0 %></div>
+        <div class="stat-label">Total Muzakki</div>
+        <div class="stat-description">Terdaftar dalam sistem</div>
+      </div>
+      <div class="stat-footer">
+        <i class="fas fa-arrow-up"></i>
+        <span>Database terkini</span>
       </div>
     </div>
 
-    <!-- Total Zakat Card -->
-    <div
-      class="group bg-white overflow-hidden shadow-lg rounded-2xl card-hover-effect border border-gray-100"
-    >
-      <div class="card-gradient-green p-4">
-        <div class="flex items-center justify-between">
-          <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-            <i class="fas fa-coins text-white text-lg"></i>
-          </div>
-          <div class="text-white/80 text-right">
-            <div class="text-lg sm:text-xl font-bold text-white truncate">
-              Rp <%= Math.floor(stats.totalZakat || 0).toLocaleString('id-ID')
-              %>
-            </div>
-          </div>
+    <!-- Zakat Terkumpul Card -->
+    <div class="stat-card stat-card-green">
+      <div class="stat-card-header">
+        <div class="stat-icon">
+          <i class="fas fa-coins"></i>
         </div>
+        <div class="stat-badge">Dana</div>
       </div>
-      <div class="p-4">
-        <h3 class="text-gray-700 font-semibold text-base">Zakat Terkumpul</h3>
-        <p class="text-gray-500 text-sm mt-1">Total dana zakat</p>
-        <div class="mt-3 flex items-center">
-          <div
-            class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-medium"
-          >
-            <i class="fas fa-check-circle mr-1"></i>Terkumpul
-          </div>
-        </div>
+      <div class="stat-content">
+        <div class="stat-value">Rp <%= Math.floor(stats.total_zakat || 0).toLocaleString('id-ID') %></div>
+        <div class="stat-label">Zakat Terkumpul</div>
+        <div class="stat-description">Total dana zakat fitrah</div>
+      </div>
+      <div class="stat-footer">
+        <i class="fas fa-check-circle"></i>
+        <span>Terkumpul</span>
       </div>
     </div>
 
     <!-- Total Infak Card -->
-    <div
-      class="group bg-white overflow-hidden shadow-lg rounded-2xl card-hover-effect border border-gray-100"
-    >
-      <div class="card-gradient-purple p-4">
-        <div class="flex items-center justify-between">
-          <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-            <i class="fas fa-hand-holding-heart text-white text-lg"></i>
-          </div>
-          <div class="text-white/80 text-right">
-            <div class="text-lg sm:text-xl font-bold text-white truncate">
-              Rp <%= Math.floor(stats.totalInfak || 0).toLocaleString('id-ID')
-              %>
-            </div>
-          </div>
+    <div class="stat-card stat-card-purple">
+      <div class="stat-card-header">
+        <div class="stat-icon">
+          <i class="fas fa-hand-holding-heart"></i>
         </div>
+        <div class="stat-badge">Infak</div>
       </div>
-      <div class="p-4">
-        <h3 class="text-gray-700 font-semibold text-base">Total Infak</h3>
-        <p class="text-gray-500 text-sm mt-1">Dana infak terkumpul</p>
-        <div class="mt-3 flex items-center">
-          <div
-            class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-medium"
-          >
-            <i class="fas fa-heart mr-1"></i>Sedekah
-          </div>
-        </div>
+      <div class="stat-content">
+        <div class="stat-value">Rp <%= Math.floor(stats.total_infak || 0).toLocaleString('id-ID') %></div>
+        <div class="stat-label">Total Infak</div>
+        <div class="stat-description">Dana infak terkumpul</div>
+      </div>
+      <div class="stat-footer">
+        <i class="fas fa-heart"></i>
+        <span>Sedekah</span>
       </div>
     </div>
 
     <!-- Belum Bayar Card -->
-    <div
-      class="group bg-white overflow-hidden shadow-lg rounded-2xl card-hover-effect border border-gray-100"
-    >
-      <div class="card-gradient-red p-4">
-        <div class="flex items-center justify-between">
-          <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
-            <i class="fas fa-exclamation-triangle text-white text-lg"></i>
-          </div>
-          <div class="text-white/80 text-right">
-            <div class="text-2xl sm:text-3xl font-bold text-white">
-              <%= stats.belumBayar || 0 %>
-            </div>
-          </div>
+    <div class="stat-card stat-card-red">
+      <div class="stat-card-header">
+        <div class="stat-icon">
+          <i class="fas fa-exclamation-triangle"></i>
         </div>
+        <div class="stat-badge">Alert</div>
       </div>
-      <div class="p-4">
-        <h3 class="text-gray-700 font-semibold text-base">Belum Bayar</h3>
-        <p class="text-gray-500 text-sm mt-1">Memerlukan tindak lanjut</p>
-        <div class="mt-3 flex items-center">
-          <div
-            class="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-medium"
-          >
-            <i class="fas fa-clock mr-1"></i>Pending
-          </div>
-        </div>
+      <div class="stat-content">
+        <div class="stat-value"><%= stats.belum_bayar || 0 %></div>
+        <div class="stat-label">Belum Bayar</div>
+        <div class="stat-description">Memerlukan tindak lanjut</div>
+      </div>
+      <div class="stat-footer">
+        <i class="fas fa-clock"></i>
+        <span>Pending</span>
       </div>
     </div>
   </div>
 
-  <!-- Enhanced Quick Actions -->
-  <div
-    class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100"
-  >
-    <div
-      class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-5 border-b border-gray-200"
-    >
-      <div class="flex items-center">
-        <div class="bg-blue-100 p-2 rounded-xl mr-3">
-          <i class="fas fa-bolt text-blue-600 text-lg"></i>
-        </div>
-        <h2 class="text-xl font-bold text-gray-900">Quick Actions</h2>
-        <span
-          class="ml-3 bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium"
-          >Aksi Cepat</span
-        >
+  <!-- Quick Actions Section - Revamped -->
+  <div class="quick-actions-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="fas fa-bolt"></i>
       </div>
+      <h2 class="section-title">Quick Actions</h2>
+      <span class="section-badge">Aksi Cepat</span>
     </div>
-    <div class="p-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <a
-          href="/muzakki/create"
-          class="group btn-gradient-primary text-white rounded-xl p-4 text-center"
-        >
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-white/20 p-3 rounded-xl mb-3 group-hover:bg-white/30 transition-colors"
-            >
-              <i class="fas fa-plus text-xl"></i>
-            </div>
-            <span class="font-semibold text-sm sm:text-base"
-              >Tambah Muzakki</span
-            >
-            <span class="text-blue-100 text-xs mt-1"
-              >Daftarkan muzakki baru</span
-            >
-          </div>
-        </a>
+    
+    <div class="quick-actions-grid">
+      <a href="/muzakki/create" class="action-card action-primary">
+        <div class="action-icon">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Tambah Muzakki</h3>
+          <p class="action-desc">Daftarkan muzakki baru</p>
+        </div>
+        <div class="action-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
 
-        <a
-          href="/muzakki"
-          class="group btn-gradient-indigo text-white rounded-xl p-4 text-center"
-        >
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-white/20 p-3 rounded-xl mb-3 group-hover:bg-white/30 transition-colors"
-            >
-              <i class="fas fa-users text-xl"></i>
-            </div>
-            <span class="font-semibold text-sm sm:text-base">Data Muzakki</span>
-            <span class="text-blue-100 text-xs mt-1">Lihat semua data</span>
-          </div>
-        </a>
+      <a href="/muzakki" class="action-card action-indigo">
+        <div class="action-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Data Muzakki</h3>
+          <p class="action-desc">Lihat semua data</p>
+        </div>
+        <div class="action-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
 
-        <a
-          href="/laporan"
-          class="group btn-gradient-green text-white rounded-xl p-4 text-center sm:col-span-2 lg:col-span-1"
-        >
-          <div class="flex flex-col items-center">
-            <div
-              class="bg-white/20 p-3 rounded-xl mb-3 group-hover:bg-white/30 transition-colors"
-            >
-              <i class="fas fa-chart-bar text-xl"></i>
-            </div>
-            <span class="font-semibold text-sm sm:text-base"
-              >Lihat Laporan</span
-            >
-            <span class="text-green-100 text-xs mt-1"
-              >Analisis data lengkap</span
-            >
-          </div>
-        </a>
-      </div>
+      <a href="/laporan" class="action-card action-green">
+        <div class="action-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">Lihat Laporan</h3>
+          <p class="action-desc">Analisis data lengkap</p>
+        </div>
+        <div class="action-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </a>
     </div>
   </div>
 
-  <!-- Enhanced Recent Activity Section -->
-  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
-    <!-- Enhanced Muzakki Terbaru -->
-    <div
-      class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100"
-    >
-      <div
-        class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b border-gray-200"
-      >
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <div class="bg-blue-100 p-2 rounded-xl mr-3">
-              <i class="fas fa-user-plus text-blue-600 text-lg"></i>
-            </div>
-            <div>
-              <h2 class="text-xl font-bold text-gray-900">Muzakki Terbaru</h2>
-              <p class="text-gray-600 text-sm">Data pendaftaran terkini</p>
-            </div>
-          </div>
-          <span
-            class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium"
-          >
-            <i class="fas fa-clock mr-1"></i>Terbaru
-          </span>
+  <!-- Two Column Layout for Recent Data -->
+  <div class="two-column-layout">
+    <!-- Muzakki Terbaru Section - Revamped -->
+    <div class="data-section">
+      <div class="section-header">
+        <div class="section-icon icon-blue">
+          <i class="fas fa-user-plus"></i>
         </div>
+        <div class="section-header-text">
+          <h2 class="section-title">Muzakki Terbaru</h2>
+          <p class="section-subtitle">Data pendaftaran terkini</p>
+        </div>
+        <span class="section-badge badge-blue">
+          <i class="fas fa-clock"></i> Terbaru
+        </span>
       </div>
 
-      <div class="p-6">
+      <div class="data-content">
         <% if (recentMuzakki && recentMuzakki.length > 0) { %>
-        <div class="space-y-4">
-          <% recentMuzakki.forEach((muzakki, index) => { %>
-          <div
-            class="group bg-gradient-to-r from-gray-50 to-gray-100 hover:from-blue-50 hover:to-indigo-50 rounded-xl p-4 transition-all duration-300 border border-gray-200 hover:border-blue-200 hover:shadow-md"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center flex-1 min-w-0">
-                <div
-                  class="bg-blue-100 group-hover:bg-blue-200 w-10 h-10 rounded-xl flex items-center justify-center mr-3 transition-colors"
-                >
-                  <span class="text-blue-600 font-bold text-sm"
-                    ><%= index + 1 %></span
-                  >
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div
-                    class="font-semibold text-gray-900 truncate text-sm sm:text-base"
-                  >
-                    <%= muzakki.nama %>
+          <div class="data-list">
+            <% recentMuzakki.forEach((muzakki, index) => { %>
+              <div class="data-item">
+                <div class="data-item-number"><%= index + 1 %></div>
+                <div class="data-item-content">
+                  <div class="data-item-header">
+                    <h3 class="data-item-name"><%= muzakki.nama %></h3>
+                    <div class="data-item-amount">Rp <%= new Intl.NumberFormat('id-ID').format(muzakki.jumlah_zakat) %></div>
                   </div>
-                  <div
-                    class="text-gray-500 text-xs sm:text-sm flex items-center mt-1"
-                  >
-                    <i class="fas fa-home mr-1 text-gray-400"></i>
-                    RT <%= muzakki.rt_nama %>
-                    <span class="mx-2">•</span>
-                    <i class="fas fa-users mr-1 text-gray-400"></i>
-                    <%= muzakki.jumlah_jiwa %> jiwa
+                  <div class="data-item-footer">
+                    <div class="data-item-info">
+                      <i class="fas fa-home"></i> RT <%= muzakki.rt_nama %>
+                      <span class="separator">•</span>
+                      <i class="fas fa-users"></i> <%= muzakki.jumlah_jiwa %> jiwa
+                    </div>
+                    <% if (muzakki.status === 'lunas') { %>
+                      <span class="status-badge status-success">
+                        <i class="fas fa-check-circle"></i> Lunas
+                      </span>
+                    <% } else { %>
+                      <span class="status-badge status-warning">
+                        <i class="fas fa-clock"></i> Belum Bayar
+                      </span>
+                    <% } %>
                   </div>
                 </div>
               </div>
-              <div class="text-right ml-4">
-                <div class="font-bold text-gray-900 text-sm sm:text-base">
-                  Rp <%= new
-                  Intl.NumberFormat('id-ID').format(muzakki.jumlah_zakat) %>
-                </div>
-                <div class="text-xs mt-1">
-                  <% if (muzakki.status === 'lunas') { %>
-                  <span
-                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                  >
-                    <i class="fas fa-check-circle mr-1"></i>Lunas
-                  </span>
-                  <% } else { %>
-                  <span
-                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700"
-                  >
-                    <i class="fas fa-clock mr-1"></i>Belum Bayar
-                  </span>
-                  <% } %>
-                </div>
-              </div>
-            </div>
+            <% }); %>
           </div>
-          <% }); %>
-        </div>
-
-        <div class="mt-6 text-center">
-          <a
-            href="/muzakki"
-            class="inline-flex items-center px-4 py-2 btn-gradient-primary text-white rounded-xl font-medium text-sm"
-          >
-            <span>Lihat Semua Data</span>
-            <i class="fas fa-arrow-right ml-2"></i>
-          </a>
-        </div>
-
+          
+          <div class="section-footer">
+            <a href="/muzakki" class="btn-view-all">
+              <span>Lihat Semua Data</span>
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
         <% } else { %>
-        <div class="text-center py-12">
-          <div
-            class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <i class="fas fa-users text-gray-400 text-2xl"></i>
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="empty-title">Belum ada data muzakki</h3>
+            <p class="empty-desc">Mulai dengan mendaftarkan muzakki pertama</p>
+            <a href="/muzakki/create" class="btn-empty-action">
+              <i class="fas fa-plus"></i> Tambah Muzakki
+            </a>
           </div>
-          <h3 class="text-gray-900 font-semibold text-lg mb-2">
-            Belum ada data muzakki
-          </h3>
-          <p class="text-gray-500 mb-6">
-            Mulai dengan mendaftarkan muzakki pertama
-          </p>
-          <a
-            href="/muzakki/create"
-            class="inline-flex items-center px-6 py-3 btn-gradient-primary text-white rounded-xl font-semibold"
-          >
-            <i class="fas fa-plus mr-2"></i>Tambah Muzakki
-          </a>
-        </div>
         <% } %>
       </div>
     </div>
 
-    <!-- Enhanced Summary RT -->
-    <div
-      class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100"
-    >
-      <div
-        class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-5 border-b border-gray-200"
-      >
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <div class="bg-green-100 p-2 rounded-xl mr-3">
-              <i class="fas fa-chart-pie text-green-600 text-lg"></i>
-            </div>
-            <div>
-              <h2 class="text-xl font-bold text-gray-900">Summary per RT</h2>
-              <p class="text-gray-600 text-sm">Statistik berdasarkan RT</p>
-            </div>
-          </div>
-          <span
-            class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-medium"
-          >
-            <i class="fas fa-chart-bar mr-1"></i>Statistik
-          </span>
+    <!-- Summary per RT Section - Revamped -->
+    <div class="data-section">
+      <div class="section-header">
+        <div class="section-icon icon-green">
+          <i class="fas fa-chart-pie"></i>
         </div>
+        <div class="section-header-text">
+          <h2 class="section-title">Summary per RT</h2>
+          <p class="section-subtitle">Statistik berdasarkan RT</p>
+        </div>
+        <span class="section-badge badge-green">
+          <i class="fas fa-chart-bar"></i> Statistik
+        </span>
       </div>
 
-      <div class="p-6">
+      <div class="data-content">
         <% if (rtStats && rtStats.length > 0) { %>
-        <div class="space-y-4">
-          <% rtStats.forEach((rt, index) => { %>
-          <div
-            class="group bg-gradient-to-r from-gray-50 to-gray-100 hover:from-green-50 hover:to-emerald-50 rounded-xl p-4 transition-all duration-300 border border-gray-200 hover:border-green-200 hover:shadow-md"
-          >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center flex-1">
-                <div
-                  class="bg-green-100 group-hover:bg-green-200 w-10 h-10 rounded-xl flex items-center justify-center mr-3 transition-colors"
-                >
-                  <i class="fas fa-home text-green-600 text-sm"></i>
+          <div class="data-list">
+            <% rtStats.forEach((rt, index) => { %>
+              <div class="data-item">
+                <div class="data-item-rt-icon">
+                  <i class="fas fa-home"></i>
                 </div>
-                <div>
-                  <div class="font-semibold text-gray-900 text-sm sm:text-base">
-                    RT <%= rt.nomor_rt %>
+                <div class="data-item-content">
+                  <div class="data-item-header">
+                    <h3 class="data-item-name">RT <%= rt.nomor_rt %></h3>
+                    <div class="data-item-amount">Rp <%= Math.floor(rt.total_zakat).toLocaleString('id-ID') %></div>
                   </div>
-                  <div
-                    class="text-gray-500 text-xs sm:text-sm flex items-center mt-1"
-                  >
-                    <i class="fas fa-users mr-1 text-gray-400"></i>
-                    <%= rt.total_muzakki %> muzakki
+                  <div class="data-item-footer">
+                    <div class="data-item-info">
+                      <i class="fas fa-users"></i> <%= rt.total_muzakki %> muzakki
+                    </div>
+                    <div class="rt-status-badges">
+                      <span class="status-badge status-success-sm">
+                        <%= rt.lunas %> lunas
+                      </span>
+                      <% if (rt.belum_bayar > 0) { %>
+                        <span class="status-badge status-warning-sm">
+                          <%= rt.belum_bayar %> belum
+                        </span>
+                      <% } %>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="text-right">
-                <div class="font-bold text-gray-900 text-sm sm:text-base">
-                  Rp <%= Math.floor(rt.total_zakat).toLocaleString('id-ID') %>
-                </div>
-                <div class="text-xs mt-1 space-x-1">
-                  <span
-                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                  >
-                    <%= rt.lunas %> lunas
-                  </span>
-                  <% if (rt.belum_bayar > 0) { %>
-                  <span
-                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700"
-                  >
-                    <%= rt.belum_bayar %> belum
-                  </span>
-                  <% } %>
-                </div>
-              </div>
-            </div>
+            <% }); %>
           </div>
-          <% }); %>
-        </div>
-
         <% } else { %>
-        <div class="text-center py-12">
-          <div
-            class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <i class="fas fa-chart-pie text-gray-400 text-2xl"></i>
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3 class="empty-title">Belum ada data statistik RT</h3>
+            <p class="empty-desc">Data akan muncul setelah ada muzakki terdaftar</p>
           </div>
-          <h3 class="text-gray-900 font-semibold text-lg mb-2">
-            Belum ada data statistik RT
-          </h3>
-          <p class="text-gray-500">
-            Data akan muncul setelah ada muzakki terdaftar
-          </p>
-        </div>
         <% } %>
       </div>
     </div>
   </div>
 </div>
 
-<!-- JavaScript for Enhanced Features -->
-<script>
-  // Set current date
-  document.addEventListener("DOMContentLoaded", function () {
-    const currentDate = document.getElementById("current-date");
-    if (currentDate) {
-      const now = new Date();
-      const options = {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      };
-      currentDate.textContent = now.toLocaleDateString("id-ID", options);
-    }
-
-    // Add subtle animations to cards
-    const cards = document.querySelectorAll(".group");
-    cards.forEach((card, index) => {
-      card.style.animationDelay = `${index * 0.1}s`;
-      card.classList.add("animate-fade-in-up");
-    });
-  });
-</script>
-
+<!-- Modern Dashboard Styles -->
 <style>
-  /* Custom Primary Colors */
-  :root {
-    --primary-50: #eff6ff;
-    --primary-100: #dbeafe;
-    --primary-200: #bfdbfe;
-    --primary-300: #93c5fd;
-    --primary-400: #60a5fa;
-    --primary-500: #3b82f6;
-    --primary-600: #2563eb;
-    --primary-700: #1d4ed8;
-    --primary-800: #1e40af;
-    --primary-900: #1e3a8a;
+  /* Dashboard Wrapper */
+  .dashboard-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  /* Enhanced Dashboard Styles */
-  .dashboard-gradient-header {
-    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
+  /* Modern Header */
+  .dashboard-header {
     position: relative;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(30, 175, 47, 0.3);
     overflow: hidden;
   }
 
-  .dashboard-gradient-header::before {
-    content: "";
+  .header-decoration {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.05) 100%
-    );
-    pointer-events: none;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
   }
 
-  .card-gradient-blue {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  .header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
-  .card-gradient-green {
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+  }
+
+  .header-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+  }
+
+  .header-subtitle {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .header-name {
+    font-weight: 600;
+    color: #fbbf24;
+  }
+
+  .date-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e5e7eb;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .stat-card-blue .stat-icon {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+  }
+
+  .stat-card-green .stat-icon {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
   }
 
-  .card-gradient-purple {
+  .stat-card-purple .stat-icon {
     background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
   }
 
-  .card-gradient-red {
+  .stat-card-red .stat-icon {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
   }
 
-  .btn-gradient-primary {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    transition: all 0.3s ease;
+  .stat-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  .btn-gradient-primary:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+  .stat-card-blue .stat-badge {
+    background: #d1fae5;
+    color: #065f46;
   }
 
-  .btn-gradient-indigo {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    transition: all 0.3s ease;
+  .stat-card-green .stat-badge {
+    background: #d1fae5;
+    color: #065f46;
   }
 
-  .btn-gradient-indigo:hover {
-    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  .stat-card-purple .stat-badge {
+    background: #ede9fe;
+    color: #5b21b6;
   }
 
-  .btn-gradient-green {
+  .stat-card-red .stat-badge {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .stat-content {
+    margin-bottom: 16px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+
+  .stat-description {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .stat-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  /* Quick Actions Section */
+  .quick-actions-section {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .icon-blue {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  }
+
+  .icon-green {
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  .section-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 2px 0 0 0;
+  }
+
+  .section-header-text {
+    flex: 1;
+  }
+
+  .section-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .badge-blue {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .badge-green {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  /* Quick Actions Grid */
+  .quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .action-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: 2px solid transparent;
+  }
+
+  .action-primary {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  }
+
+  .action-indigo {
+    background: linear-gradient(135deg, #1EAF2F 0%, #0f8a1f 100%);
+  }
+
+  .action-green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  .action-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .action-content {
+    flex: 1;
+  }
+
+  .action-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 4px 0;
+  }
+
+  .action-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .action-arrow {
+    color: white;
+    opacity: 0.7;
     transition: all 0.3s ease;
   }
 
-  .btn-gradient-green:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  .action-card:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  /* Two Column Layout */
+  .two-column-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 24px;
+  }
+
+  /* Data Section */
+  .data-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .data-section .section-header {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 0;
+  }
+
+  .data-content {
+    padding: 24px;
+  }
+
+  /* Data List */
+  .data-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .data-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: linear-gradient(to right, #f9fafb, #ffffff);
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .data-item:hover {
+    background: linear-gradient(to right, #f0fdf4, #d1fae5);
+    border-color: #86efac;
+    transform: translateX(4px);
+  }
+
+  .data-item-number {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .data-item-rt-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .data-item-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .data-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 12px;
+  }
+
+  .data-item-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .data-item-amount {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    white-space: nowrap;
+  }
+
+  .data-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .data-item-info {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .separator {
+    margin: 0 4px;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .status-success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-success-sm,
+  .status-warning-sm {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  .rt-status-badges {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* Section Footer */
+  .section-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+  }
+
+  .btn-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-view-all:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 8px 20px rgba(30, 175, 47, 0.4);
   }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
   }
 
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    color: #9ca3af;
+  }
+
+  .empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-desc {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 24px 0;
+  }
+
+  .btn-empty-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-empty-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 175, 47, 0.4);
+  }
+
+  /* Animations */
   @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0px);
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
     }
     50% {
-      transform: translateY(-10px);
+      transform: translateY(-20px) rotate(5deg);
     }
   }
 
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .two-column-layout {
+      grid-template-columns: 1fr;
+    }
   }
 
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
+  @media (max-width: 768px) {
+    .dashboard-wrapper {
+      padding: 16px;
+      gap: 20px;
+    }
+
+    .dashboard-header {
+      padding: 24px;
+    }
+
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-title {
+      font-size: 24px;
+    }
+
+    .date-badge {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-actions-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .two-column-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-value {
+      font-size: 24px;
+    }
+
+    .data-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .data-item-header {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
   }
 
-  /* Custom scrollbar for better aesthetics */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
+  @media (max-width: 640px) {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
-  ::-webkit-scrollbar-track {
-    background: #f1f5f9;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-
-  /* Enhanced hover effects */
-  .card-hover-effect {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-hover-effect:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  /* Glassmorphism effect */
-  .glass-effect {
-    backdrop-filter: blur(16px);
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    .section-badge {
+      align-self: flex-start;
+    }
   }
 </style>
+
+<!-- Enhanced JavaScript -->
+<script>
+  // Set current date with better formatting
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateElement = document.getElementById('current-date');
+    if (dateElement) {
+      const now = new Date();
+      const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+      dateElement.textContent = now.toLocaleDateString('id-ID', options);
+    }
+
+    // Add entrance animations
+    const animateElements = document.querySelectorAll('.stat-card, .action-card, .data-item');
+    animateElements.forEach((el, index) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        el.style.transition = 'all 0.5s ease';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, index * 50);
+    });
+  });
+</script>
 
 <%- include('layouts/footer') %>

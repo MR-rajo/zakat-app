@@ -435,31 +435,34 @@
         <span>Zakat - App</span>
       </div>
       
-      <!-- User Dropdown -->
-      <div class="user-dropdown-container">
-        <button class="user-dropdown-btn" onclick="toggleUserDropdown()">
-          <div class="user-avatar">
-            <%= (user && user.name) ? user.name.charAt(0).toUpperCase() : 'U' %>
+
+      <!-- Right section with user dropdown -->
+      <div style="margin-left: auto;">
+        <div class="user-dropdown-container">
+          <button class="user-dropdown-btn" onclick="toggleUserDropdown()">
+            <div class="user-avatar">
+              <%= (user && user.name) ? user.name.charAt(0).toUpperCase() : 'U' %>
+            </div>
+            <span class="user-name"><%= (user && user.name) ? user.name : 'User' %></span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-name"><%= (user && user.name) ? user.name : 'User' %></div>
+              <div class="user-dropdown-phone"><%= (user && user.nomor_wa) ? user.nomor_wa : 'No Phone' %></div>
+            </div>
+            <a href="/users/profile" class="user-dropdown-item">
+              <i class="fas fa-user"></i>
+              <span>Profile Saya</span>
+            </a>
+            <form method="POST" action="/auth/logout">
+              <button type="submit" class="user-dropdown-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Keluar</span>
+              </button>
+            </form>
           </div>
-          <span class="user-name"><%= (user && user.name) ? user.name : 'User' %></span>
-          <i class="fas fa-chevron-down"></i>
-        </button>
-        
-        <div class="user-dropdown" id="userDropdown">
-          <div class="user-dropdown-header">
-            <div class="user-dropdown-name"><%= (user && user.name) ? user.name : 'User' %></div>
-            <div class="user-dropdown-phone"><%= (user && user.nomor_wa) ? user.nomor_wa : 'No Phone' %></div>
-          </div>
-          <a href="/users/profile" class="user-dropdown-item">
-            <i class="fas fa-user"></i>
-            <span>Profile Saya</span>
-          </a>
-          <form method="POST" action="/auth/logout">
-            <button type="submit" class="user-dropdown-item logout">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Keluar</span>
-            </button>
-          </form>
         </div>
       </div>
     </nav>
