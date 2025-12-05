@@ -1,59 +1,278 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <link href="/css/output.css" rel="stylesheet" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="text-center">
-      <div
-        class="mx-auto h-24 w-24 bg-red-100 rounded-full flex items-center justify-center mb-6"
-      >
-        <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
-      </div>
 
-      <h1 class="text-6xl font-bold text-gray-900 mb-4">
-        <%= error.status || 500 %>
-      </h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    <%= title %>
+  </title>
+  <link href="/css/output.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      <h2 class="text-2xl font-semibold text-gray-700 mb-4">
-        <%= title || 'Terjadi Kesalahan' %>
-      </h2>
+    .error-container {
+      max-width: 600px;
+      width: 100%;
+      padding: 40px 24px;
+      text-align: center;
+    }
 
-      <p class="text-gray-600 mb-8 max-w-md mx-auto">
-        <% if (typeof message !== 'undefined' && message) { %> <%= message %> <%
-        } else { %> Mohon maaf, terjadi kesalahan pada server. Silakan coba lagi
-        nanti. <% } %>
-      </p>
+    .error-icon-wrapper {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 32px;
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+      animation: pulse-error 2s ease-in-out infinite;
+    }
 
-      <div class="space-x-4">
-        <a href="/" class="btn-primary">
-          <i class="fas fa-home mr-2"></i>Kembali ke Beranda
-        </a>
-        <button onclick="history.back()" class="btn-secondary">
-          <i class="fas fa-arrow-left mr-2"></i>Kembali
-        </button>
-      </div>
+    @keyframes pulse-error {
 
-      <% if (typeof process !== 'undefined' && process.env.NODE_ENV ===
-      'development' && typeof error !== 'undefined' && error.stack) { %>
-      <div class="mt-8 text-left max-w-4xl mx-auto">
-        <details class="bg-red-50 border border-red-200 rounded-lg p-4">
-          <summary class="cursor-pointer text-red-700 font-medium">
+      0%,
+      100% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+      }
+
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(239, 68, 68, 0.3);
+      }
+    }
+
+    .error-icon {
+      font-size: 48px;
+      color: #dc2626;
+    }
+
+    .error-code {
+      font-size: 72px;
+      font-weight: 800;
+      color: #111827;
+      margin: 0 0 16px 0;
+      line-height: 1;
+    }
+
+    .error-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 16px 0;
+    }
+
+    .error-message {
+      font-size: 16px;
+      color: #6b7280;
+      line-height: 1.6;
+      margin: 0 0 32px 0;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(30, 175, 47, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(30, 175, 47, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #374151;
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-secondary:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .debug-section {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .debug-details {
+      background: white;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .debug-summary {
+      cursor: pointer;
+      color: #dc2626;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .debug-summary:hover {
+      color: #b91c1c;
+    }
+
+    .debug-summary::before {
+      content: '▶';
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    details[open] .debug-summary::before {
+      transform: rotate(90deg);
+    }
+
+    .debug-content {
+      margin-top: 16px;
+      padding: 16px;
+      background: #fef2f2;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .debug-pre {
+      margin: 0;
+      font-size: 12px;
+      color: #991b1b;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    @media (max-width: 640px) {
+      .error-container {
+        padding: 24px 16px;
+      }
+
+      .error-code {
+        font-size: 56px;
+      }
+
+      .error-title {
+        font-size: 22px;
+      }
+
+      .error-message {
+        font-size: 14px;
+      }
+
+      .button-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="error-container">
+    <!-- Error Icon -->
+    <div class="error-icon-wrapper">
+      <i class="fas fa-exclamation-triangle error-icon"></i>
+    </div>
+
+    <!-- Error Code -->
+    <h1 class="error-code">
+      <%= error.status || 500 %>
+    </h1>
+
+    <!-- Error Title -->
+    <h2 class="error-title">
+      <%= title || 'Terjadi Kesalahan' %>
+    </h2>
+
+    <!-- Error Message -->
+    <p class="error-message">
+      <% if (typeof message !=='undefined' && message) { %>
+        <%= message %>
+          <% } else { %>
+            Mohon maaf, terjadi kesalahan pada server. Silakan coba lagi nanti.
+            <% } %>
+    </p>
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+      <a href="/" class="btn btn-primary">
+        <i class="fas fa-home"></i>
+        Kembali ke Beranda
+      </a>
+      <button onclick="history.back()" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        Kembali
+      </button>
+    </div>
+
+    <!-- Debug Information (Development Mode) -->
+    <% if (typeof process !=='undefined' && process.env.NODE_ENV==='development' && typeof error !=='undefined' &&
+      error.stack) { %>
+      <div class="debug-section">
+        <details class="debug-details">
+          <summary class="debug-summary">
+            <i class="fas fa-bug"></i>
             Debug Information (Development Mode)
           </summary>
-          <pre class="mt-4 text-xs text-red-600 overflow-auto">
-<%= error.stack %></pre
-          >
+          <div class="debug-content">
+            <pre class="debug-pre"><%= error.stack %></pre>
+          </div>
         </details>
       </div>
       <% } %>
-    </div>
-  </body>
+  </div>
+</body>
+
 </html>
