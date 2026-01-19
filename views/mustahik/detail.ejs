@@ -210,7 +210,7 @@
           <form
             method="POST"
             action="/mustahik/delete/<%= mustahik.id %>?_method=DELETE"
-            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data mustahik <%= mustahik.nama %>? Tindakan ini tidak dapat dibatalkan.')"
+            id="deleteForm"
           >
             <button type="submit" class="btn-danger w-full">
               <i class="fas fa-trash mr-2"></i>Hapus Data
@@ -265,5 +265,23 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Handle delete form submission with SweetAlert2
+  document
+    .getElementById("deleteForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      showDeleteConfirm(
+        "<%= mustahik.nama %>",
+        "Apakah Anda yakin ingin menghapus data mustahik <%= mustahik.nama %>? Tindakan ini tidak dapat dibatalkan."
+      ).then((result) => {
+        if (result.isConfirmed) {
+          this.submit();
+        }
+      });
+    });
+</script>
 
 <%- include('../layouts/footer') %>

@@ -1,5 +1,4 @@
-<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50
-min-h-screen', currentPage: 'distribusi' }) %>
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'distribusi' }) %>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
   <!-- Header -->
@@ -458,13 +457,13 @@ min-h-screen', currentPage: 'distribusi' }) %>
           document.getElementById("tanggal_distribusi").value;
 
         if (!status) {
-          alert("Silakan pilih status distribusi");
+          showError("Silakan pilih status distribusi", "Data Belum Lengkap");
           e.preventDefault();
           return;
         }
 
         if (!tanggalDistribusi) {
-          alert("Silakan pilih tanggal distribusi");
+          showError("Silakan pilih tanggal distribusi", "Data Belum Lengkap");
           e.preventDefault();
           return;
         }
@@ -477,19 +476,19 @@ min-h-screen', currentPage: 'distribusi' }) %>
           );
 
           if (!jumlah || jumlah <= 0) {
-            alert("Jumlah harus lebih dari 0");
+            showError("Jumlah harus lebih dari 0", "Input Tidak Valid");
             e.preventDefault();
             return;
           }
 
           if (jenisZakat && jenisZakat.value === "uang" && jumlah < 1000) {
-            alert("Jumlah uang minimal Rp 1.000");
+            showError("Jumlah uang minimal Rp 1.000", "Jumlah Terlalu Kecil");
             e.preventDefault();
             return;
           }
 
           if (jenisZakat && jenisZakat.value === "beras" && jumlah < 0.1) {
-            alert("Jumlah beras minimal 0.1 kg");
+            showError("Jumlah beras minimal 0.1 kg", "Jumlah Terlalu Kecil");
             e.preventDefault();
             return;
           }
@@ -504,14 +503,19 @@ min-h-screen', currentPage: 'distribusi' }) %>
             batal: "Batal",
           };
 
-          if (
-            !confirm(
-              `Apakah Anda yakin ingin mengubah status dari "${statusLabels[originalStatus]}" ke "${statusLabels[status]}"?`
-            )
-          ) {
-            e.preventDefault();
-            return;
-          }
+          showConfirm(
+            `Apakah Anda yakin ingin mengubah status dari "${statusLabels[originalStatus]}" ke "${statusLabels[status]}"?`,
+            "Konfirmasi Perubahan Status",
+            {
+              confirmText: "Ya, Ubah Status",
+              cancelText: "Batal",
+            }
+          ).then((result) => {
+            if (!result.isConfirmed) {
+              e.preventDefault();
+              return;
+            }
+          });
         }
       });
   });

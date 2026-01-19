@@ -65,7 +65,9 @@ router.get("/", async (req, res) => {
 router.get("/create", async (req, res) => {
   try {
     const db = req.app.locals.db;
-    const [rwRows] = await db.execute("SELECT id, nomor_rw, ketua_rw FROM rw ORDER BY nomor_rw ASC");
+    const [rwRows] = await db.execute(
+      "SELECT id, nomor_rw, ketua_rw FROM rw ORDER BY nomor_rw ASC"
+    );
 
     res.render("rt/create", {
       title: "Tambah RT - Zakat Fitrah App",
@@ -132,7 +134,9 @@ router.get("/:id/edit", async (req, res) => {
       return res.redirect("/rt");
     }
 
-    const [rwRows] = await db.execute("SELECT id, nomor_rw, ketua_rw FROM rw ORDER BY nomor_rw ASC");
+    const [rwRows] = await db.execute(
+      "SELECT id, nomor_rw, ketua_rw FROM rw ORDER BY nomor_rw ASC"
+    );
 
     res.render("rt/edit", {
       title: "Edit RT - Zakat Fitrah App",
@@ -246,6 +250,9 @@ router.get("/:id/detail", async (req, res) => {
       `
       SELECT 
         m.*,
+        (SELECT GROUP_CONCAT(md.nama_muzakki SEPARATOR ', ') 
+         FROM muzakki_details md 
+         WHERE md.muzakki_id = m.id) as nama_muzakki_list,
         CASE 
           WHEN m.jenis_zakat = 'uang' THEN m.jumlah_uang 
           ELSE m.jumlah_beras_kg * 12000 
@@ -269,7 +276,7 @@ router.get("/:id/detail", async (req, res) => {
         END as kembalian
       FROM muzakki m 
       WHERE m.rt_id = ? 
-      ORDER BY m.nama ASC
+      ORDER BY m.id ASC
     `,
       [req.params.id]
     );

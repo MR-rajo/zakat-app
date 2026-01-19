@@ -1,412 +1,1203 @@
 <%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'distribusi' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="mb-8">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">
-          <i class="fas fa-chart-bar mr-2 text-primary-600"></i>Laporan Distribusi Zakat
-        </h1>
-        <p class="text-gray-600 mt-1">Analisis dan statistik distribusi zakat kepada mustahik</p>
+<style>
+  /* Modern Page Layout */
+  .page-wrapper {
+    padding: 1rem;
+  }
+
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    animation: slideDown 0.5s ease-out;
+  }
+
+  .header-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+  }
+
+  .header-icon-box {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    animation: pulse 2s infinite;
+  }
+
+  .header-text-box {
+    flex: 1;
+  }
+
+  .header-title-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-subtitle-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-action-success {
+    background: white;
+    color: #10b981;
+  }
+
+  .btn-action-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-action-primary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+  }
+
+  .btn-action-primary:hover {
+    background: white;
+    color: #10b981;
+    transform: translateY(-2px);
+  }
+
+  /* Filters Section */
+  .filters-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+
+  .filters-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+  }
+
+  .filters-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .filters-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+  }
+
+  .filters-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    align-items: end;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .label-icon {
+    color: #10b981;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 0.875rem;
+    pointer-events: none;
+  }
+
+  .filter-select,
+  .filter-input {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .filter-select:focus,
+  .filter-input:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .btn-secondary {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .btn-secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-2px);
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-box {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.5s ease-out both;
+  }
+
+  .stat-box:nth-child(1) { animation-delay: 0.2s; }
+  .stat-box:nth-child(2) { animation-delay: 0.3s; }
+  .stat-box:nth-child(3) { animation-delay: 0.4s; }
+  .stat-box:nth-child(4) { animation-delay: 0.5s; }
+
+  .stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .stat-icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .stat-icon-box.blue {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+
+  .stat-icon-box.green {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  .stat-icon-box.yellow {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .stat-icon-box.purple {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+
+  .stat-content {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  /* Charts Section */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-box {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.5s ease-out 0.6s both;
+  }
+
+  .chart-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f3f4f6;
+  }
+
+  .chart-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .chart-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+  }
+
+  .chart-canvas-wrapper {
+    position: relative;
+    height: 250px;
+  }
+
+  .chart-canvas-wrapper.tall {
+    height: 300px;
+  }
+
+  /* Table Section */
+  .table-section {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    animation: fadeIn 0.5s ease-out 0.7s both;
+  }
+
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-bottom: 2px solid #f3f4f6;
+  }
+
+  .table-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .table-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .table-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+  }
+
+  .table-count {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 400;
+  }
+
+  .modern-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .modern-table thead {
+    background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+  }
+
+  .modern-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .modern-table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+  }
+
+  .modern-table tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  .modern-table td {
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .ranking-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .ranking-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .ranking-icon.gold {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+  }
+
+  .ranking-icon.silver {
+    background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+    color: #6b7280;
+  }
+
+  .ranking-icon.bronze {
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    color: white;
+  }
+
+  .ranking-icon.default {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .user-details {
+    flex: 1;
+  }
+
+  .user-name {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+
+  .user-category {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .category-fakir { background: #fef2f2; color: #dc2626; }
+  .category-miskin { background: #fff7ed; color: #ea580c; }
+  .category-amil { background: #f0fdf4; color: #16a34a; }
+  .category-mualaf { background: #eff6ff; color: #2563eb; }
+  .category-fisabilillah { background: #faf5ff; color: #7c3aed; }
+  .category-default { background: #f3f4f6; color: #6b7280; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .status-diterima { background: #dcfce7; color: #15803d; }
+  .status-disalurkan { background: #dbeafe; color: #1e40af; }
+  .status-pending { background: #fef3c7; color: #a16207; }
+  .status-batal { background: #fee2e2; color: #b91c1c; }
+
+  .amount-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .amount-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  .amount-icon.beras {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .amount-icon.uang {
+    background: #fef3c7;
+    color: #ca8a04;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+  }
+
+  .empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-description {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  /* Animations */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .page-wrapper {
+      padding: 1.5rem;
+    }
+
+    .filters-form {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-wrapper {
+      padding: 1rem;
+    }
+
+    .header-content-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-left-section {
+      width: 100%;
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .header-title-text {
+      font-size: 1.5rem;
+    }
+
+    .filters-form {
+      grid-template-columns: 1fr;
+    }
+
+    .filter-buttons {
+      flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .modern-table {
+      font-size: 0.75rem;
+    }
+
+    .modern-table th,
+    .modern-table td {
+      padding: 0.75rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .header-icon-box {
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+    }
+
+    .btn-action span {
+      display: none;
+    }
+
+    .table-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .page-header,
+    .filters-section,
+    .btn-action,
+    .btn-primary,
+    .btn-secondary {
+      display: none !important;
+    }
+
+    .page-wrapper {
+      padding: 0;
+    }
+
+    .table-section,
+    .stat-box,
+    .chart-box {
+      box-shadow: none;
+      border: 1px solid #e5e7eb;
+    }
+  }
+</style>
+
+<div class="page-wrapper">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="header-content-wrapper">
+      <div class="header-left-section">
+        <div class="header-icon-box">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="header-text-box">
+          <h1 class="header-title-text">Laporan Distribusi Zakat</h1>
+          <p class="header-subtitle-text">Analisis dan statistik distribusi zakat kepada mustahik</p>
+        </div>
       </div>
-      <div class="mt-4 sm:mt-0 flex space-x-3">
-        <button onclick="exportToExcel()" class="btn-secondary">
-          <i class="fas fa-file-excel mr-2"></i>Export Excel
+      <div class="header-actions">
+        <button onclick="exportToExcel()" class="btn-action btn-action-success">
+          <i class="fas fa-file-excel mr-2"></i>
+          <span>Export Excel</span>
         </button>
-        <button onclick="printReport()" class="btn-secondary">
-          <i class="fas fa-print mr-2"></i>Cetak
+        <button onclick="printReport()" class="btn-action btn-action-primary">
+          <i class="fas fa-print mr-2"></i>
+          <span>Cetak</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="bg-white shadow-sm rounded-lg mb-6">
-    <div class="p-6">
-      <form method="GET" action="/distribusi/laporan" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label for="periode" class="block text-sm font-medium text-gray-700 mb-1">Periode</label>
-          <select id="periode" name="periode" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
-                                                   focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
-            <option value="all" <%= periode === 'all' ? 'selected' : '' %>>Semua Periode</option>
-            <option value="today" <%= periode === 'today' ? 'selected' : '' %>>Hari Ini</option>
-            <option value="week" <%= periode === 'week' ? 'selected' : '' %>>Minggu Ini</option>
-            <option value="month" <%= periode === 'month' ? 'selected' : '' %>>Bulan Ini</option>
-            <option value="year" <%= periode === 'year' ? 'selected' : '' %>>Tahun Ini</option>
-            <option value="custom" <%= periode === 'custom' ? 'selected' : '' %>>Kustom</option>
-          </select>
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <div class="filters-icon">
+        <i class="fas fa-filter"></i>
+      </div>
+      <h2 class="filters-title">Filter Laporan</h2>
+    </div>
+    <div class="filters-content">
+      <form method="GET" action="/distribusi/laporan" class="filters-form">
+        <!-- Periode Filter -->
+        <div class="filter-group">
+          <label for="periode" class="filter-label">
+            <i class="fas fa-calendar-alt label-icon"></i>
+            Periode
+          </label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <select id="periode" name="periode" class="filter-select">
+              <option value="all" <%= (typeof periode !== 'undefined' && periode === 'all') ? 'selected' : '' %>>Semua Periode</option>
+              <option value="today" <%= (typeof periode !== 'undefined' && periode === 'today') ? 'selected' : '' %>>Hari Ini</option>
+              <option value="week" <%= (typeof periode !== 'undefined' && periode === 'week') ? 'selected' : '' %>>Minggu Ini</option>
+              <option value="month" <%= (typeof periode !== 'undefined' && periode === 'month') ? 'selected' : '' %>>Bulan Ini</option>
+              <option value="year" <%= (typeof periode !== 'undefined' && periode === 'year') ? 'selected' : '' %>>Tahun Ini</option>
+              <option value="custom" <%= (typeof periode !== 'undefined' && periode === 'custom') ? 'selected' : '' %>>Kustom</option>
+            </select>
+          </div>
         </div>
 
-        <div id="customDateRange" style="<%= periode === 'custom' ? '' : 'display: none;' %>">
-          <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Dari Tanggal</label>
-          <input type="date" id="start_date" name="start_date" value="<%= startDate || '' %>"
-                 class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
-                        focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+        <!-- Custom Date Range Start -->
+        <div id="customDateRange" class="filter-group" style="<%= (typeof periode !== 'undefined' && periode === 'custom') ? '' : 'display: none;' %>">
+          <label for="start_date" class="filter-label">
+            <i class="fas fa-calendar-day label-icon"></i>
+            Dari Tanggal
+          </label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="fas fa-calendar"></i>
+            </div>
+            <input type="date" id="start_date" name="start_date" value="<%= (typeof startDate !== 'undefined') ? startDate : '' %>" class="filter-input">
+          </div>
         </div>
 
-        <div id="customDateRangeTo" style="<%= periode === 'custom' ? '' : 'display: none;' %>">
-          <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal</label>
-          <input type="date" id="end_date" name="end_date" value="<%= endDate || '' %>"
-                 class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
-                        focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+        <!-- Custom Date Range End -->
+        <div id="customDateRangeTo" class="filter-group" style="<%= (typeof periode !== 'undefined' && periode === 'custom') ? '' : 'display: none;' %>">
+          <label for="end_date" class="filter-label">
+            <i class="fas fa-calendar-check label-icon"></i>
+            Sampai Tanggal
+          </label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="fas fa-calendar"></i>
+            </div>
+            <input type="date" id="end_date" name="end_date" value="<%= (typeof endDate !== 'undefined') ? endDate : '' %>" class="filter-input">
+          </div>
         </div>
 
-        <div>
-          <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-          <select id="status" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
-                                                   focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
-            <option value="">Semua Status</option>
-            <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
-            <option value="disalurkan" <%= status === 'disalurkan' ? 'selected' : '' %>>Disalurkan</option>
-            <option value="diterima" <%= status === 'diterima' ? 'selected' : '' %>>Diterima</option>
-            <option value="batal" <%= status === 'batal' ? 'selected' : '' %>>Batal</option>
-          </select>
+        <!-- Status Filter -->
+        <div class="filter-group">
+          <label for="status" class="filter-label">
+            <i class="fas fa-check-circle label-icon"></i>
+            Status
+          </label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <select id="status" name="status" class="filter-select">
+              <option value="">Semua Status</option>
+              <option value="pending" <%= (typeof status !== 'undefined' && status === 'pending') ? 'selected' : '' %>>Pending</option>
+              <option value="disalurkan" <%= (typeof status !== 'undefined' && status === 'disalurkan') ? 'selected' : '' %>>Disalurkan</option>
+              <option value="diterima" <%= (typeof status !== 'undefined' && status === 'diterima') ? 'selected' : '' %>>Diterima</option>
+              <option value="batal" <%= (typeof status !== 'undefined' && status === 'batal') ? 'selected' : '' %>>Batal</option>
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori Mustahik</label>
-          <select id="kategori" name="kategori" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
-                                                      focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
-            <option value="">Semua Kategori</option>
-            <option value="fakir" <%= kategori === 'fakir' ? 'selected' : '' %>>Fakir</option>
-            <option value="miskin" <%= kategori === 'miskin' ? 'selected' : '' %>>Miskin</option>
-            <option value="amil" <%= kategori === 'amil' ? 'selected' : '' %>>Amil</option>
-            <option value="mualaf" <%= kategori === 'mualaf' ? 'selected' : '' %>>Mualaf</option>
-            <option value="fisabilillah" <%= kategori === 'fisabilillah' ? 'selected' : '' %>>Fisabilillah</option>
-            <option value="ibnu_sabil" <%= kategori === 'ibnu_sabil' ? 'selected' : '' %>>Ibnu Sabil</option>
-            <option value="gharimin" <%= kategori === 'gharimin' ? 'selected' : '' %>>Gharimin</option>
-            <option value="riqab" <%= kategori === 'riqab' ? 'selected' : '' %>>Riqab</option>
-          </select>
+        <!-- Kategori Filter -->
+        <div class="filter-group">
+          <label for="kategori" class="filter-label">
+            <i class="fas fa-tags label-icon"></i>
+            Kategori Mustahik
+          </label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="fas fa-tag"></i>
+            </div>
+            <select id="kategori" name="kategori" class="filter-select">
+              <option value="">Semua Kategori</option>
+              <option value="fakir" <%= (typeof kategori !== 'undefined' && kategori === 'fakir') ? 'selected' : '' %>>Fakir</option>
+              <option value="miskin" <%= (typeof kategori !== 'undefined' && kategori === 'miskin') ? 'selected' : '' %>>Miskin</option>
+              <option value="amil" <%= (typeof kategori !== 'undefined' && kategori === 'amil') ? 'selected' : '' %>>Amil</option>
+              <option value="mualaf" <%= (typeof kategori !== 'undefined' && kategori === 'mualaf') ? 'selected' : '' %>>Mualaf</option>
+              <option value="fisabilillah" <%= (typeof kategori !== 'undefined' && kategori === 'fisabilillah') ? 'selected' : '' %>>Fisabilillah</option>
+              <option value="ibnu_sabil" <%= (typeof kategori !== 'undefined' && kategori === 'ibnu_sabil') ? 'selected' : '' %>>Ibnu Sabil</option>
+              <option value="gharimin" <%= (typeof kategori !== 'undefined' && kategori === 'gharimin') ? 'selected' : '' %>>Gharimin</option>
+              <option value="riqab" <%= (typeof kategori !== 'undefined' && kategori === 'riqab') ? 'selected' : '' %>>Riqab</option>
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label for="rt" class="block text-sm font-medium text-gray-700 mb-1">RT</label>
-          <select id="rt" name="rt" class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm
-                                          focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
-            <option value="">Semua RT</option>
-            <% rtList.forEach(r => { %>
-            <option value="<%= r.id %>" <%= rt == r.id ? 'selected' : '' %>>RT <%= r.nama %></option>
-            <% }); %>
-          </select>
+        <!-- RT Filter -->
+        <div class="filter-group">
+          <label for="rt" class="filter-label">
+            <i class="fas fa-home label-icon"></i>
+            RT
+          </label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <select id="rt" name="rt" class="filter-select">
+              <option value="">Semua RT</option>
+              <% if (typeof rtList !== 'undefined' && rtList) { %>
+                <% rtList.forEach(r => { %>
+                <option value="<%= r.id %>" <%= (typeof rt !== 'undefined' && rt == r.id) ? 'selected' : '' %>>RT <%= r.nama %></option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
         </div>
 
-        <div class="flex items-end">
-          <button type="submit" class="btn-primary mr-2">
-            <i class="fas fa-search mr-2"></i>Filter
-          </button>
-          <a href="/distribusi/laporan" class="btn-secondary">
-            <i class="fas fa-undo mr-2"></i>Reset
-          </a>
+        <!-- Action Buttons -->
+        <div class="filter-group">
+          <label class="filter-label" style="opacity: 0;">Action</label>
+          <div class="filter-buttons">
+            <button type="submit" class="btn-primary">
+              <i class="fas fa-search"></i>
+              Filter
+            </button>
+            <a href="/distribusi/laporan" class="btn-secondary">
+              <i class="fas fa-undo"></i>
+              Reset
+            </a>
+          </div>
         </div>
       </form>
     </div>
   </div>
 
   <!-- Summary Statistics -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-              <i class="fas fa-list text-white"></i>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Distribusi</dt>
-              <dd class="text-lg font-medium text-gray-900"><%= summary.totalDistribusi %></dd>
-            </dl>
-          </div>
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-header">
+        <div class="stat-content">
+          <div class="stat-label">Total Distribusi</div>
+          <div class="stat-value"><%= (typeof summary !== 'undefined' && summary.totalDistribusi) ? summary.totalDistribusi : 0 %></div>
+        </div>
+        <div class="stat-icon-box blue">
+          <i class="fas fa-list"></i>
         </div>
       </div>
     </div>
 
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-              <i class="fas fa-seedling text-white"></i>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Beras</dt>
-              <dd class="text-lg font-medium text-gray-900">
-                <%= parseFloat(summary.totalBeras).toLocaleString('id-ID') %> kg
-              </dd>
-            </dl>
-          </div>
+    <div class="stat-box">
+      <div class="stat-header">
+        <div class="stat-content">
+          <div class="stat-label">Total Beras</div>
+          <div class="stat-value"><%= (typeof summary !== 'undefined' && summary.totalBeras) ? parseFloat(summary.totalBeras).toLocaleString('id-ID') : 0 %> kg</div>
+        </div>
+        <div class="stat-icon-box green">
+          <i class="fas fa-seedling"></i>
         </div>
       </div>
     </div>
 
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
-              <i class="fas fa-coins text-white"></i>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Total Uang</dt>
-              <dd class="text-lg font-medium text-gray-900">
-                Rp <%= parseFloat(summary.totalUang).toLocaleString('id-ID') %>
-              </dd>
-            </dl>
-          </div>
+    <div class="stat-box">
+      <div class="stat-header">
+        <div class="stat-content">
+          <div class="stat-label">Total Uang</div>
+          <div class="stat-value">Rp <%= (typeof summary !== 'undefined' && summary.totalUang) ? parseFloat(summary.totalUang).toLocaleString('id-ID') : 0 %></div>
+        </div>
+        <div class="stat-icon-box yellow">
+          <i class="fas fa-coins"></i>
         </div>
       </div>
     </div>
 
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-              <i class="fas fa-users text-white"></i>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">Mustahik Aktif</dt>
-              <dd class="text-lg font-medium text-gray-900"><%= summary.totalMustahik %></dd>
-            </dl>
-          </div>
+    <div class="stat-box">
+      <div class="stat-header">
+        <div class="stat-content">
+          <div class="stat-label">Mustahik Aktif</div>
+          <div class="stat-value"><%= (typeof summary !== 'undefined' && summary.totalMustahik) ? summary.totalMustahik : 0 %></div>
+        </div>
+        <div class="stat-icon-box purple">
+          <i class="fas fa-users"></i>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Charts Section -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <div class="charts-grid">
     <!-- Status Distribution Chart -->
-    <div class="bg-white shadow-sm rounded-lg">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900">
-          <i class="fas fa-chart-pie mr-2 text-primary-600"></i>Distribusi Status
-        </h3>
+    <div class="chart-box">
+      <div class="chart-header">
+        <div class="chart-icon">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <h3 class="chart-title">Distribusi Status</h3>
       </div>
-      <div class="p-6">
-        <canvas id="statusChart" width="400" height="200"></canvas>
+      <div class="chart-canvas-wrapper">
+        <canvas id="statusChart"></canvas>
       </div>
     </div>
 
     <!-- Category Distribution Chart -->
-    <div class="bg-white shadow-sm rounded-lg">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900">
-          <i class="fas fa-chart-bar mr-2 text-primary-600"></i>Distribusi per Kategori
-        </h3>
+    <div class="chart-box">
+      <div class="chart-header">
+        <div class="chart-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h3 class="chart-title">Distribusi per Kategori</h3>
       </div>
-      <div class="p-6">
-        <canvas id="categoryChart" width="400" height="200"></canvas>
+      <div class="chart-canvas-wrapper">
+        <canvas id="categoryChart"></canvas>
       </div>
     </div>
   </div>
 
   <!-- Monthly Trend -->
-  <div class="bg-white shadow-sm rounded-lg mb-6">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-gray-900">
-        <i class="fas fa-chart-line mr-2 text-primary-600"></i>Tren Distribusi Bulanan
-      </h3>
+  <div class="chart-box" style="margin-bottom: 2rem;">
+    <div class="chart-header">
+      <div class="chart-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3 class="chart-title">Tren Distribusi Bulanan</h3>
     </div>
-    <div class="p-6">
-      <canvas id="monthlyChart" width="800" height="300"></canvas>
+    <div class="chart-canvas-wrapper tall">
+      <canvas id="monthlyChart"></canvas>
     </div>
   </div>
 
   <!-- Top Mustahik Recipients -->
-  <div class="bg-white shadow-sm rounded-lg mb-6">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-gray-900">
-        <i class="fas fa-trophy mr-2 text-primary-600"></i>Top 10 Penerima Distribusi
-      </h3>
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-header-left">
+        <div class="table-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h3 class="table-title">Top 10 Penerima Distribusi</h3>
+      </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Ranking
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Mustahik
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Total Distribusi
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Total Beras
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Total Uang
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% topMustahik.forEach((m, index) => { %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <% if (index === 0) { %>
-                  <i class="fas fa-crown text-yellow-500 mr-2"></i>
-                <% } else if (index === 1) { %>
-                  <i class="fas fa-medal text-gray-400 mr-2"></i>
-                <% } else if (index === 2) { %>
-                  <i class="fas fa-medal text-yellow-600 mr-2"></i>
-                <% } else { %>
-                  <span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium text-gray-600 mr-2">
-                    <%= index + 1 %>
-                  </span>
-                <% } %>
-                <span class="text-sm font-medium text-gray-900">#<%= index + 1 %></span>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 h-8 w-8">
-                  <div class="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-                    <span class="text-xs font-bold text-white">
-                      <%= m.nama.charAt(0).toUpperCase() %>
-                    </span>
-                  </div>
+    
+    <% if (typeof topMustahik === 'undefined' || !topMustahik || topMustahik.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-trophy empty-icon"></i>
+      <h3 class="empty-title">Tidak ada data</h3>
+      <p class="empty-description">Belum ada data penerima distribusi</p>
+    </div>
+    <% } else { %>
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Ranking</th>
+          <th>Mustahik</th>
+          <th>Total Distribusi</th>
+          <th>Total Beras</th>
+          <th>Total Uang</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% topMustahik.forEach((m, index) => { %>
+        <tr>
+          <td>
+            <div class="ranking-badge">
+              <% if (index === 0) { %>
+                <div class="ranking-icon gold">
+                  <i class="fas fa-crown"></i>
                 </div>
-                <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900"><%= m.nama %></div>
-                  <div class="text-sm text-gray-500">
-                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                      <% if (m.kategori === 'fakir') { %>bg-red-100 text-red-800<% } 
-                         else if (m.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } 
-                         else if (m.kategori === 'amil') { %>bg-green-100 text-green-800<% } 
-                         else if (m.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } 
-                         else if (m.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } 
-                         else { %>bg-gray-100 text-gray-800<% } %>">
-                      <%= m.kategori.charAt(0).toUpperCase() + m.kategori.slice(1) %>
-                    </span>
-                  </div>
+              <% } else if (index === 1) { %>
+                <div class="ranking-icon silver">
+                  <i class="fas fa-medal"></i>
                 </div>
+              <% } else if (index === 2) { %>
+                <div class="ranking-icon bronze">
+                  <i class="fas fa-medal"></i>
+                </div>
+              <% } else { %>
+                <div class="ranking-icon default">
+                  <%= index + 1 %>
+                </div>
+              <% } %>
+              <span style="font-weight: 600;">#<%= index + 1 %></span>
+            </div>
+          </td>
+          <td>
+            <div class="user-info">
+              <div class="user-avatar">
+                <%= m.nama.charAt(0).toUpperCase() %>
               </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <%= m.total_distribusi %> kali
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <i class="fas fa-seedling text-green-600 mr-1"></i>
+              <div class="user-details">
+                <div class="user-name"><%= m.nama %></div>
+                <span class="user-category
+                  <% if (m.kategori === 'fakir') { %>category-fakir<% } 
+                     else if (m.kategori === 'miskin') { %>category-miskin<% } 
+                     else if (m.kategori === 'amil') { %>category-amil<% } 
+                     else if (m.kategori === 'mualaf') { %>category-mualaf<% } 
+                     else if (m.kategori === 'fisabilillah') { %>category-fisabilillah<% } 
+                     else { %>category-default<% } %>">
+                  <%= m.kategori.charAt(0).toUpperCase() + m.kategori.slice(1) %>
+                </span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span style="font-weight: 600;"><%= m.total_distribusi %></span> kali
+          </td>
+          <td>
+            <div class="amount-display">
+              <div class="amount-icon beras">
+                <i class="fas fa-seedling"></i>
+              </div>
               <%= parseFloat(m.total_beras || 0).toLocaleString('id-ID') %> kg
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <i class="fas fa-coins text-yellow-600 mr-1"></i>
+            </div>
+          </td>
+          <td>
+            <div class="amount-display">
+              <div class="amount-icon uang">
+                <i class="fas fa-coins"></i>
+              </div>
               Rp <%= parseFloat(m.total_uang || 0).toLocaleString('id-ID') %>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
+            </div>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% } %>
   </div>
 
   <!-- Detailed Distribution Table -->
-  <div class="bg-white shadow-sm rounded-lg">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-semibold text-gray-900">
-        <i class="fas fa-table mr-2 text-primary-600"></i>Data Detail Distribusi
-        <span class="text-sm font-normal text-gray-500 ml-2">(<%= distributions.length %> dari <%= totalDistributions %> distribusi)</span>
-      </h3>
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-header-left">
+        <div class="table-icon">
+          <i class="fas fa-table"></i>
+        </div>
+        <div>
+          <h3 class="table-title">Data Detail Distribusi</h3>
+          <span class="table-count">
+            <%= (typeof distributions !== 'undefined' && distributions) ? distributions.length : 0 %> dari <%= (typeof totalDistributions !== 'undefined') ? totalDistributions : 0 %> distribusi
+          </span>
+        </div>
+      </div>
     </div>
     
-    <% if (distributions.length === 0) { %>
-    <div class="text-center py-12">
-      <i class="fas fa-chart-bar text-gray-400 text-4xl mb-4"></i>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ada data</h3>
-      <p class="text-gray-500">Tidak ada distribusi yang sesuai dengan filter yang dipilih</p>
+    <% if (typeof distributions === 'undefined' || !distributions || distributions.length === 0) { %>
+    <div class="empty-state">
+      <i class="fas fa-chart-bar empty-icon"></i>
+      <h3 class="empty-title">Tidak ada data</h3>
+      <p class="empty-description">Tidak ada distribusi yang sesuai dengan filter yang dipilih</p>
     </div>
     <% } else { %>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Tanggal
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Mustahik
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Jenis & Jumlah
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              PIC
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% distributions.forEach(d => { %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <%= new Date(d.tanggal_distribusi).toLocaleDateString('id-ID') %>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 h-8 w-8">
-                  <div class="h-8 w-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center">
-                    <span class="text-xs font-bold text-white">
-                      <%= d.mustahik_nama.charAt(0).toUpperCase() %>
-                    </span>
-                  </div>
-                </div>
-                <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900"><%= d.mustahik_nama %></div>
-                  <div class="text-sm text-gray-500">
-                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                      <% if (d.kategori === 'fakir') { %>bg-red-100 text-red-800<% } 
-                         else if (d.kategori === 'miskin') { %>bg-orange-100 text-orange-800<% } 
-                         else if (d.kategori === 'amil') { %>bg-green-100 text-green-800<% } 
-                         else if (d.kategori === 'mualaf') { %>bg-blue-100 text-blue-800<% } 
-                         else if (d.kategori === 'fisabilillah') { %>bg-purple-100 text-purple-800<% } 
-                         else { %>bg-gray-100 text-gray-800<% } %>">
-                      <%= d.kategori.charAt(0).toUpperCase() + d.kategori.slice(1) %>
-                    </span>
-                  </div>
-                </div>
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Mustahik</th>
+          <th>Jenis & Jumlah</th>
+          <th>Status</th>
+          <th>PIC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% distributions.forEach(d => { %>
+        <tr>
+          <td>
+            <i class="fas fa-calendar-alt" style="color: #9ca3af; margin-right: 0.5rem;"></i>
+            <%= new Date(d.tanggal_distribusi).toLocaleDateString('id-ID') %>
+          </td>
+          <td>
+            <div class="user-info">
+              <div class="user-avatar">
+                <%= d.mustahik_nama.charAt(0).toUpperCase() %>
               </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">
-                <% if (d.jenis_zakat === 'beras') { %>
-                  <i class="fas fa-seedling text-green-600 mr-1"></i>
-                  <%= parseFloat(d.jumlah).toLocaleString('id-ID') %> kg Beras
-                <% } else { %>
-                  <i class="fas fa-coins text-yellow-600 mr-1"></i>
-                  Rp <%= parseFloat(d.jumlah).toLocaleString('id-ID') %>
-                <% } %>
+              <div class="user-details">
+                <div class="user-name"><%= d.mustahik_nama %></div>
+                <span class="user-category
+                  <% if (d.kategori === 'fakir') { %>category-fakir<% } 
+                     else if (d.kategori === 'miskin') { %>category-miskin<% } 
+                     else if (d.kategori === 'amil') { %>category-amil<% } 
+                     else if (d.kategori === 'mualaf') { %>category-mualaf<% } 
+                     else if (d.kategori === 'fisabilillah') { %>category-fisabilillah<% } 
+                     else { %>category-default<% } %>">
+                  <%= d.kategori.charAt(0).toUpperCase() + d.kategori.slice(1) %>
+                </span>
               </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                <% if (d.status === 'diterima') { %>bg-green-100 text-green-800<% } 
-                   else if (d.status === 'disalurkan') { %>bg-blue-100 text-blue-800<% } 
-                   else if (d.status === 'pending') { %>bg-yellow-100 text-yellow-800<% } 
-                   else { %>bg-red-100 text-red-800<% } %>">
-                <%= d.status.charAt(0).toUpperCase() + d.status.slice(1) %>
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <%= d.user_nama || 'System' %>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
+            </div>
+          </td>
+          <td>
+            <% if (d.jenis_zakat === 'beras') { %>
+              <div class="amount-display">
+                <div class="amount-icon beras">
+                  <i class="fas fa-seedling"></i>
+                </div>
+                <%= parseFloat(d.jumlah).toLocaleString('id-ID') %> kg Beras
+              </div>
+            <% } else { %>
+              <div class="amount-display">
+                <div class="amount-icon uang">
+                  <i class="fas fa-coins"></i>
+                </div>
+                Rp <%= parseFloat(d.jumlah).toLocaleString('id-ID') %>
+              </div>
+            <% } %>
+          </td>
+          <td>
+            <span class="status-badge
+              <% if (d.status === 'diterima') { %>status-diterima<% } 
+                 else if (d.status === 'disalurkan') { %>status-disalurkan<% } 
+                 else if (d.status === 'pending') { %>status-pending<% } 
+                 else { %>status-batal<% } %>">
+              <%= d.status.charAt(0).toUpperCase() + d.status.slice(1) %>
+            </span>
+          </td>
+          <td>
+            <i class="fas fa-user" style="color: #9ca3af; margin-right: 0.5rem;"></i>
+            <%= d.user_nama || 'System' %>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
     <% } %>
   </div>
 </div>
@@ -422,8 +1213,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const customDateRangeTo = document.getElementById('customDateRangeTo');
     
     if (this.value === 'custom') {
-      customDateRange.style.display = 'block';
-      customDateRangeTo.style.display = 'block';
+      customDateRange.style.display = 'flex';
+      customDateRangeTo.style.display = 'flex';
     } else {
       customDateRange.style.display = 'none';
       customDateRangeTo.style.display = 'none';
@@ -431,9 +1222,13 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Charts
-  const statusData = <%- JSON.stringify(chartData.statusData) %>;
-  const categoryData = <%- JSON.stringify(chartData.categoryData) %>;
-  const monthlyData = <%- JSON.stringify(chartData.monthlyData) %>;
+  const chartData = <%- typeof chartData !== 'undefined' ? JSON.stringify(chartData) : '{}' %>;
+  const statusData = chartData.statusData || { labels: [], values: [] };
+  const categoryData = chartData.categoryData || { labels: [], values: [] };
+  const monthlyData = chartData.monthlyData || { labels: [], beras: [], uang: [] };
+
+  // Chart.js default config
+  Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
   // Status Distribution Chart
   const statusCtx = document.getElementById('statusChart').getContext('2d');
@@ -444,21 +1239,53 @@ document.addEventListener('DOMContentLoaded', function() {
       datasets: [{
         data: statusData.values,
         backgroundColor: [
-          '#FDE047', // pending - yellow
-          '#3B82F6', // disalurkan - blue
-          '#10B981', // diterima - green
-          '#EF4444'  // batal - red
+          '#fbbf24', // pending - yellow
+          '#3b82f6', // disalurkan - blue
+          '#10b981', // diterima - green
+          '#ef4444'  // batal - red
         ],
-        borderWidth: 2,
-        borderColor: '#ffffff'
+        borderWidth: 3,
+        borderColor: '#ffffff',
+        hoverOffset: 10
       }]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
       plugins: {
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12,
+              weight: '600'
+            },
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          titleFont: {
+            size: 14,
+            weight: '600'
+          },
+          bodyFont: {
+            size: 13
+          },
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return label + ': ' + value + ' (' + percentage + '%)';
+            }
+          }
         }
       }
     }
@@ -474,31 +1301,61 @@ document.addEventListener('DOMContentLoaded', function() {
         label: 'Jumlah Distribusi',
         data: categoryData.values,
         backgroundColor: [
-          '#EF4444', // fakir - red
-          '#F97316', // miskin - orange
-          '#10B981', // amil - green
-          '#3B82F6', // mualaf - blue
-          '#8B5CF6', // fisabilillah - purple
-          '#06B6D4', // ibnu_sabil - cyan
-          '#F59E0B', // gharimin - amber
-          '#84CC16'  // riqab - lime
+          '#ef4444', // fakir - red
+          '#f97316', // miskin - orange
+          '#10b981', // amil - green
+          '#3b82f6', // mualaf - blue
+          '#8b5cf6', // fisabilillah - purple
+          '#06b6d4', // ibnu_sabil - cyan
+          '#f59e0b', // gharimin - amber
+          '#84cc16'  // riqab - lime
         ],
-        borderRadius: 4
+        borderRadius: 6,
+        borderSkipped: false
       }]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
       plugins: {
         legend: {
           display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          titleFont: {
+            size: 14,
+            weight: '600'
+          },
+          bodyFont: {
+            size: 13
+          }
         }
       },
       scales: {
         y: {
           beginAtZero: true,
           ticks: {
-            stepSize: 1
+            stepSize: 1,
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            display: false
           }
         }
       }
@@ -515,32 +1372,92 @@ document.addEventListener('DOMContentLoaded', function() {
         {
           label: 'Beras (kg)',
           data: monthlyData.beras,
-          borderColor: '#10B981',
+          borderColor: '#10b981',
           backgroundColor: 'rgba(16, 185, 129, 0.1)',
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          borderWidth: 3,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#10b981',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: '#10b981',
+          pointHoverBorderColor: '#ffffff'
         },
         {
           label: 'Uang (ribu Rp)',
-          data: monthlyData.uang.map(v => v / 1000), // Convert to thousands
-          borderColor: '#F59E0B',
+          data: monthlyData.uang.map(v => v / 1000),
+          borderColor: '#f59e0b',
           backgroundColor: 'rgba(245, 158, 11, 0.1)',
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          borderWidth: 3,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#f59e0b',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: '#f59e0b',
+          pointHoverBorderColor: '#ffffff'
         }
       ]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: {
-          position: 'top'
+          position: 'top',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12,
+              weight: '600'
+            },
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 1,
+          titleFont: {
+            size: 14,
+            weight: '600'
+          },
+          bodyFont: {
+            size: 13
+          }
         }
       },
       scales: {
         y: {
-          beginAtZero: true
+          beginAtZero: true,
+          ticks: {
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            display: false
+          }
         }
       }
     }

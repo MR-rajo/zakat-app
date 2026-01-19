@@ -1,0 +1,1043 @@
+<!-- Modal Tambah Infak Batch -->
+<div id="tambahInfakModal" class="modal-overlay-infak" style="display: none;">
+  <div class="modal-container-infak">
+    <!-- Modal Header -->
+    <div class="modal-header-infak">
+      <div class="modal-header-left">
+        <div class="modal-icon-box">
+          <i class="fas fa-hand-holding-heart"></i>
+        </div>
+        <div class="modal-title-box">
+          <h3 class="modal-title">Tambah Infak Kembalian</h3>
+          <p class="modal-subtitle">Pilih muzakki untuk mengkonversi kembalian menjadi infak</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="closeInfakModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body-infak">
+      <!-- Search and Filter Section -->
+      <div class="search-section-infak">
+        <div class="search-box-infak">
+          <i class="fas fa-search"></i>
+          <input 
+            type="text" 
+            id="searchMuzakki" 
+            placeholder="Cari nama muzakki..." 
+            class="search-input-infak"
+            onkeyup="filterMuzakki()"
+          />
+        </div>
+        <div class="filter-stats">
+          <span class="stat-badge stat-total">
+            <i class="fas fa-users"></i>
+            <span id="totalCount">0</span> Total
+          </span>
+          <span class="stat-badge stat-selected">
+            <i class="fas fa-check-circle"></i>
+            <span id="selectedCount">0</span> Dipilih
+          </span>
+        </div>
+      </div>
+
+      <!-- Select All Option -->
+      <div class="select-all-box">
+        <label class="checkbox-container-select-all">
+          <input 
+            type="checkbox" 
+            id="selectAllCheckbox" 
+            onchange="toggleSelectAll(this)"
+          />
+          <span class="checkbox-custom"></span>
+          <span class="checkbox-label-bold">Pilih Semua</span>
+        </label>
+      </div>
+
+      <!-- Muzakki List -->
+      <form id="infakBatchForm" method="POST" action="/muzakki/rt/<%= rt.id %>/batch-infak">
+        <div class="muzakki-list-infak" id="muzakkiList">
+          <% 
+          // Debug: Tampilkan semua data muzakki untuk analisis
+          console.log('=== MODAL DEBUG ===');
+          console.log('Total muzakki:', muzakki.length);
+          muzakki.forEach((m, idx) => {
+            console.log(`Muzakki ${idx + 1}:`, {
+              id: m.id,
+              nama: m.nama_muzakki_list,
+              kembalian: m.kembalian,
+              kembalian_type: typeof m.kembalian,
+              infak_id: m.infak_id,
+              jumlah_bayar: m.jumlah_bayar
+            });
+          });
+          
+          // Filter muzakki: kembalian harus ada (tidak null, tidak 0) DAN belum ada infak
+          const muzakkiWithKembalian = muzakki.filter(m => {
+            // Cek kembalian dengan berbagai cara untuk memastikan
+            const kembalianValue = parseFloat(m.kembalian || 0);
+            const hasKembalian = kembalianValue > 0;
+            const noInfak = !m.infak_id || m.infak_id === null || m.infak_id === undefined;
+            
+            console.log(`Filter ${m.nama_muzakki_list}:`, { 
+              kembalianValue, 
+              hasKembalian, 
+              noInfak,
+              passed: hasKembalian && noInfak 
+            });
+            
+            return hasKembalian && noInfak;
+          });
+          
+          console.log('Filtered muzakki with kembalian:', muzakkiWithKembalian.length);
+          
+          if (muzakkiWithKembalian.length === 0) { 
+          %>
+            <div class="empty-state-infak">
+              <i class="fas fa-inbox"></i>
+              <p>Tidak ada muzakki dengan kembalian yang belum disedekahkan</p>
+              <small style="color: #9ca3af; margin-top: 8px; display: block;">
+                Total muzakki: <%= muzakki.length %><br>
+                Debug: Cek browser console untuk detail
+              </small>
+            </div>
+          <% } else { 
+            muzakkiWithKembalian.forEach((item, index) => { 
+          %>
+            <div class="muzakki-card-infak" data-nama="<%= item.nama_muzakki_list ? item.nama_muzakki_list.toLowerCase() : '' %>">
+              <label class="muzakki-checkbox-label">
+                <input 
+                  type="checkbox" 
+                  name="muzakki_ids[]" 
+                  value="<%= item.id %>" 
+                  class="muzakki-checkbox"
+                  data-kembalian="<%= item.kembalian %>"
+                  onchange="updateSelectedCount()"
+                />
+                <span class="checkbox-custom-card"></span>
+                
+                <div class="muzakki-info-card">
+                  <div class="muzakki-header-row">
+                    <div class="muzakki-avatar">
+                      <i class="fas fa-user"></i>
+                    </div>
+                    <div class="muzakki-details">
+                      <div class="muzakki-name-row">
+                        <h4 class="muzakki-name"><%= item.nama_muzakki_list || '-' %></h4>
+                        <div class="muzakki-badge-count">
+                          <i class="fas fa-users"></i>
+                          <%= item.jumlah_muzakki %> jiwa
+                        </div>
+                      </div>
+                      <div class="muzakki-meta-row">
+                        <span class="meta-item">
+                          <i class="fas fa-calendar"></i>
+                          <%= new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                        </span>
+                        <span class="meta-item">
+                          <i class="fas fa-user-tie"></i>
+                          <%= item.pencatat_name %>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="muzakki-financial-info">
+                    <div class="financial-row">
+                      <div class="financial-item">
+                        <span class="financial-label">Jumlah Bayar</span>
+                        <span class="financial-value">
+                          Rp <%= Math.floor(item.jumlah_bayar || 0).toLocaleString('id-ID') %>
+                        </span>
+                      </div>
+                      <div class="financial-item">
+                        <span class="financial-label">Jumlah Jiwa</span>
+                        <span class="financial-value">
+                          <%= item.jumlah_jiwa || 0 %> jiwa
+                        </span>
+                      </div>
+                    </div>
+                    <div class="kembalian-highlight">
+                      <span class="kembalian-label">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Kembalian
+                      </span>
+                      <span class="kembalian-amount">
+                        Rp <%= Math.floor(item.kembalian || 0).toLocaleString('id-ID') %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Keterangan Input -->
+                  <div class="keterangan-input-box">
+                    <label class="keterangan-label">
+                      <i class="fas fa-comment-dots"></i>
+                      Keterangan (opsional)
+                    </label>
+                    <input 
+                      type="text" 
+                      name="keterangan_<%= item.id %>" 
+                      class="keterangan-input"
+                      placeholder="Tambahkan catatan untuk infak ini..."
+                    />
+                  </div>
+                </div>
+              </label>
+            </div>
+          <% 
+            });
+          } 
+          %>
+        </div>
+
+        <!-- Modal Footer / Actions -->
+        <div class="modal-footer-infak">
+          <div class="footer-summary">
+            <div class="summary-item">
+              <span class="summary-label">Total Kembalian Dipilih:</span>
+              <span class="summary-value" id="totalKembalianSelected">Rp 0</span>
+            </div>
+          </div>
+          <div class="footer-actions">
+            <button type="button" class="btn-cancel-infak" onclick="closeInfakModal()">
+              <i class="fas fa-times"></i>
+              Batal
+            </button>
+            <button type="submit" class="btn-submit-infak" id="btnSubmitInfak" disabled>
+              <i class="fas fa-paper-plane"></i>
+              Simpan Infak (<span id="submitCount">0</span>)
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Modal Overlay */
+.modal-overlay-infak {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Container */
+.modal-container-infak {
+  background: white;
+  border-radius: 20px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Modal Header */
+.modal-header-infak {
+  padding: 24px 28px;
+  border-bottom: 2px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  border-radius: 20px 20px 0 0;
+  color: white;
+}
+
+.modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-icon-box {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.modal-title-box { flex: 1; }
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modal-close-btn {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-body-infak {
+  padding: 24px 28px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Search Section */
+.search-section-infak {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.search-box-infak {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+}
+
+.search-box-infak i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.search-input-infak {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.search-input-infak:focus {
+  outline: none;
+  border-color: #1EAF2F;
+  box-shadow: 0 0 0 3px rgba(30, 175, 47, 0.1);
+}
+
+.filter-stats {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stat-total {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.stat-selected {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Select All Box */
+.select-all-box {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 2px solid #bbf7d0;
+}
+
+.checkbox-container-select-all {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-container-select-all input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid #16a34a;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-container-select-all input[type="checkbox"]:checked + .checkbox-custom {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  border-color: #15803d;
+}
+
+.checkbox-container-select-all input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: white;
+  font-size: 12px;
+}
+
+.checkbox-label-bold {
+  font-size: 15px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+/* Muzakki List */
+.muzakki-list-infak {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Empty State */
+.empty-state-infak {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.empty-state-infak i {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state-infak p {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Muzakki Card */
+.muzakki-card-infak {
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  background: white;
+  overflow: hidden;
+}
+
+.muzakki-card-infak:hover {
+  border-color: #1EAF2F;
+  box-shadow: 0 4px 12px rgba(30, 175, 47, 0.1);
+}
+
+.muzakki-checkbox-label {
+  display: block;
+  cursor: pointer;
+  padding: 20px;
+  user-select: none;
+}
+
+.muzakki-checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom-card {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid #d1d5db;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.muzakki-checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom-card {
+  background: linear-gradient(135deg, #1EAF2F, #16a127);
+  border-color: #1EAF2F;
+}
+
+.muzakki-checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom-card::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  color: white;
+  font-size: 14px;
+}
+
+.muzakki-checkbox-label input[type="checkbox"]:checked ~ .muzakki-info-card {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-left: 4px solid #1EAF2F;
+}
+
+.muzakki-info-card {
+  background: #fafafa;
+  border-radius: 12px;
+  padding: 16px;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-right: 56px;
+}
+
+/* Muzakki Header */
+.muzakki-header-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.muzakki-avatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #1EAF2F, #16a127);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.muzakki-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.muzakki-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.muzakki-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.muzakki-badge-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.muzakki-meta-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.meta-item i {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Financial Info */
+.muzakki-financial-info {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.financial-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.financial-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.financial-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.financial-value {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.kembalian-highlight {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-radius: 10px;
+  border: 2px solid #fbbf24;
+}
+
+.kembalian-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.kembalian-label i {
+  color: #f59e0b;
+}
+
+.kembalian-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+/* Keterangan Input */
+.keterangan-input-box {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.keterangan-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.keterangan-label i {
+  color: #1EAF2F;
+}
+
+.keterangan-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.keterangan-input:focus {
+  outline: none;
+  border-color: #1EAF2F;
+  box-shadow: 0 0 0 3px rgba(30, 175, 47, 0.1);
+}
+
+/* Modal Footer */
+.modal-footer-infak {
+  padding: 20px 28px;
+  border-top: 2px solid #f3f4f6;
+  background: #fafafa;
+  border-radius: 0 0 20px 20px;
+}
+
+.footer-summary {
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-radius: 12px;
+  border: 2px solid #bfdbfe;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.summary-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-cancel-infak,
+.btn-submit-infak {
+  flex: 1;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel-infak {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.btn-cancel-infak:hover {
+  background: #e5e7eb;
+  transform: translateY(-2px);
+}
+
+.btn-submit-infak {
+  background: linear-gradient(135deg, #1EAF2F, #16a127);
+  color: white;
+  box-shadow: 0 4px 12px rgba(30, 175, 47, 0.3);
+}
+
+.btn-submit-infak:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 175, 47, 0.4);
+}
+
+.btn-submit-infak:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-container-infak {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+
+  .modal-header-infak {
+    padding: 20px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal-icon-box {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .modal-subtitle {
+    font-size: 12px;
+  }
+
+  .modal-body-infak {
+    padding: 20px;
+  }
+
+  .search-section-infak {
+    flex-direction: column;
+  }
+
+  .search-box-infak {
+    min-width: 100%;
+  }
+
+  .filter-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .financial-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .footer-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel-infak,
+  .btn-submit-infak {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header-left {
+    gap: 12px;
+  }
+
+  .modal-icon-box {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-subtitle {
+    display: none;
+  }
+
+  .modal-body-infak {
+    padding: 16px;
+  }
+
+  .muzakki-checkbox-label {
+    padding: 16px;
+  }
+
+  .muzakki-info-card {
+    padding: 12px;
+    padding-right: 48px;
+  }
+
+  .muzakki-header-row {
+    gap: 10px;
+  }
+
+  .muzakki-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .muzakki-name {
+    font-size: 14px;
+  }
+
+  .kembalian-highlight {
+    padding: 10px 12px;
+  }
+
+  .kembalian-label {
+    font-size: 11px;
+  }
+
+  .kembalian-amount {
+    font-size: 14px;
+  }
+
+  .modal-footer-infak {
+    padding: 16px;
+  }
+}
+</style>
+
+<script>
+// Debug: Log muzakki data saat modal script dimuat
+console.log('=== DEBUG MODAL INFAK ===');
+console.log('Total muzakki:', <%= muzakki.length %>);
+console.log('Muzakki data:', <%- JSON.stringify(muzakki.map(m => ({ 
+  id: m.id, 
+  nama: m.nama_muzakki_list, 
+  kembalian: m.kembalian, 
+  infak_id: m.infak_id 
+}))) %>);
+
+// Open Modal
+function openInfakModal() {
+  document.getElementById('tambahInfakModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  updateSelectedCount();
+  updateTotalCount();
+  
+  // Debug saat modal dibuka
+  console.log('Modal dibuka, total cards:', document.querySelectorAll('.muzakki-card-infak').length);
+}
+
+// Close Modal
+function closeInfakModal() {
+  document.getElementById('tambahInfakModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+  // Reset form
+  document.getElementById('infakBatchForm').reset();
+  document.getElementById('selectAllCheckbox').checked = false;
+  updateSelectedCount();
+}
+
+// Close on ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeInfakModal();
+  }
+});
+
+// Close on overlay click
+document.getElementById('tambahInfakModal')?.addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeInfakModal();
+  }
+});
+
+// Filter Muzakki
+function filterMuzakki() {
+  const searchValue = document.getElementById('searchMuzakki').value.toLowerCase();
+  const cards = document.querySelectorAll('.muzakki-card-infak');
+  
+  cards.forEach(card => {
+    const nama = card.getAttribute('data-nama') || '';
+    if (nama.includes(searchValue)) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// Toggle Select All
+function toggleSelectAll(checkbox) {
+  const checkboxes = document.querySelectorAll('.muzakki-checkbox');
+  const visibleCards = Array.from(document.querySelectorAll('.muzakki-card-infak'))
+    .filter(card => card.style.display !== 'none');
+  
+  visibleCards.forEach(card => {
+    const cb = card.querySelector('.muzakki-checkbox');
+    if (cb) {
+      cb.checked = checkbox.checked;
+    }
+  });
+  
+  updateSelectedCount();
+}
+
+// Update Selected Count
+function updateSelectedCount() {
+  const checkboxes = document.querySelectorAll('.muzakki-checkbox:checked');
+  const count = checkboxes.length;
+  
+  document.getElementById('selectedCount').textContent = count;
+  document.getElementById('submitCount').textContent = count;
+  
+  const submitBtn = document.getElementById('btnSubmitInfak');
+  submitBtn.disabled = count === 0;
+  
+  // Calculate total kembalian
+  let totalKembalian = 0;
+  checkboxes.forEach(cb => {
+    const kembalian = parseFloat(cb.getAttribute('data-kembalian')) || 0;
+    totalKembalian += kembalian;
+  });
+  
+  document.getElementById('totalKembalianSelected').textContent = 
+    'Rp ' + Math.floor(totalKembalian).toLocaleString('id-ID');
+}
+
+// Update Total Count
+function updateTotalCount() {
+  const cards = document.querySelectorAll('.muzakki-card-infak');
+  document.getElementById('totalCount').textContent = cards.length;
+}
+
+// Form Submit Handler
+document.getElementById('infakBatchForm')?.addEventListener('submit', function(e) {
+  const checkedBoxes = document.querySelectorAll('.muzakki-checkbox:checked');
+  
+  if (checkedBoxes.length === 0) {
+    e.preventDefault();
+    alert('Pilih minimal 1 muzakki untuk ditambahkan sebagai infak');
+    return false;
+  }
+  
+  // Confirm before submit
+  const confirmed = confirm(
+    `Anda akan menambahkan ${checkedBoxes.length} infak dari kembalian.\n\nLanjutkan?`
+  );
+  
+  if (!confirmed) {
+    e.preventDefault();
+    return false;
+  }
+});
+</script>

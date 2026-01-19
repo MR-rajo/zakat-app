@@ -177,22 +177,26 @@ document.querySelector('form').addEventListener('submit', function(e) {
   
   if (!nama) {
     e.preventDefault();
-    alert('Nama mustahik harus diisi');
+    showError('Nama mustahik harus diisi', 'Data Belum Lengkap');
     document.getElementById('nama').focus();
     return;
   }
   
   if (!kategori) {
     e.preventDefault();
-    alert('Kategori mustahik harus dipilih');
+    showError('Kategori mustahik harus dipilih', 'Data Belum Lengkap');
     document.getElementById('kategori').focus();
     return;
   }
   
   // Confirm submission
-  if (!confirm('Apakah perubahan data sudah benar?')) {
-    e.preventDefault();
-  }
+  e.preventDefault();
+  showConfirm('Apakah perubahan data sudah benar?', 'Konfirmasi Perubahan')
+    .then((result) => {
+      if (result.isConfirmed) {
+        document.querySelector('form').submit();
+      }
+    });
 });
 </script>
 

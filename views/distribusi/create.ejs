@@ -313,43 +313,43 @@ document.addEventListener('DOMContentLoaded', function() {
     const status = document.getElementById('status').value;
 
     if (!mustahikId) {
-      alert('Silakan pilih mustahik terlebih dahulu');
+      showError('Silakan pilih mustahik terlebih dahulu', 'Data Belum Lengkap');
       e.preventDefault();
       return;
     }
 
     if (!jenisZakat) {
-      alert('Silakan pilih jenis zakat terlebih dahulu');
+      showError('Silakan pilih jenis zakat terlebih dahulu', 'Data Belum Lengkap');
       e.preventDefault();
       return;
     }
 
     if (!jumlah || parseFloat(jumlah) <= 0) {
-      alert('Jumlah harus lebih dari 0');
+      showError('Jumlah harus lebih dari 0', 'Input Tidak Valid');
       e.preventDefault();
       return;
     }
 
     if (jenisZakat.value === 'uang' && parseFloat(jumlah) < 1000) {
-      alert('Jumlah uang minimal Rp 1.000');
+      showError('Jumlah uang minimal Rp 1.000', 'Jumlah Terlalu Kecil');
       e.preventDefault();
       return;
     }
 
     if (jenisZakat.value === 'beras' && parseFloat(jumlah) < 0.1) {
-      alert('Jumlah beras minimal 0.1 kg');
+      showError('Jumlah beras minimal 0.1 kg', 'Jumlah Terlalu Kecil');
       e.preventDefault();
       return;
     }
 
     if (!tanggalDistribusi) {
-      alert('Silakan pilih tanggal distribusi');
+      showError('Silakan pilih tanggal distribusi', 'Data Belum Lengkap');
       e.preventDefault();
       return;
     }
 
     if (!status) {
-      alert('Silakan pilih status distribusi');
+      showError('Silakan pilih status distribusi', 'Data Belum Lengkap');
       e.preventDefault();
       return;
     }
@@ -360,10 +360,20 @@ document.addEventListener('DOMContentLoaded', function() {
     today.setHours(0, 0, 0, 0);
 
     if (status === 'diterima' && selectedDate > today) {
-      if (!confirm('Tanggal distribusi di masa depan namun status sudah diterima. Lanjutkan?')) {
-        e.preventDefault();
-        return;
-      }
+      showConfirm(
+        'Tanggal distribusi di masa depan namun status sudah diterima. Lanjutkan?',
+        'Peringatan Tanggal',
+        {
+          icon: 'warning',
+          confirmText: 'Ya, Lanjutkan',
+          cancelText: 'Batal'
+        }
+      ).then((result) => {
+        if (!result.isConfirmed) {
+          e.preventDefault();
+          return;
+        }
+      });
     }
   });
 

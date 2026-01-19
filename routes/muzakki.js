@@ -76,16 +76,32 @@ router.get("/rt/:rt_id", async (req, res) => {
         m.*,
         u.name as pencatat_name,
         GROUP_CONCAT(md.nama_muzakki SEPARATOR ', ') as nama_muzakki_list,
-        COUNT(md.id) as jumlah_muzakki
+        COALESCE(COUNT(md.id), 0) as jumlah_muzakki,
+        MAX(i.id) as infak_id
       FROM muzakki m
       LEFT JOIN users u ON m.user_id = u.id
       LEFT JOIN muzakki_details md ON m.id = md.muzakki_id
+      LEFT JOIN infak i ON m.id = i.muzakki_id
       WHERE m.rt_id = ?
-      GROUP BY m.id
+      GROUP BY m.id, u.name
       ORDER BY m.created_at DESC
     `,
       [rtId]
     );
+
+    // Debug: Log data untuk troubleshooting
+    console.log('=== RT DETAIL DEBUG ===');
+    console.log('RT ID:', rtId);
+    console.log('Total muzakki:', muzakki.length);
+    muzakki.forEach((m, idx) => {
+      console.log(`Muzakki ${idx + 1}:`, {
+        id: m.id,
+        nama: m.nama_muzakki_list,
+        kembalian: m.kembalian,
+        infak_id: m.infak_id,
+        jumlah_bayar: m.jumlah_bayar
+      });
+    });
 
     res.render("muzakki/rt-detail", {
       title: `Detail Muzakki RT ${rtInfo[0].nomor_rt} - Zakat Fitrah`,
@@ -107,11 +123,17 @@ router.get("/create", async (req, res) => {
 
     // Get all RT for dropdown
     const [rtList] = await db.execute("SELECT * FROM rt ORDER BY nomor_rt");
+    
+    // Get all master_zakat for dropdown
+    const [masterZakatList] = await db.execute(
+      "SELECT id, nama, harga, kg FROM master_zakat ORDER BY nama"
+    );
 
     res.render("muzakki/create", {
       title: "Tambah Muzakki - Zakat Fitrah",
       layout: "layouts/main",
       rtList,
+      masterZakatList,
     });
   } catch (error) {
     console.error("Error loading create form:", error);
@@ -122,7 +144,7 @@ router.get("/create", async (req, res) => {
 
 // POST /muzakki - Create new muzakki
 router.post("/", async (req, res) => {
-  const { rt_id, muzakki, jumlah_jiwa, jenis_zakat, jumlah_bayar, catatan } =
+  const { rt_id, muzakki, jumlah_jiwa, master_zakat_id, jumlah_bayar, catatan } =
     req.body;
 
   try {
@@ -131,13 +153,13 @@ router.post("/", async (req, res) => {
       rt_id,
       muzakki,
       jumlah_jiwa,
-      jenis_zakat,
+      master_zakat_id,
       jumlah_bayar,
       catatan,
     });
 
     // Input validation
-    if (!rt_id || !jumlah_jiwa || !jenis_zakat || !jumlah_bayar) {
+    if (!rt_id || !jumlah_jiwa || !master_zakat_id || !jumlah_bayar) {
       req.flash("error_msg", "Semua field yang wajib harus diisi");
       return res.redirect("/muzakki/create");
     }
@@ -180,23 +202,37 @@ router.post("/", async (req, res) => {
       return res.redirect("/muzakki/create");
     }
 
-    // Calculate kewajiban based on jenis zakat
+    const db = req.app.locals.db;
+    
+    // Get master_zakat data
+    const [masterZakat] = await db.execute(
+      "SELECT * FROM master_zakat WHERE id = ?",
+      [master_zakat_id]
+    );
+    
+    if (masterZakat.length === 0) {
+      req.flash("error_msg", "Jenis zakat tidak valid");
+      return res.redirect("/muzakki/create");
+    }
+    
+    const zakatData = masterZakat[0];
+    const jenis_zakat = zakatData.kg > 0 ? 'beras' : 'uang';
+    
+    // Calculate kewajiban based on master_zakat data
     let jumlah_beras_kg = null;
     let jumlah_uang = null;
     let kewajiban = 0;
 
     if (jenis_zakat === "beras") {
-      jumlah_beras_kg = jiwa * ZAKAT_BERAS_PER_JIWA;
-      kewajiban = jumlah_beras_kg;
+      jumlah_beras_kg = jiwa * parseFloat(zakatData.kg);
+      kewajiban = jiwa * parseFloat(zakatData.harga); // Kewajiban dalam rupiah
     } else if (jenis_zakat === "uang") {
-      jumlah_uang = jiwa * ZAKAT_UANG_PER_JIWA;
+      jumlah_uang = jiwa * parseFloat(zakatData.harga);
       kewajiban = jumlah_uang;
     }
 
     // Calculate kembalian
     const kembalian = Math.max(0, bayar - kewajiban);
-
-    const db = req.app.locals.db;
     const userId = req.session.user ? req.session.user.id : null;
 
     if (!userId) {
@@ -225,8 +261,8 @@ router.post("/", async (req, res) => {
       const [result] = await db.execute(
         `
         INSERT INTO muzakki 
-        (rt_id, jumlah_jiwa, jenis_zakat, jumlah_beras_kg, jumlah_uang, jumlah_bayar, kembalian, catatan, user_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (rt_id, jumlah_jiwa, jenis_zakat, jumlah_beras_kg, jumlah_uang, jumlah_bayar, kembalian, catatan, user_id, master_zakat_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
           rt_id,
@@ -238,6 +274,7 @@ router.post("/", async (req, res) => {
           kembalian,
           catatan || null,
           userId,
+          master_zakat_id,
         ]
       );
 
@@ -334,6 +371,11 @@ router.get("/:id/edit", async (req, res) => {
 
     // Get all RT for dropdown
     const [rtList] = await db.execute("SELECT * FROM rt ORDER BY nomor_rt");
+    
+    // Get all master_zakat for dropdown
+    const [masterZakatList] = await db.execute(
+      "SELECT id, nama, harga, kg FROM master_zakat ORDER BY nama"
+    );
 
     res.render("muzakki/edit", {
       title: "Edit Muzakki - Zakat Fitrah",
@@ -341,6 +383,7 @@ router.get("/:id/edit", async (req, res) => {
       muzakki: muzakki[0],
       muzakkiDetails: muzakkiDetails, // Pass all details
       rtList,
+      masterZakatList,
     });
   } catch (error) {
     console.error("Error loading edit form:", error);
@@ -352,12 +395,12 @@ router.get("/:id/edit", async (req, res) => {
 // PUT /muzakki/:id - Update muzakki
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
-  const { rt_id, muzakki, jumlah_jiwa, jenis_zakat, jumlah_bayar, catatan } =
+  const { rt_id, muzakki, jumlah_jiwa, master_zakat_id, jumlah_bayar, catatan } =
     req.body;
 
   try {
     // Input validation
-    if (!rt_id || !jumlah_jiwa || !jenis_zakat || !jumlah_bayar) {
+    if (!rt_id || !jumlah_jiwa || !master_zakat_id || !jumlah_bayar) {
       req.flash("error_msg", "Semua field yang wajib harus diisi");
       return res.redirect(`/muzakki/${id}/edit`);
     }
@@ -384,23 +427,37 @@ router.put("/:id", async (req, res) => {
       return res.redirect(`/muzakki/${id}/edit`);
     }
 
-    // Calculate kewajiban based on jenis zakat
+    const db = req.app.locals.db;
+    
+    // Get master_zakat data
+    const [masterZakat] = await db.execute(
+      "SELECT * FROM master_zakat WHERE id = ?",
+      [master_zakat_id]
+    );
+    
+    if (masterZakat.length === 0) {
+      req.flash("error_msg", "Jenis zakat tidak valid");
+      return res.redirect(`/muzakki/${id}/edit`);
+    }
+    
+    const zakatData = masterZakat[0];
+    const jenis_zakat = zakatData.kg > 0 ? 'beras' : 'uang';
+    
+    // Calculate kewajiban based on master_zakat data
     let jumlah_beras_kg = null;
     let jumlah_uang = null;
     let kewajiban = 0;
 
     if (jenis_zakat === "beras") {
-      jumlah_beras_kg = jiwa * ZAKAT_BERAS_PER_JIWA;
-      kewajiban = jumlah_beras_kg;
+      jumlah_beras_kg = jiwa * parseFloat(zakatData.kg);
+      kewajiban = jiwa * parseFloat(zakatData.harga);
     } else if (jenis_zakat === "uang") {
-      jumlah_uang = jiwa * ZAKAT_UANG_PER_JIWA;
+      jumlah_uang = jiwa * parseFloat(zakatData.harga);
       kewajiban = jumlah_uang;
     }
 
     // Calculate kembalian
     const kembalian = Math.max(0, bayar - kewajiban);
-
-    const db = req.app.locals.db;
 
     // Begin transaction
     await db.query("START TRANSACTION");
@@ -412,7 +469,7 @@ router.put("/:id", async (req, res) => {
         UPDATE muzakki 
         SET rt_id = ?, jumlah_jiwa = ?, jenis_zakat = ?, 
             jumlah_beras_kg = ?, jumlah_uang = ?, jumlah_bayar = ?, 
-            kembalian = ?, catatan = ?
+            kembalian = ?, catatan = ?, master_zakat_id = ?
         WHERE id = ?
         `,
         [
@@ -424,6 +481,7 @@ router.put("/:id", async (req, res) => {
           bayar,
           kembalian,
           catatan,
+          master_zakat_id,
           id,
         ]
       );
@@ -585,6 +643,99 @@ router.post("/:id/sedekahkan-kembalian", async (req, res) => {
   }
 });
 
+// POST /muzakki/rt/:rtId/batch-infak - Batch insert infak dari kembalian
+router.post("/rt/:rtId/batch-infak", async (req, res) => {
+  const rtId = req.params.rtId;
+  const { muzakki_ids } = req.body;
+
+  try {
+    const db = req.app.locals.db;
+
+    // Validate input
+    if (!muzakki_ids || muzakki_ids.length === 0) {
+      req.flash("error_msg", "Pilih minimal 1 muzakki untuk ditambahkan sebagai infak");
+      return res.redirect(`/muzakki/rt/${rtId}`);
+    }
+
+    // Ensure muzakki_ids is array
+    const ids = Array.isArray(muzakki_ids) ? muzakki_ids : [muzakki_ids];
+    
+    let successCount = 0;
+    let totalInfak = 0;
+    const errors = [];
+
+    // Process each muzakki
+    for (const muzakkiId of ids) {
+      try {
+        // Get muzakki data
+        const [muzakki] = await db.execute(
+          "SELECT * FROM muzakki WHERE id = ? AND rt_id = ?",
+          [muzakkiId, rtId]
+        );
+
+        if (muzakki.length === 0) {
+          errors.push(`Muzakki ID ${muzakkiId} tidak ditemukan`);
+          continue;
+        }
+
+        const muzakkiData = muzakki[0];
+
+        // Check if already has infak
+        const [existingInfak] = await db.execute(
+          "SELECT id FROM infak WHERE muzakki_id = ?",
+          [muzakkiId]
+        );
+
+        if (existingInfak.length > 0) {
+          errors.push(`Muzakki ${muzakkiData.nama_muzakki_list || muzakkiId} sudah memiliki infak`);
+          continue;
+        }
+
+        if (muzakkiData.kembalian <= 0) {
+          errors.push(`Muzakki ${muzakkiData.nama_muzakki_list || muzakkiId} tidak memiliki kembalian`);
+          continue;
+        }
+
+        // Get keterangan for this muzakki
+        const keterangan = req.body[`keterangan_${muzakkiId}`] || "Kembalian dari zakat fitrah";
+
+        // Insert infak
+        await db.execute(
+          `INSERT INTO infak (muzakki_id, jumlah, keterangan) VALUES (?, ?, ?)`,
+          [muzakkiId, muzakkiData.kembalian, keterangan]
+        );
+
+        // Reset kembalian to 0
+        await db.execute("UPDATE muzakki SET kembalian = 0 WHERE id = ?", [muzakkiId]);
+
+        successCount++;
+        totalInfak += muzakkiData.kembalian;
+      } catch (err) {
+        console.error(`Error processing muzakki ${muzakkiId}:`, err);
+        errors.push(`Error pada muzakki ID ${muzakkiId}`);
+      }
+    }
+
+    // Show results
+    if (successCount > 0) {
+      req.flash(
+        "success_msg",
+        `Berhasil menambahkan ${successCount} infak dengan total Rp ${totalInfak.toLocaleString("id-ID")}`
+      );
+    }
+
+    if (errors.length > 0) {
+      req.flash("error_msg", errors.join(", "));
+    }
+
+    res.redirect(`/muzakki/rt/${rtId}`);
+  } catch (error) {
+    console.error("Error batch infak:", error);
+    req.flash("error_msg", "Terjadi kesalahan saat menambahkan infak");
+    res.redirect(`/muzakki/rt/${rtId}`);
+  }
+});
+
 // GET /muzakki/:id - Show detail muzakki
 router.get("/:id", async (req, res) => {
   try {
@@ -631,4 +782,379 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// ========================================
+// API Routes for Master Zakat CRUD
+// ========================================
+
+// GET /api/master-zakat - Get all master zakat
+router.get("/api/master-zakat", async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    
+    const [masterZakat] = await db.execute(
+      `SELECT id, nama, harga, kg, created_at, updated_at 
+       FROM master_zakat 
+       ORDER BY id ASC`
+    );
+
+    res.json({
+      success: true,
+      data: masterZakat
+    });
+  } catch (error) {
+    console.error("Error fetching master zakat:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat mengambil data master zakat"
+    });
+  }
+});
+
+// POST /api/master-zakat - Create new master zakat
+router.post("/api/master-zakat", async (req, res) => {
+  const { nama, harga, kg } = req.body;
+
+  try {
+    // Validation
+    if (!nama || nama.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "Nama jenis zakat harus diisi"
+      });
+    }
+
+    if (harga === undefined || harga === null || harga === '' || parseFloat(harga) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Harga tidak boleh kosong atau kurang dari 0"
+      });
+    }
+
+    const db = req.app.locals.db;
+    const userId = req.session.user ? req.session.user.id : null;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Session tidak valid. Silakan login kembali."
+      });
+    }
+
+    // Insert to database
+    const [result] = await db.execute(
+      `INSERT INTO master_zakat (nama, harga, kg, created_by, updated_by)
+       VALUES (?, ?, ?, ?, ?)`,
+      [nama.trim(), parseFloat(harga), parseFloat(kg) || 0, userId, userId]
+    );
+
+    res.json({
+      success: true,
+      message: "Data jenis zakat berhasil ditambahkan",
+      data: { id: result.insertId }
+    });
+  } catch (error) {
+    console.error("Error creating master zakat:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat menyimpan data: " + error.message
+    });
+  }
+});
+
+// PUT /api/master-zakat/:id - Update master zakat
+router.put("/api/master-zakat/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nama, harga, kg } = req.body;
+
+  try {
+    // Validation
+    if (!nama || nama.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "Nama jenis zakat harus diisi"
+      });
+    }
+
+    if (harga === undefined || harga === null || harga === '' || parseFloat(harga) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Harga tidak boleh kosong atau kurang dari 0"
+      });
+    }
+
+    const db = req.app.locals.db;
+    const userId = req.session.user ? req.session.user.id : null;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Session tidak valid. Silakan login kembali."
+      });
+    }
+
+    // Check if exists
+    const [existing] = await db.execute(
+      "SELECT id FROM master_zakat WHERE id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Data tidak ditemukan"
+      });
+    }
+
+    // Update database
+    await db.execute(
+      `UPDATE master_zakat 
+       SET nama = ?, harga = ?, kg = ?, updated_by = ?
+       WHERE id = ?`,
+      [nama.trim(), parseFloat(harga), parseFloat(kg) || 0, userId, id]
+    );
+
+    res.json({
+      success: true,
+      message: "Data jenis zakat berhasil diupdate"
+    });
+  } catch (error) {
+    console.error("Error updating master zakat:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat mengupdate data: " + error.message
+    });
+  }
+});
+
+// DELETE /api/master-zakat/:id - Delete master zakat
+router.delete("/api/master-zakat/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const db = req.app.locals.db;
+
+    // Check if exists
+    const [existing] = await db.execute(
+      "SELECT id, nama FROM master_zakat WHERE id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Data tidak ditemukan"
+      });
+    }
+
+    // Check if being used
+    const [usageCount] = await db.execute(
+      "SELECT COUNT(*) as count FROM muzakki WHERE master_zakat_id = ?",
+      [id]
+    );
+
+    if (usageCount[0].count > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Data ini sedang digunakan oleh ${usageCount[0].count} muzakki. Tidak dapat dihapus.`
+      });
+    }
+
+    // Delete from database
+    await db.execute("DELETE FROM master_zakat WHERE id = ?", [id]);
+
+    res.json({
+      success: true,
+      message: "Data jenis zakat berhasil dihapus"
+    });
+  } catch (error) {
+    console.error("Error deleting master zakat:", error);
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat menghapus data: " + error.message
+    });
+  }
+});
+
+// GET /muzakki/export-excel - Export all muzakki data to Excel with sheets per RT
+router.get("/export-excel", async (req, res) => {
+  const ExcelJS = require('exceljs');
+  
+  try {
+    const db = req.app.locals.db;
+
+    // Create workbook
+    const workbook = new ExcelJS.Workbook();
+
+    // Get all RT data
+    const [rtList] = await db.execute(`
+      SELECT id, nomor_rt, ketua_rt 
+      FROM rt 
+      ORDER BY nomor_rt
+    `);
+
+    // If no RT found, return empty workbook
+    if (rtList.length === 0) {
+      const worksheet = workbook.addWorksheet('Data Kosong');
+      worksheet.addRow(['Tidak ada data RT']);
+    }
+
+    // Create a sheet for each RT
+    for (const rt of rtList) {
+      // Get muzakki data for this RT
+      const [muzakkiData] = await db.execute(`
+        SELECT 
+          m.id,
+          m.jumlah_jiwa,
+          m.jenis_zakat,
+          m.jumlah_beras_kg,
+          m.jumlah_uang,
+          m.jumlah_bayar,
+          m.kembalian,
+          m.created_at,
+          u.name as pencatat_name
+        FROM muzakki m
+        LEFT JOIN users u ON m.user_id = u.id
+        WHERE m.rt_id = ?
+        ORDER BY m.created_at DESC
+      `, [rt.id]);
+
+      // For each muzakki, get detail names
+      for (let i = 0; i < muzakkiData.length; i++) {
+        const [details] = await db.execute(`
+          SELECT GROUP_CONCAT(nama_muzakki SEPARATOR ', ') as nama_muzakki_list
+          FROM muzakki_details
+          WHERE muzakki_id = ?
+        `, [muzakkiData[i].id]);
+        
+        muzakkiData[i].nama_muzakki_list = details[0]?.nama_muzakki_list || '-';
+      }
+
+      // Create worksheet
+      const sheetName = `RT ${String(rt.nomor_rt).padStart(2, '0')}`;
+      const worksheet = workbook.addWorksheet(sheetName);
+
+      // Add title
+      worksheet.mergeCells('A1:J1');
+      worksheet.getCell('A1').value = `DATA MUZAKKI RT ${rt.nomor_rt}`;
+      worksheet.getCell('A1').font = { bold: true, size: 14 };
+      worksheet.getCell('A1').alignment = { horizontal: 'center' };
+
+      // Add ketua info
+      worksheet.mergeCells('A2:J2');
+      worksheet.getCell('A2').value = `Ketua RT: ${rt.ketua_rt || '-'}`;
+      worksheet.getCell('A2').font = { italic: true };
+      worksheet.getCell('A2').alignment = { horizontal: 'center' };
+
+      // Empty row
+      worksheet.addRow([]);
+
+      // Header row
+      const headerRow = worksheet.addRow([
+        'No',
+        'Nama Muzakki',
+        'Jumlah Jiwa',
+        'Jenis Zakat',
+        'Jumlah Beras (kg)',
+        'Jumlah Uang (Rp)',
+        'Jumlah Bayar (Rp)',
+        'Kembalian (Rp)',
+        'Pencatat',
+        'Tanggal'
+      ]);
+
+      // Style header
+      headerRow.font = { bold: true };
+      headerRow.alignment = { horizontal: 'center' };
+
+      // Set column widths
+      worksheet.getColumn(1).width = 5;
+      worksheet.getColumn(2).width = 35;
+      worksheet.getColumn(3).width = 12;
+      worksheet.getColumn(4).width = 12;
+      worksheet.getColumn(5).width = 18;
+      worksheet.getColumn(6).width = 18;
+      worksheet.getColumn(7).width = 18;
+      worksheet.getColumn(8).width = 18;
+      worksheet.getColumn(9).width = 20;
+      worksheet.getColumn(10).width = 15;
+
+      // Add data
+      let totalJiwa = 0;
+      let totalBeras = 0;
+      let totalUang = 0;
+      let totalBayar = 0;
+      let totalKembalian = 0;
+
+      muzakkiData.forEach((item, index) => {
+        const jiwa = parseInt(item.jumlah_jiwa) || 0;
+        const beras = parseFloat(item.jumlah_beras_kg) || 0;
+        const uang = parseFloat(item.jumlah_uang) || 0;
+        const bayar = parseFloat(item.jumlah_bayar) || 0;
+        const kembalian = parseFloat(item.kembalian) || 0;
+
+        totalJiwa += jiwa;
+        totalBeras += beras;
+        totalUang += uang;
+        totalBayar += bayar;
+        totalKembalian += kembalian;
+
+        worksheet.addRow([
+          index + 1,
+          item.nama_muzakki_list,
+          jiwa,
+          item.jenis_zakat === 'beras' ? 'Beras' : 'Uang',
+          beras,
+          uang,
+          bayar,
+          kembalian,
+          item.pencatat_name || '-',
+          new Date(item.created_at).toLocaleDateString('id-ID')
+        ]);
+      });
+
+      // Add total row
+      if (muzakkiData.length > 0) {
+        worksheet.addRow([]);
+        const totalRow = worksheet.addRow([
+          '',
+          'TOTAL',
+          totalJiwa,
+          '',
+          totalBeras,
+          totalUang,
+          totalBayar,
+          totalKembalian,
+          '',
+          ''
+        ]);
+        totalRow.font = { bold: true };
+      }
+    }
+
+    // Generate buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    // Set headers
+    const filename = `Data_Muzakki_${new Date().toISOString().split('T')[0]}.xlsx`;
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', buffer.length);
+
+    // Send buffer
+    res.send(buffer);
+
+  } catch (error) {
+    console.error("Error exporting to Excel:", error);
+    console.error("Stack:", error.stack);
+    
+    if (!res.headersSent) {
+      res.status(500).json({
+        success: false,
+        message: "Terjadi kesalahan saat export ke Excel: " + error.message
+      });
+    }
+  }
+});
+
 module.exports = router;
+

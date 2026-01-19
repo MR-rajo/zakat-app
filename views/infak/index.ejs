@@ -1,145 +1,917 @@
 <%- include('../layouts/header', { title: 'Data Infak - Zakat Fitrah App',
 bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'infak' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h1 class="text-3xl font-bold text-gray-900">
-        <i class="fas fa-hand-holding-heart mr-2 text-primary-600"></i>Data
-        Infak
-      </h1>
-      <p class="text-gray-600 mt-1">
-        Daftar infak yang terkumpul dari kembalian zakat
-      </p>
-    </div>
-  </div>
-
-  <!-- Statistics Card -->
-  <div class="card mb-6">
-    <div class="text-center">
-      <div class="text-4xl font-bold text-primary-600 mb-2">
-        Rp <%= Math.floor(infak.reduce((total, item) => total +
-        (parseFloat(item.jumlah) || 0), 0)).toLocaleString('id-ID') %>
-      </div>
-      <div class="text-gray-600">Total Infak Terkumpul</div>
-      <div class="text-sm text-gray-500 mt-1">
-        Dari <%= infak.length %> transaksi infak
+<div class="page-wrapper">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="header-content-wrapper">
+      <div class="header-left-section">
+        <div class="header-icon-box">
+          <i class="fas fa-hand-holding-heart"></i>
+        </div>
+        <div class="header-text-box">
+          <h1 class="header-title-text">Data Infak</h1>
+          <p class="header-subtitle-text">Daftar infak yang terkumpul dari kembalian zakat</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Data Table -->
-  <div class="card">
-    <div class="table-responsive">
+  <!-- Statistics Cards -->
+  <div class="stats-container">
+    <div class="stat-box stat-box-primary">
+      <div class="stat-icon-wrapper stat-icon-primary">
+        <i class="fas fa-coins"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          Rp <%= Math.floor(infak.reduce((total, item) => total +
+          (parseFloat(item.jumlah) || 0), 0)).toLocaleString('id-ID') %>
+        </div>
+        <div class="stat-label-text">Total Infak Terkumpul</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+    <div class="stat-box stat-box-success">
+      <div class="stat-icon-wrapper stat-icon-success">
+        <i class="fas fa-exchange-alt"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          <%= infak.length %>
+        </div>
+        <div class="stat-label-text">Total Transaksi Infak</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+    <div class="stat-box stat-box-info">
+      <div class="stat-icon-wrapper stat-icon-info">
+        <i class="fas fa-calculator"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          <% if (infak.length > 0) { %>
+            Rp <%= Math.floor((infak.reduce((total, item) => total + (parseFloat(item.jumlah) || 0), 0)) / infak.length).toLocaleString('id-ID') %>
+          <% } else { %>
+            Rp 0
+          <% } %>
+        </div>
+        <div class="stat-label-text">Rata-rata Per Transaksi</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- Data Table Section -->
+  <div class="table-section">
+    <div class="table-header-wrapper">
+      <div class="table-header-left">
+        <div class="table-header-icon">
+          <i class="fas fa-table"></i>
+        </div>
+        <div class="table-header-text">
+          <h2 class="table-title">Daftar Transaksi Infak</h2>
+          <p class="table-subtitle">Riwayat lengkap infak dari kembalian zakat</p>
+        </div>
+      </div>
+      <div class="table-header-right">
+        <span class="table-badge">
+          <i class="fas fa-list"></i>
+          <%= infak.length %> Transaksi
+        </span>
+      </div>
+    </div>
+
+    <div class="table-content-wrapper">
       <% if (infak.length === 0) { %>
-      <div class="text-center py-12">
-        <i class="fas fa-hand-holding-heart text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-900 mb-2">Belum ada infak</h3>
-        <p class="text-gray-600 mb-6">
-          Infak akan muncul otomatis ketika ada kembalian zakat yang
-          disedekahkan
-        </p>
-        <a href="/muzakki" class="btn-primary">
-          <i class="fas fa-users mr-2"></i>Lihat Data Muzakki
-        </a>
-      </div>
+        <div class="empty-state-box">
+          <div class="empty-state-icon">
+            <i class="fas fa-hand-holding-heart"></i>
+          </div>
+          <h3 class="empty-state-title">Belum ada infak</h3>
+          <p class="empty-state-desc">Infak akan muncul otomatis ketika ada kembalian zakat yang disedekahkan</p>
+          <a href="/muzakki" class="btn-empty-state">
+            <i class="fas fa-users mr-2"></i>
+            Lihat Data Muzakki
+          </a>
+        </div>
       <% } else { %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Dari Muzakki</th>
-            <th>RT</th>
-            <th>Jumlah Infak</th>
-            <th>Keterangan</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% infak.forEach(function(item) { %>
-          <tr>
-            <td>
-              <div class="font-medium text-gray-900">
-                <%= new Date(item.created_at).toLocaleDateString('id-ID', {
-                weekday: 'short', year: 'numeric', month: 'short', day:
-                'numeric' }) %>
-              </div>
-              <div class="text-xs text-gray-500">
-                <%= new Date(item.created_at).toLocaleTimeString('id-ID', {
-                hour: '2-digit', minute: '2-digit' }) %>
-              </div>
-            </td>
-            <td>
-              <div class="font-medium text-gray-900">
-                <%= item.muzakki_name || '-' %>
-              </div>
-              <div class="text-xs text-gray-500">
-                ID: <%= item.muzakki_id %>
-              </div>
-            </td>
-            <td>
-              <% if (item.nomor_rt) { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-              >
-                <%= item.nomor_rt %>
-              </span>
-              <% } else { %>
-              <span class="text-gray-400">-</span>
-              <% } %>
-            </td>
-            <td>
-              <div class="font-bold text-primary-600 text-lg">
-                Rp <%= Math.floor(item.jumlah).toLocaleString('id-ID') %>
-              </div>
-            </td>
-            <td>
-              <div class="text-sm text-gray-600">
-                <%= item.keterangan || '-' %>
-              </div>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-        <tfoot>
-          <tr class="bg-gray-50">
-            <td colspan="3" class="font-bold text-gray-900">Total Infak</td>
-            <td class="font-bold text-primary-600 text-lg">
-              Rp <%= Math.floor(infak.reduce((total, item) => total +
-              (parseFloat(item.jumlah) || 0), 0)).toLocaleString('id-ID') %>
-            </td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+        <div class="table-responsive-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Dari Muzakki</th>
+                <th>RT</th>
+                <th>Jumlah Infak</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% infak.forEach(function(item, index) { %>
+              <tr class="table-row-animated" style="animation-delay: <%= index * 0.05 %>s;">
+                <td>
+                  <div class="cell-content-primary">
+                    <div class="date-display">
+                      <i class="fas fa-calendar-alt mr-2"></i>
+                      <%= new Date(item.created_at).toLocaleDateString('id-ID', {
+                        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+                      }) %>
+                    </div>
+                    <div class="time-display">
+                      <i class="fas fa-clock mr-1"></i>
+                      <%= new Date(item.created_at).toLocaleTimeString('id-ID', {
+                        hour: '2-digit', minute: '2-digit'
+                      }) %>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-content-primary">
+                    <div class="muzakki-name">
+                      <%= item.muzakki_name || '-' %>
+                    </div>
+                    <div class="muzakki-id">
+                      ID: <%= item.muzakki_id %>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <% if (item.nomor_rt) { %>
+                    <span class="rt-badge-small">
+                      <i class="fas fa-home"></i>
+                      RT <%= item.nomor_rt %>
+                    </span>
+                  <% } else { %>
+                    <span class="text-gray-400">-</span>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <div class="amount-display-large amount-primary">
+                    <i class="fas fa-coins mr-1"></i>
+                    Rp <%= Math.floor(item.jumlah).toLocaleString('id-ID') %>
+                  </div>
+                </td>
+                <td>
+                  <div class="keterangan-text">
+                    <%= item.keterangan || '-' %>
+                  </div>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+            <tfoot>
+              <tr class="table-footer-row">
+                <td colspan="3" class="footer-label">
+                  <i class="fas fa-calculator mr-2"></i>
+                  Total Infak
+                </td>
+                <td class="text-center">
+                  <div class="footer-total-amount">
+                    Rp <%= Math.floor(infak.reduce((total, item) => total +
+                    (parseFloat(item.jumlah) || 0), 0)).toLocaleString('id-ID') %>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       <% } %>
     </div>
   </div>
 
+  </div>
+
   <!-- Information Card -->
-  <div class="mt-6 card">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">
-      <i class="fas fa-info-circle mr-2 text-blue-600"></i>Informasi Infak
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
-      <div>
-        <h4 class="font-medium text-gray-900 mb-2">Sumber Infak</h4>
-        <ul class="space-y-1">
-          <li>• Kembalian dari pembayaran zakat fitrah</li>
-          <li>• Otomatis tercatat saat kembalian disedekahkan</li>
-          <li>• Dapat digunakan untuk keperluan sosial</li>
+  <div class="info-card-section">
+    <div class="info-card-header">
+      <div class="info-card-icon">
+        <i class="fas fa-info-circle"></i>
+      </div>
+      <h3 class="info-card-title">Informasi Infak</h3>
+    </div>
+    <div class="info-card-content">
+      <div class="info-box-item">
+        <div class="info-box-header">
+          <i class="fas fa-hand-holding-usd info-icon"></i>
+          <h4 class="info-box-title">Sumber Infak</h4>
+        </div>
+        <ul class="info-list">
+          <li><i class="fas fa-check-circle"></i> Kembalian dari pembayaran zakat fitrah</li>
+          <li><i class="fas fa-check-circle"></i> Otomatis tercatat saat kembalian disedekahkan</li>
+          <li><i class="fas fa-check-circle"></i> Dapat digunakan untuk keperluan sosial</li>
         </ul>
       </div>
-      <div>
-        <h4 class="font-medium text-gray-900 mb-2">Pemanfaatan</h4>
-        <ul class="space-y-1">
-          <li>• Bantuan untuk mustahik</li>
-          <li>• Kegiatan sosial masyarakat</li>
-          <li>• Operasional kegiatan zakat</li>
+      <div class="info-box-item">
+        <div class="info-box-header">
+          <i class="fas fa-hands-helping info-icon"></i>
+          <h4 class="info-box-title">Pemanfaatan</h4>
+        </div>
+        <ul class="info-list">
+          <li><i class="fas fa-check-circle"></i> Bantuan untuk mustahik</li>
+          <li><i class="fas fa-check-circle"></i> Kegiatan sosial masyarakat</li>
+          <li><i class="fas fa-check-circle"></i> Operasional kegiatan zakat</li>
         </ul>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modern Styles -->
+<style>
+  /* Page Wrapper */
+  .page-wrapper {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-animation 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-animation {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  .header-content-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-text-box {
+    color: white;
+  }
+
+  .header-title-text {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: white;
+  }
+
+  .header-subtitle-text {
+    font-size: 16px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* Statistics Container */
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-box {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-box:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.1;
+  }
+
+  .stat-box-primary .stat-decoration {
+    background: #1EAF2F;
+  }
+
+  .stat-box-success .stat-decoration {
+    background: #10b981;
+  }
+
+  .stat-box-info .stat-decoration {
+    background: #3b82f6;
+  }
+
+  .stat-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-icon-primary {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  }
+
+  .stat-icon-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .stat-icon-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  .stat-content-box {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-value-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .stat-label-text {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  /* Table Section */
+  .table-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .table-header-wrapper {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .table-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .table-header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .table-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  .table-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .table-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #d1fae5;
+    color: #065f46;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .table-content-wrapper {
+    padding: 16px;
+  }
+
+  /* Empty State */
+  .empty-state-box {
+    text-align: center;
+    padding: 60px 24px;
+  }
+
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: #9ca3af;
+  }
+
+  .empty-state-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-state-desc {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0 0 28px 0;
+  }
+
+  .btn-empty-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(30, 175, 47, 0.3);
+  }
+
+  .btn-empty-state:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 175, 47, 0.4);
+  }
+
+  /* Data Table */
+  .table-responsive-wrapper {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead tr {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .data-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeInRow 0.5s ease forwards;
+  }
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .data-table tbody tr:hover {
+    background: linear-gradient(to right, #f0fdf4, #dcfce7);
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(30, 175, 47, 0.1);
+  }
+
+  .data-table td {
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  .data-table tfoot tr {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-top: 2px solid #e5e7eb;
+  }
+
+  .table-footer-row td {
+    padding: 20px 16px;
+    font-weight: 600;
+  }
+
+  .footer-label {
+    font-size: 16px;
+    color: #111827;
+    display: flex;
+    align-items: center;
+  }
+
+  .footer-total-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1EAF2F;
+  }
+
+  /* Table Cell Content */
+  .cell-content-primary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .date-display {
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+
+  .time-display {
+    font-size: 12px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+  }
+
+  .muzakki-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .muzakki-id {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-gray-400 {
+    color: #9ca3af;
+  }
+
+  .rt-badge-small {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #f3f4f6;
+    color: #374151;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .amount-display-large {
+    font-weight: 700;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .amount-primary {
+    color: #1EAF2F;
+  }
+
+  .keterangan-text {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  /* Information Card */
+  .info-card-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .info-card-header {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 20px 24px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .info-card-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .info-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  .info-card-content {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .info-box-item {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 2px solid #bae6fd;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .info-box-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+  }
+
+  .info-box-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .info-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .info-box-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e40af;
+    margin: 0;
+  }
+
+  .info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: #1e3a8a;
+    line-height: 1.6;
+  }
+
+  .info-list li i {
+    color: #10b981;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  /* Utility Classes */
+  .mr-1 {
+    margin-right: 4px;
+  }
+
+  .mr-2 {
+    margin-right: 8px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .info-card-content {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-wrapper {
+      padding: 12px;
+      gap: 16px;
+    }
+
+    .page-header {
+      padding: 20px 16px;
+    }
+
+    .header-title-text {
+      font-size: 24px;
+    }
+
+    .header-subtitle-text {
+      font-size: 14px;
+    }
+
+    .header-icon-box {
+      width: 52px;
+      height: 52px;
+      font-size: 24px;
+    }
+
+    .stats-container {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .stat-value-text {
+      font-size: 20px;
+    }
+
+    .table-content-wrapper {
+      padding: 12px;
+    }
+
+    .data-table {
+      font-size: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 10px 8px;
+    }
+
+    .table-header-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .info-card-content {
+      padding: 16px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page-wrapper {
+      padding: 8px;
+    }
+
+    .header-left-section {
+      gap: 12px;
+    }
+
+    .header-title-text {
+      font-size: 20px;
+    }
+
+    .header-icon-box {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+    }
+
+    .amount-display-large {
+      font-size: 14px;
+    }
+
+    .footer-total-amount {
+      font-size: 16px;
+    }
+  }
+</style>
+<!-- JavaScript -->
+<script>
+  // Add entrance animations on load
+  document.addEventListener('DOMContentLoaded', function () {
+    // Animate stat boxes
+    const statBoxes = document.querySelectorAll('.stat-box');
+    statBoxes.forEach((box, index) => {
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        box.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
+
+    // Animate info boxes
+    const infoBoxes = document.querySelectorAll('.info-box-item');
+    infoBoxes.forEach((box, index) => {
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        box.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      }, (statBoxes.length * 100) + (index * 150));
+    });
+  });
+</script>
 
 <%- include('../layouts/footer') %>

@@ -9,9 +9,15 @@ router.get("/login", (req, res) => {
     return res.redirect("/");
   }
 
+  // Get messages from query parameters
+  const success = req.query.success;
+  const error = req.query.error;
+
   res.render("auth/login", {
     title: "Login - Zakat Fitrah",
     layout: "layouts/main",
+    success: success,
+    error: error,
   });
 });
 
@@ -71,12 +77,20 @@ router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error("Logout error:", err);
-      req.flash("error_msg", "Terjadi kesalahan saat logout");
-      return res.redirect("/");
+      return res.redirect("/?error=Terjadi kesalahan saat logout");
     }
+    res.redirect("/?success=Anda telah berhasil logout");
+  });
+});
 
-    req.flash("success_msg", "Anda telah berhasil logout");
-    res.redirect("/auth/login");
+// POST /auth/logout - Logout user (for form submission)
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.redirect("/?error=Terjadi kesalahan saat logout");
+    }
+    res.redirect("/?success=Anda telah berhasil logout");
   });
 });
 

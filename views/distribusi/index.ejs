@@ -14,10 +14,10 @@
           </div>
         </div>
         <div class="header-actions">
-          <a href="/distribusi/create" class="btn-action btn-action-primary">
+          <button type="button" onclick="openCreateDistribusi()" class="btn-action btn-action-primary cursor-pointer">
             <i class="fas fa-plus mr-2"></i>
             <span>Distribusi Baru</span>
-          </a>
+          </button>
           <a href="/distribusi/laporan" class="btn-action btn-action-secondary">
             <i class="fas fa-chart-bar mr-2"></i>
             <span>Laporan</span>
@@ -199,10 +199,10 @@
                   Mulai dengan membuat distribusi zakat pertama untuk mustahik
                   <% } %>
             </p>
-            <a href="/distribusi/create" class="btn-empty-state">
+            <button type="button" onclick="openCreateDistribusi()" class="btn-empty-state">
               <i class="fas fa-plus mr-2"></i>
               Buat Distribusi Baru
-            </a>
+            </button>
           </div>
           <% } else { %>
             <div class="table-responsive-wrapper">
@@ -296,10 +296,10 @@
                             <i class="fas fa-eye"></i>
                           </a>
                           <% if (d.status==='pending' || d.status==='disalurkan' ) { %>
-                            <a href="/distribusi/edit/<%= d.id %>" class="btn-icon btn-icon-primary"
-                              title="Edit Distribusi">
+                            <button type="button" onclick="openEditDistribusi(<%= d.id %>)" 
+                              class="btn-icon btn-icon-primary" title="Edit Distribusi">
                               <i class="fas fa-edit"></i>
-                            </a>
+                            </button>
                             <% } %>
                               <% if (d.status==='pending' ) { %>
                                 <form method="POST" action="/distribusi/delete/<%= d.id %>?_method=DELETE"
@@ -367,19 +367,15 @@
   <style>
     /* Page Wrapper */
     .page-wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
     }
 
     /* Page Header */
     .page-header {
       background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
       border-radius: 20px;
-      padding: 32px;
+      padding: 16px;
       box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
       position: relative;
       overflow: hidden;
@@ -645,7 +641,7 @@
 
     .filter-header {
       background: linear-gradient(to right, #f9fafb, #f3f4f6);
-      padding: 20px 24px;
+      padding: 16px;
       border-bottom: 1px solid #e5e7eb;
       display: flex;
       align-items: center;
@@ -678,7 +674,7 @@
     }
 
     .filter-content {
-      padding: 24px;
+      padding: 16px;
     }
 
     .filter-form {
@@ -804,7 +800,7 @@
 
     .table-header-wrapper {
       background: linear-gradient(to right, #f9fafb, #f3f4f6);
-      padding: 24px 28px;
+      padding: 16px;
       border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
@@ -875,7 +871,7 @@
     }
 
     .table-content-wrapper {
-      padding: 28px;
+      padding: 16px;
     }
 
     /* Empty State */
@@ -1412,28 +1408,17 @@
     function confirmDelete(btn) {
       const id = btn.dataset.id;
       const nama = btn.dataset.nama;
-
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          title: 'Konfirmasi Hapus',
-          text: `Yakin ingin menghapus distribusi untuk ${nama}? Data ini tidak dapat dikembalikan.`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#ef4444',
-          cancelButtonColor: '#6b7280',
-          confirmButtonText: 'Ya, Hapus',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
+      
+      showDeleteConfirm(`distribusi untuk ${nama}`)
+        .then((result) => {
           if (result.isConfirmed) {
             document.getElementById(`delete-form-${id}`).submit();
           }
         });
-      } else {
-        if (confirm(`Apakah Anda yakin ingin menghapus distribusi untuk ${nama}?`)) {
-          document.getElementById(`delete-form-${id}`).submit();
-        }
-      }
     }
   </script>
+
+  <!-- Include Modal -->
+  <%- include('./partials/modal-form') %>
 
   <%- include('../layouts/footer') %>

@@ -155,25 +155,49 @@
 
               <!-- Jenis Zakat -->
               <div class="form-group">
-                <label for="jenis_zakat" class="form-label">
+                <label for="master_zakat_id" class="form-label">
                   <i class="fas fa-hand-holding mr-1"></i>Jenis Zakat <span class="required">*</span>
                 </label>
-                <select id="jenis_zakat" name="jenis_zakat" required class="form-select" onchange="calculateZakat()">
+                <select id="master_zakat_id" name="master_zakat_id" required class="form-select">
                   <option value="">Pilih jenis zakat</option>
-                  <option value="beras">Beras (2.5 kg/jiwa)</option>
-                  <option value="uang">Uang (Rp 45.000/jiwa)</option>
+                  <% masterZakatList.forEach(function(zakat) { %>
+                    <option value="<%= zakat.id %>" data-harga="<%= zakat.harga %>" data-kg="<%= zakat.kg %>">
+                      <%= zakat.nama %> 
+                      <% if (parseFloat(zakat.kg) > 0) { %>
+                        (<%= zakat.kg %> kg/jiwa)
+                      <% } else { %>
+                        (Rp <%= Math.floor(parseFloat(zakat.harga)).toLocaleString('id-ID') %>/jiwa)
+                      <% } %>
+                    </option>
+                  <% }); %>
                 </select>
               </div>
 
-              <!-- Kewajiban Display -->
+              <!-- Preview Perhitungan Zakat -->
               <div class="form-group form-group-full">
-                <div class="kewajiban-box">
-                  <div class="kewajiban-icon">
-                    <i class="fas fa-calculator"></i>
+                <div class="preview-container">
+                  <!-- Preview Jumlah Uang -->
+                  <div class="preview-box preview-box-blue">
+                    <div class="preview-icon">
+                      <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="preview-content">
+                      <div class="preview-label">Total Zakat (Uang)</div>
+                      <div class="preview-value" id="preview_jumlah_uang">Rp 0</div>
+                      <input type="hidden" id="jumlah_uang" name="jumlah_uang" value="0" />
+                    </div>
                   </div>
-                  <div class="kewajiban-content">
-                    <div class="kewajiban-label">Kewajiban Zakat</div>
-                    <div class="kewajiban-value" id="kewajiban_display">-</div>
+
+                  <!-- Preview Jumlah Beras -->
+                  <div class="preview-box preview-box-green">
+                    <div class="preview-icon">
+                      <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="preview-content">
+                      <div class="preview-label">Total Zakat (Beras)</div>
+                      <div class="preview-value" id="preview_jumlah_beras_kg">0 kg</div>
+                      <input type="hidden" id="jumlah_beras_kg" name="jumlah_beras_kg" value="0" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -257,9 +281,9 @@
   <style>
     /* Page Wrapper */
     .page-wrapper {
-      max-width: 1400px;
+      max-width: 100%;
       margin: 0 auto;
-      padding: 24px;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -636,6 +660,14 @@
       font-size: 24px;
       font-weight: 700;
       color: #111827;
+      line-height: 1.3;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+    }
+
+    .kewajiban-value > div {
+      width: 100%;
     }
 
     /* Form Actions */
@@ -800,198 +832,96 @@
       }
     }
 
-    /* Utility Classes */
-    border-radius: 12px;
+    /* Preview Container */
+    .preview-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 8px;
     }
 
-    .kewajiban-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    .preview-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
       border-radius: 12px;
+      border: 2px solid;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .preview-box-blue {
+      border-color: #bfdbfe;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    }
+
+    .preview-box-green {
+      border-color: #bbf7d0;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+
+    .preview-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 18px;
       color: white;
-      font-size: 20px;
+      flex-shrink: 0;
     }
 
-    .kewajiban-content {
+    .preview-box-blue .preview-icon {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .preview-box-green .preview-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .preview-content {
       flex: 1;
+      min-width: 0;
     }
 
-    .kewajiban-label {
-      font-size: 13px;
-      color: #065f46;
+    .preview-label {
+      font-size: 12px;
       font-weight: 600;
       margin-bottom: 4px;
     }
 
-    .kewajiban-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: #111827;
+    .preview-box-blue .preview-label {
+      color: #1e40af;
     }
 
-    /* Form Actions */
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      padding: 24px 0;
+    .preview-box-green .preview-label {
+      color: #065f46;
     }
 
-    .btn-primary,
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 15px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
-      color: white;
-      box-shadow: 0 4px 15px rgba(30, 175, 47, 0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(30, 175, 47, 0.4);
-    }
-
-    .btn-secondary {
-      background: white;
-      color: #374151;
-      border: 2px solid #e5e7eb;
-    }
-
-    .btn-secondary:hover {
-      background: #f9fafb;
-      border-color: #d1d5db;
-    }
-
-    /* Info Grid */
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .info-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: 1px solid #e5e7eb;
-      display: flex;
-      gap: 16px;
-    }
-
-    .info-card-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .info-card-green .info-card-icon {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    }
-
-    .info-card-blue .info-card-icon {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    }
-
-    .info-card-content {
-      flex: 1;
-    }
-
-    .info-card-title {
+    .preview-value {
       font-size: 18px;
       font-weight: 700;
-      color: #111827;
-      margin: 0 0 12px 0;
+      line-height: 1.2;
     }
 
-    .info-card-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .preview-box-blue .preview-value {
+      color: #1e3a8a;
     }
 
-    .info-card-list li {
-      font-size: 14px;
-      color: #6b7280;
-      padding-left: 20px;
-      position: relative;
+    .preview-box-green .preview-value {
+      color: #064e3b;
     }
 
-    .info-card-list li::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: #1EAF2F;
-      font-weight: 700;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-      .form-grid {
+    @media (max-width: 640px) {
+      .preview-container {
         grid-template-columns: 1fr;
-      }
-
-      .form-group-full,
-      .form-group-double {
-        grid-column: span 1;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .page-wrapper {
-        padding: 16px;
-      }
-
-      .page-header {
-        padding: 24px;
-      }
-
-      .header-content-wrapper {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .header-title-text {
-        font-size: 24px;
-      }
-
-      .card-body {
-        padding: 20px;
-      }
-
-      .form-actions {
-        flex-direction: column-reverse;
-      }
-
-      .btn-primary,
-      .btn-secondary {
-        width: 100%;
-        justify-content: center;
       }
     }
 
@@ -1033,26 +963,154 @@
 
     // Enhanced calculate zakat function
     function calculateZakat() {
-      const jiwa = parseInt(document.getElementById("jumlah_jiwa").value) || 0;
-      const jenisZakat = document.getElementById("jenis_zakat").value;
+      console.log('=== Calculate Zakat Called ===');
+      
+      const jiwaEl = document.getElementById("jumlah_jiwa");
+      const masterZakatSelect = document.getElementById("master_zakat_id");
       const kewajibanDisplay = document.getElementById("kewajiban_display");
+      
+      // Preview elements
+      const previewJumlahUang = document.getElementById("preview_jumlah_uang");
+      const previewJumlahBerasKg = document.getElementById("preview_jumlah_beras_kg");
+      const inputJumlahUang = document.getElementById("jumlah_uang");
+      const inputJumlahBerasKg = document.getElementById("jumlah_beras_kg");
 
-      if (jiwa > 0 && jenisZakat) {
-        let kewajiban = 0;
-        if (jenisZakat === "beras") {
-          kewajiban = jiwa * 2.5; // 2.5 kg per jiwa
-          kewajibanDisplay.textContent = kewajiban.toFixed(1) + " kg beras";
-          kewajibanDisplay.style.color = "#059669";
-        } else if (jenisZakat === "uang") {
-          kewajiban = jiwa * 45000; // Rp 45.000 per jiwa
-          kewajibanDisplay.textContent =
-            "Rp " + kewajiban.toLocaleString("id-ID");
-          kewajibanDisplay.style.color = "#2563eb";
-        }
-      } else {
-        kewajibanDisplay.textContent = "-";
-        kewajibanDisplay.style.color = "#9ca3af";
+      console.log('Elements:', {
+        jiwaEl: !!jiwaEl,
+        masterZakatSelect: !!masterZakatSelect,
+        kewajibanDisplay: !!kewajibanDisplay,
+        previewJumlahUang: !!previewJumlahUang,
+        previewJumlahBerasKg: !!previewJumlahBerasKg
+      });
+
+      if (!jiwaEl || !masterZakatSelect || !kewajibanDisplay) {
+        console.error('Element tidak ditemukan!');
+        return;
       }
+
+      const jiwa = parseInt(jiwaEl.value) || 0;
+      const selectedValue = masterZakatSelect.value;
+      
+      console.log('Values:', {
+        jiwa: jiwa,
+        selectedValue: selectedValue
+      });
+
+      if (jiwa > 0 && selectedValue) {
+        const selectedOption = masterZakatSelect.options[masterZakatSelect.selectedIndex];
+        const hargaStr = selectedOption.getAttribute('data-harga');
+        const kgStr = selectedOption.getAttribute('data-kg');
+        
+        console.log('Attributes:', {
+          hargaStr: hargaStr,
+          kgStr: kgStr
+        });
+        
+        const harga = parseFloat(hargaStr) || 0;
+        const kg = parseFloat(kgStr) || 0;
+        
+        console.log('Parsed:', {
+          harga: harga,
+          kg: kg
+        });
+        
+        if (kg > 0) {
+          // Jenis beras
+          const totalKg = jiwa * kg;
+          const totalUang = jiwa * harga;
+          
+          console.log('BERAS - Total KG:', totalKg, 'Total Uang:', totalUang);
+          
+          // Update kewajiban display
+          kewajibanDisplay.innerHTML = 
+            '<div class="text-lg font-bold text-green-600">' +
+              totalKg.toFixed(1) + ' kg beras' +
+            '</div>' +
+            '<div class="text-sm text-gray-600">' +
+              '(Senilai Rp ' + Math.floor(totalUang).toLocaleString("id-ID") + ')' +
+            '</div>';
+          
+          // Update preview dan hidden inputs
+          if (previewJumlahUang) {
+            previewJumlahUang.textContent = 'Rp ' + Math.floor(totalUang).toLocaleString("id-ID");
+          }
+          if (previewJumlahBerasKg) {
+            previewJumlahBerasKg.textContent = totalKg.toFixed(1) + ' kg';
+          }
+          if (inputJumlahUang) {
+            inputJumlahUang.value = Math.floor(totalUang);
+          }
+          if (inputJumlahBerasKg) {
+            inputJumlahBerasKg.value = totalKg.toFixed(1);
+          }
+          
+          console.log('✅ Beras display updated');
+        } else {
+          // Jenis uang
+          const totalUang = jiwa * harga;
+          
+          console.log('UANG - Total:', totalUang);
+          
+          // Update kewajiban display
+          kewajibanDisplay.innerHTML = 
+            '<div class="text-lg font-bold text-blue-600">' +
+              'Rp ' + Math.floor(totalUang).toLocaleString("id-ID") +
+            '</div>' +
+            '<div class="text-sm text-gray-600">' +
+              jiwa + ' jiwa × Rp ' + Math.floor(harga).toLocaleString("id-ID") + 
+              ' = Rp ' + Math.floor(totalUang).toLocaleString("id-ID") +
+            '</div>';
+          
+          // Update preview dan hidden inputs
+          if (previewJumlahUang) {
+            previewJumlahUang.textContent = 'Rp ' + Math.floor(totalUang).toLocaleString("id-ID");
+          }
+          if (previewJumlahBerasKg) {
+            previewJumlahBerasKg.textContent = '0 kg';
+          }
+          if (inputJumlahUang) {
+            inputJumlahUang.value = Math.floor(totalUang);
+          }
+          if (inputJumlahBerasKg) {
+            inputJumlahBerasKg.value = 0;
+          }
+          
+          console.log('✅ Uang display updated');
+        }
+        
+        console.log('Final HTML:', kewajibanDisplay.innerHTML);
+        console.log('Preview Values:', {
+          jumlah_uang: inputJumlahUang ? inputJumlahUang.value : 'N/A',
+          jumlah_beras_kg: inputJumlahBerasKg ? inputJumlahBerasKg.value : 'N/A'
+        });
+      } else {
+        // Reset semua ke default
+        kewajibanDisplay.innerHTML = '<span style="color: #9ca3af;">-</span>';
+        
+        if (previewJumlahUang) {
+          previewJumlahUang.textContent = 'Rp 0';
+        }
+        if (previewJumlahBerasKg) {
+          previewJumlahBerasKg.textContent = '0 kg';
+        }
+        if (inputJumlahUang) {
+          inputJumlahUang.value = 0;
+        }
+        if (inputJumlahBerasKg) {
+          inputJumlahBerasKg.value = 0;
+        }
+        
+        console.log('Reset to default -');
+        
+        if (jiwa === 0) {
+          console.log('Jumlah jiwa masih 0, tambahkan muzakki terlebih dahulu');
+        }
+        if (!masterZakatSelect.value) {
+          console.log('Jenis zakat belum dipilih');
+        }
+      }
+      
+      console.log('=== End Calculate Zakat ===');
     }
 
     // Function untuk menambah section muzakki baru
@@ -1296,6 +1354,8 @@
 
     // Add event listeners when document is ready
     document.addEventListener("DOMContentLoaded", function () {
+      console.log("=== DOM Content Loaded ===");
+      
       const displayInput = document.getElementById("jumlah_bayar_display");
 
       // Prevent non-numeric input
@@ -1331,6 +1391,33 @@
 
       // Initialize jumlah jiwa dengan menghitung muzakki yang ada
       updateJumlahJiwa();
+
+      // Add event listener untuk jenis zakat
+      const masterZakatSelect = document.getElementById("master_zakat_id");
+      if (masterZakatSelect) {
+        console.log("✅ Found master_zakat_id element");
+        
+        // Remove any existing onchange
+        masterZakatSelect.onchange = null;
+        
+        // Add new event listener
+        masterZakatSelect.addEventListener("change", function() {
+          console.log("📝 Event: Jenis zakat changed to:", this.value);
+          calculateZakat();
+        });
+        
+        console.log("✅ Event listener added successfully");
+        
+        // Trigger initial calculation if already selected
+        if (masterZakatSelect.value) {
+          console.log("Initial value exists:", masterZakatSelect.value);
+          setTimeout(() => {
+            calculateZakat();
+          }, 300);
+        }
+      } else {
+        console.error("❌ Element master_zakat_id not found!");
+      }
     });
 
     // Form validation
@@ -1338,7 +1425,7 @@
       .getElementById("muzakkiForm")
       .addEventListener("submit", function (e) {
         const jiwa = parseInt(document.getElementById("jumlah_jiwa").value);
-        const jenisZakat = document.getElementById("jenis_zakat").value;
+        const masterZakatId = document.getElementById("master_zakat_id").value;
         const jumlahBayar = parseInt(
           document.getElementById("jumlah_bayar").value
         );
@@ -1359,7 +1446,7 @@
           return false;
         }
 
-        if (!jenisZakat) {
+        if (!masterZakatId) {
           e.preventDefault();
           if (typeof Swal !== 'undefined') {
             Swal.fire({
@@ -1422,6 +1509,8 @@
         // Konfirmasi final dengan SweetAlert2
         e.preventDefault();
         const muzakkiCount = muzakkiSections.length;
+        const masterZakatSelect = document.getElementById("master_zakat_id");
+        const jenisZakatText = masterZakatSelect.options[masterZakatSelect.selectedIndex].text;
 
         if (typeof Swal !== 'undefined') {
           Swal.fire({
@@ -1432,7 +1521,7 @@
               <ul style="list-style: none; padding-left: 0;">
                 <li style="margin-bottom: 6px;">📊 Jumlah Muzakki: <strong>${muzakkiCount} orang</strong></li>
                 <li style="margin-bottom: 6px;">👥 Jumlah Jiwa: <strong>${jiwa} jiwa</strong></li>
-                <li style="margin-bottom: 6px;">🎯 Jenis Zakat: <strong>${jenisZakat}</strong></li>
+                <li style="margin-bottom: 6px;">🎯 Jenis Zakat: <strong>${jenisZakatText}</strong></li>
                 <li style="margin-bottom: 6px;">💰 Jumlah Bayar: <strong>Rp ${jumlahBayar.toLocaleString("id-ID")}</strong></li>
               </ul>
             </div>
@@ -1456,7 +1545,7 @@
             `Apakah data yang dimasukkan sudah benar?\n\n` +
             `- Jumlah Muzakki: ${muzakkiCount} orang\n` +
             `- Jumlah Jiwa: ${jiwa} jiwa\n` +
-            `- Jenis Zakat: ${jenisZakat}\n` +
+            `- Jenis Zakat: ${jenisZakatText}\n` +
             `- Jumlah Bayar: Rp ${jumlahBayar.toLocaleString("id-ID")}`;
 
           if (confirm(confirmMessage)) {

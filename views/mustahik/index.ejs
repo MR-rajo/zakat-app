@@ -344,9 +344,9 @@
                     </div>
                   </div>
                 </div>
-                <% }); %>
-            </div>
-            <% } %>
+            <% }); %>
+          </div>
+        <% } %>
       </div>
     </div>
   </div>
@@ -355,9 +355,7 @@
   <style>
     /* Page Wrapper */
     .page-wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -1310,14 +1308,14 @@
     });
 
     // Confirm delete function
-    function confirmDelete(btn) {
-      const id = btn.dataset.id;
-      const nama = btn.dataset.nama;
+    function confirmDelete(button) {
+      const id = button.getAttribute('data-id');
+      const nama = button.getAttribute('data-nama');
 
       if (typeof Swal !== 'undefined') {
         Swal.fire({
           title: 'Konfirmasi Hapus',
-          text: `Yakin ingin menghapus data mustahik ${nama}? Data ini tidak dapat dikembalikan.`,
+          text: 'Yakin ingin menghapus data mustahik ' + nama + '? Data ini tidak dapat dikembalikan.',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#ef4444',
@@ -1326,13 +1324,13 @@
           cancelButtonText: 'Batal'
         }).then((result) => {
           if (result.isConfirmed) {
-            const form = document.getElementById(`delete-form-${id}`) || document.getElementById(`delete-form-mobile-${id}`);
+            const form = document.getElementById('delete-form-' + id) || document.getElementById('delete-form-mobile-' + id);
             if (form) form.submit();
           }
         });
       } else {
-        if (confirm(`Apakah Anda yakin ingin menghapus data mustahik ${nama}?`)) {
-          const form = document.getElementById(`delete-form-${id}`) || document.getElementById(`delete-form-mobile-${id}`);
+        if (confirm('Apakah Anda yakin ingin menghapus data mustahik ' + nama + '?')) {
+          const form = document.getElementById('delete-form-' + id) || document.getElementById('delete-form-mobile-' + id);
           if (form) form.submit();
         }
       }

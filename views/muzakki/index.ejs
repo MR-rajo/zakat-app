@@ -15,6 +15,10 @@
           </div>
         </div>
         <div class="header-actions">
+          <button type="button" onclick="openMasterZakatModal()" class="btn-action btn-action-secondary">
+            <i class="fas fa-database mr-2"></i>
+            <span>Master Zakat</span>
+          </button>
           <a href="/muzakki/create" class="btn-action btn-action-primary">
             <i class="fas fa-plus mr-2"></i>
             <span>Tambah Muzakki</span>
@@ -90,6 +94,10 @@
           </div>
         </div>
         <div class="table-header-right">
+          <button type="button" onclick="exportToExcel()" class="btn-export-excel" title="Export ke Excel">
+            <i class="fas fa-file-excel"></i>
+            <span>Export Excel</span>
+          </button>
           <span class="table-badge">
             <i class="fas fa-list"></i>
             <%= rtData.length %> RT
@@ -215,19 +223,15 @@
   <style>
     /* Page Wrapper */
     .page-wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
       display: flex;
-      flex-direction: column;
-      gap: 24px;
+      gap: 16px;
     }
 
     /* Page Header */
     .page-header {
       background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
       border-radius: 20px;
-      padding: 32px;
+      padding: 16px;
       box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
       position: relative;
       overflow: hidden;
@@ -334,6 +338,18 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
       background: #f8f8f8;
+    }
+
+    .btn-action-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-action-secondary:hover {
+      background: white;
+      color: #1EAF2F;
+      border-color: white;
     }
 
     /* Statistics Container */
@@ -449,7 +465,7 @@
 
     .table-header-wrapper {
       background: linear-gradient(to right, #f9fafb, #f3f4f6);
-      padding: 24px 28px;
+      padding: 16px;
       border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
@@ -474,6 +490,38 @@
       justify-content: center;
       color: white;
       font-size: 20px;
+    }
+
+    .table-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-export-excel {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+
+    .btn-export-excel:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
+      background: linear-gradient(135deg, #047857, #065f46);
+    }
+
+    .btn-export-excel i {
+      font-size: 16px;
     }
 
     .table-title {
@@ -502,7 +550,7 @@
     }
 
     .table-content-wrapper {
-      padding: 28px;
+      padding: 16px;
     }
 
     /* Empty State */
@@ -791,6 +839,27 @@
         align-items: flex-start;
       }
 
+      .table-header-right {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .btn-export-excel {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      .btn-export-excel span {
+        display: inline;
+      }
+
+      .table-badge {
+        flex: 1;
+        justify-content: center;
+      }
+
       .action-buttons-group {
         flex-direction: column;
         gap: 6px;
@@ -828,6 +897,313 @@
         }, index * 100);
       });
     });
+
+    // Export to Excel Function with SweetAlert2
+    async function exportToExcel() {
+      // Show confirmation dialog with modern design
+      const result = await Swal.fire({
+        title: '<div style="color: #111827; font-size: 24px; font-weight: 700; margin-bottom: 8px;">📊 Export Data ke Excel</div>',
+        html: `
+          <style>
+            .swal2-actions {
+              gap: 12px !important;
+              margin-top: 24px !important;
+            }
+            .export-excel-popup {
+              border-radius: 20px !important;
+              box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+            }
+            .export-excel-confirm-btn,
+            .export-excel-cancel-btn {
+              padding: 14px 32px !important;
+              border-radius: 12px !important;
+              font-weight: 600 !important;
+              font-size: 15px !important;
+              border: none !important;
+              cursor: pointer !important;
+              transition: all 0.3s ease !important;
+              display: inline-flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              gap: 8px !important;
+              min-width: 140px !important;
+            }
+            .export-excel-confirm-btn {
+              background: linear-gradient(135deg, #059669, #047857) !important;
+              color: white !important;
+              box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
+            }
+            .export-excel-confirm-btn:hover {
+              transform: translateY(-2px) !important;
+              box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
+            }
+            .export-excel-cancel-btn {
+              background: #f3f4f6 !important;
+              color: #6b7280 !important;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            }
+            .export-excel-cancel-btn:hover {
+              background: #e5e7eb !important;
+              transform: translateY(-2px) !important;
+            }
+          </style>
+          <div style="text-align: left; padding: 20px; background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 12px; margin: 20px 0;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #059669, #047857); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                <i class="fas fa-file-excel"></i>
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 16px; color: #065f46;">Data Muzakki Per RT</div>
+                <div style="font-size: 13px; color: #059669;">File Excel dengan multiple sheets</div>
+              </div>
+            </div>
+            <div style="background: white; border-radius: 8px; padding: 16px; border-left: 4px solid #059669;">
+              <div style="font-size: 14px; color: #374151; margin-bottom: 12px;">
+                <strong>File akan berisi:</strong>
+              </div>
+              <ul style="margin: 0; padding-left: 20px; color: #6b7280; font-size: 13px;">
+                <li style="margin-bottom: 6px;">📋 Tab terpisah untuk setiap RT</li>
+                <li style="margin-bottom: 6px;">👥 Detail lengkap muzakki per RT</li>
+                <li style="margin-bottom: 6px;">💰 Informasi zakat dan pembayaran</li>
+                <li>📊 Total <%= rtData.length %> RT akan di-export</li>
+              </ul>
+            </div>
+          </div>
+        `,
+        icon: null,
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-download" style="margin-right: 8px;"></i>Download Excel',
+        cancelButtonText: '<i class="fas fa-times" style="margin-right: 8px;"></i>Batal',
+        reverseButtons: true,
+        customClass: {
+          popup: 'export-excel-popup',
+          actions: 'export-excel-actions',
+          confirmButton: 'export-excel-confirm-btn',
+          cancelButton: 'export-excel-cancel-btn'
+        },
+        buttonsStyling: false,
+        width: '600px',
+        padding: '2em',
+        background: '#ffffff',
+        backdrop: 'rgba(0,0,0,0.6)'
+      });
+
+      if (result.isConfirmed) {
+        // Show loading with progress
+        Swal.fire({
+          title: '<strong style="color: #111827;">Memproses Export...</strong>',
+          html: `
+            <div style="padding: 20px;">
+              <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite;">
+                <i class="fas fa-file-excel" style="font-size: 36px; color: #059669;"></i>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Sedang membuat file Excel...</div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+                <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">
+                  <span id="progressText">0%</span> - <span id="progressStatus">Memulai...</span>
+                </div>
+              </div>
+            </div>
+            <style>
+              @keyframes pulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.1); opacity: 0.8; }
+              }
+              .progress-bar-container {
+                width: 100%;
+                height: 8px;
+                background: #e5e7eb;
+                border-radius: 10px;
+                overflow: hidden;
+                position: relative;
+              }
+              .progress-bar-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #059669, #10b981, #34d399);
+                border-radius: 10px;
+                width: 0%;
+                transition: width 0.3s ease;
+                position: relative;
+                overflow: hidden;
+              }
+              .progress-bar-fill::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                animation: shimmer 1.5s infinite;
+              }
+              @keyframes shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+              }
+              .export-excel-popup {
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+              }
+              .export-excel-confirm-btn,
+              .export-excel-cancel-btn {
+                padding: 12px 32px;
+                border-radius: 12px;
+                font-weight: 600;
+                font-size: 15px;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+              }
+              .export-excel-confirm-btn {
+                background: linear-gradient(135deg, #059669, #047857);
+                color: white;
+                box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+              }
+              .export-excel-confirm-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+              }
+              .export-excel-cancel-btn {
+                background: #f3f4f6;
+                color: #6b7280;
+              }
+              .export-excel-cancel-btn:hover {
+                background: #e5e7eb;
+              }
+            </style>
+          `,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            simulateProgress();
+          }
+        });
+
+        try {
+          // Trigger download
+          const response = await fetch('/muzakki/export-excel', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Export failed');
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Data_Muzakki_${new Date().toISOString().split('T')[0]}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          // Show success
+          Swal.fire({
+            icon: 'success',
+            title: '<div style="color: #065f46; font-size: 24px; font-weight: 700;">✅ Berhasil!</div>',
+            html: `
+              <style>
+                .success-excel-popup {
+                  border-radius: 20px !important;
+                  box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+                }
+                .success-excel-btn {
+                  padding: 14px 32px !important;
+                  border-radius: 12px !important;
+                  font-weight: 600 !important;
+                  font-size: 15px !important;
+                  border: none !important;
+                  cursor: pointer !important;
+                  background: linear-gradient(135deg, #059669, #047857) !important;
+                  color: white !important;
+                  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
+                  transition: all 0.3s ease !important;
+                }
+                .success-excel-btn:hover {
+                  transform: translateY(-2px) !important;
+                  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
+                }
+              </style>
+              <div style="padding: 20px;">
+                <div style="font-size: 15px; color: #374151; margin-bottom: 12px;">
+                  File Excel berhasil didownload
+                </div>
+                <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 8px; padding: 12px; border-left: 4px solid #059669;">
+                  <div style="font-size: 13px; color: #059669; font-weight: 600;">
+                    📄 Data_Muzakki_${new Date().toISOString().split('T')[0]}.xlsx
+                  </div>
+                </div>
+              </div>
+            `,
+            confirmButtonText: 'OK, Saya Mengerti',
+            customClass: {
+              popup: 'success-excel-popup',
+              confirmButton: 'success-excel-btn'
+            },
+            buttonsStyling: false,
+            width: '500px'
+          });
+
+        } catch (error) {
+          console.error('Export error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal Export',
+            text: 'Terjadi kesalahan saat export data ke Excel',
+            confirmButtonColor: '#ef4444'
+          });
+        }
+      }
+    }
+
+    // Simulate progress for better UX
+    function simulateProgress() {
+      let progress = 0;
+      const progressBar = document.getElementById('progressBarFill');
+      const progressText = document.getElementById('progressText');
+      const progressStatus = document.getElementById('progressStatus');
+      
+      const statuses = [
+        'Memulai...',
+        'Mengambil data RT...',
+        'Mengambil data muzakki...',
+        'Membuat sheets Excel...',
+        'Memformat data...',
+        'Menambahkan styling...',
+        'Finalisasi...',
+        'Selesai!'
+      ];
+      
+      const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 100) progress = 100;
+        
+        progressBar.style.width = progress + '%';
+        progressText.textContent = Math.floor(progress) + '%';
+        
+        const statusIndex = Math.floor((progress / 100) * (statuses.length - 1));
+        progressStatus.textContent = statuses[statusIndex];
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+        }
+      }, 200);
+    }
   </script>
+
+  <!-- Include Master Zakat Modal -->
+  <%- include('./partials/master-zakat-modal') %>
 
   <%- include('../layouts/footer') %>

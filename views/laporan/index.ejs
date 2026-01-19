@@ -1,247 +1,1139 @@
 <%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'laporan' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">
-      <i class="fas fa-chart-bar mr-2 text-primary-600"></i>Laporan Zakat
-    </h1>
-    <p class="text-gray-600 mt-1">
-      Laporan pengumpulan dan distribusi zakat fitrah per RT
-    </p>
-  </div>
-
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-primary-600">
-        <%= laporanRT.reduce((total, rt) => total + (rt.total_muzakki || 0), 0)
-        %>
+<div class="page-wrapper">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="header-content-wrapper">
+      <div class="header-left-section">
+        <div class="header-icon-box">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="header-text-box">
+          <h1 class="header-title-text">Laporan Zakat</h1>
+          <p class="header-subtitle-text">Laporan pengumpulan dan distribusi zakat fitrah per RT</p>
+        </div>
       </div>
-      <div class="text-sm text-gray-600">Total Muzakki</div>
-    </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-green-600">
-        <%= laporanRT.reduce((total, rt) => total +
-        (parseFloat(rt.total_beras_kg) || 0), 0).toFixed(1) %> kg
-      </div>
-      <div class="text-sm text-gray-600">Total Beras</div>
-    </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-blue-600">
-        Rp <%= laporanRT.reduce((total, rt) => total +
-        (parseFloat(rt.total_terkumpul) || 0), 0).toLocaleString('id-ID') %>
-      </div>
-      <div class="text-sm text-gray-600">Total Terkumpul</div>
-    </div>
-    <div class="card text-center">
-      <div class="text-3xl font-bold text-yellow-600">
-        Rp <%= totalInfak.toLocaleString('id-ID') %>
-      </div>
-      <div class="text-sm text-gray-600">Total Infak</div>
     </div>
   </div>
 
-  <!-- Laporan Per RT -->
-  <div class="card">
-    <div class="mb-4">
-      <h2 class="text-xl font-semibold text-gray-900">
-        <i class="fas fa-map-marker-alt mr-2 text-gray-600"></i>Laporan Per RT
-      </h2>
+  <!-- Statistics Cards -->
+  <div class="stats-container">
+    <div class="stat-box stat-box-primary">
+      <div class="stat-icon-wrapper stat-icon-primary">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          <%= laporanRT.reduce((total, rt) => total + (rt.total_muzakki || 0), 0) %>
+        </div>
+        <div class="stat-label-text">Total Muzakki</div>
+      </div>
+      <div class="stat-decoration"></div>
     </div>
 
-    <div class="table-responsive">
+    <div class="stat-box stat-box-success">
+      <div class="stat-icon-wrapper stat-icon-success">
+        <i class="fas fa-weight"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          <%= laporanRT.reduce((total, rt) => total + (parseFloat(rt.total_beras_kg) || 0), 0).toFixed(1) %> kg
+        </div>
+        <div class="stat-label-text">Total Beras</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+    <div class="stat-box stat-box-info">
+      <div class="stat-icon-wrapper stat-icon-info">
+        <i class="fas fa-coins"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(laporanRT.reduce((total, rt) => total + (parseFloat(rt.total_terkumpul) || 0), 0)) %>
+        </div>
+        <div class="stat-label-text">Total Terkumpul</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+    <div class="stat-box stat-box-warning">
+      <div class="stat-icon-wrapper stat-icon-warning">
+        <i class="fas fa-hand-holding-usd"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">
+          Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(totalInfak) %>
+        </div>
+        <div class="stat-label-text">Total Infak</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+  </div>
+
+  <!-- Data Table Section -->
+  <div class="table-section">
+    <div class="table-header-wrapper">
+      <div class="table-header-left">
+        <div class="table-header-icon">
+          <i class="fas fa-table"></i>
+        </div>
+        <div class="table-header-text">
+          <h2 class="table-title">Laporan Per RT</h2>
+          <p class="table-subtitle">Daftar lengkap laporan zakat berdasarkan RT</p>
+        </div>
+      </div>
+      <div class="table-header-right">
+        <span class="table-badge">
+          <i class="fas fa-list"></i>
+          <%= laporanRT.length %> RT
+        </span>
+      </div>
+    </div>
+
+    <div class="table-content-wrapper">
       <% if (laporanRT.length === 0) { %>
-      <div class="text-center py-12">
-        <i class="fas fa-chart-bar text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-900 mb-2">
-          Belum ada data laporan
-        </h3>
-        <p class="text-gray-600 mb-6">
-          Laporan akan muncul setelah ada data muzakki
-        </p>
-        <a href="/muzakki/create" class="btn-primary">
-          <i class="fas fa-plus mr-2"></i>Tambah Muzakki
-        </a>
-      </div>
+        <div class="empty-state-box">
+          <div class="empty-state-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h3 class="empty-state-title">Belum ada data laporan</h3>
+          <p class="empty-state-desc">Laporan akan muncul setelah ada data muzakki</p>
+          <a href="/muzakki/create" class="btn-empty-state">
+            <i class="fas fa-plus mr-2"></i>
+            Tambah Muzakki
+          </a>
+        </div>
       <% } else { %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>RT</th>
-            <th>Ketua RT</th>
-            <th>Jumlah Muzakki</th>
-            <th>Zakat Beras</th>
-            <th>Kewajiban Uang</th>
-            <th>Total Terkumpul</th>
-            <th>Kembalian</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% laporanRT.forEach(function(rt) { %>
-          <tr>
-            <td>
-              <div class="font-medium text-primary-600"><%= rt.nomor_rt %></div>
-            </td>
-            <td>
-              <div class="font-medium text-gray-900"><%= rt.ketua_rt %></div>
-            </td>
-            <td class="text-center">
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-              >
-                <%= rt.total_muzakki || 0 %> orang
-              </span>
-            </td>
-            <td>
-              <% if (rt.total_beras_kg && parseFloat(rt.total_beras_kg) > 0) {
-              %>
-              <div class="font-medium text-green-600">
-                <%= parseFloat(rt.total_beras_kg).toFixed(1) %> kg
-              </div>
-              <% } else { %>
-              <span class="text-gray-400">-</span>
-              <% } %>
-            </td>
-            <td>
-              <% if (rt.total_uang_kewajiban &&
-              parseFloat(rt.total_uang_kewajiban) > 0) { %>
-              <div class="font-medium text-blue-600">
-                Rp <%=
-                parseFloat(rt.total_uang_kewajiban).toLocaleString('id-ID') %>
-              </div>
-              <% } else { %>
-              <span class="text-gray-400">-</span>
-              <% } %>
-            </td>
-            <td>
-              <div class="font-bold text-primary-600">
-                Rp <%= (rt.total_terkumpul || 0).toLocaleString('id-ID') %>
-              </div>
-            </td>
-            <td>
-              <% if (rt.total_kembalian && parseFloat(rt.total_kembalian) > 0) {
-              %>
-              <div class="font-medium text-yellow-600">
-                Rp <%= parseFloat(rt.total_kembalian).toLocaleString('id-ID') %>
-              </div>
-              <% } else { %>
-              <span class="text-gray-400">-</span>
-              <% } %>
-            </td>
-            <td>
-              <% if (rt.total_muzakki > 0) { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-              >
-                <i class="fas fa-check mr-1"></i>Aktif
-              </span>
-              <% } else { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-              >
-                <i class="fas fa-minus mr-1"></i>Belum Ada
-              </span>
-              <% } %>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-        <tfoot>
-          <tr class="bg-gray-50">
-            <td colspan="2" class="font-bold text-gray-900">TOTAL</td>
-            <td class="text-center font-bold text-gray-900">
-              <%= laporanRT.reduce((total, rt) => total + (rt.total_muzakki ||
-              0), 0) %> orang
-            </td>
-            <td class="font-bold text-green-600">
-              <%= laporanRT.reduce((total, rt) => total +
-              (parseFloat(rt.total_beras_kg) || 0), 0).toFixed(1) %> kg
-            </td>
-            <td class="font-bold text-blue-600">
-              Rp <%= laporanRT.reduce((total, rt) => total +
-              (parseFloat(rt.total_uang_kewajiban) || 0),
-              0).toLocaleString('id-ID') %>
-            </td>
-            <td class="font-bold text-primary-600">
-              Rp <%= laporanRT.reduce((total, rt) => total +
-              (parseFloat(rt.total_terkumpul) || 0), 0).toLocaleString('id-ID')
-              %>
-            </td>
-            <td class="font-bold text-yellow-600">
-              Rp <%= laporanRT.reduce((total, rt) => total +
-              (parseFloat(rt.total_kembalian) || 0), 0).toLocaleString('id-ID')
-              %>
-            </td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+        <div class="table-responsive-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>RT</th>
+                <th>Ketua RT</th>
+                <th>Jumlah Muzakki</th>
+                <th>Zakat Beras</th>
+                <th>Kewajiban Uang</th>
+                <th>Total Terkumpul</th>
+                <th>Kembalian</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% laporanRT.forEach(function(rt, index) { %>
+              <tr class="table-row-animated" style="animation-delay: <%= index * 0.05 %>s;">
+                <td>
+                  <div class="cell-content-primary">
+                    <div class="rt-badge">
+                      <i class="fas fa-home"></i>
+                      RT <%= rt.nomor_rt %>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="cell-content-primary">
+                    <div class="ketua-name">
+                      <%= rt.ketua_rt %>
+                    </div>
+                    <div class="cell-subtitle">Ketua RT</div>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <span class="badge-stat badge-stat-primary">
+                    <i class="fas fa-users"></i>
+                    <%= rt.total_muzakki || 0 %> orang
+                  </span>
+                </td>
+                <td class="text-center">
+                  <% if (rt.total_beras_kg && parseFloat(rt.total_beras_kg) > 0) { %>
+                    <div class="amount-display amount-success">
+                      <i class="fas fa-weight mr-1"></i>
+                      <%= parseFloat(rt.total_beras_kg).toFixed(1) %> kg
+                    </div>
+                  <% } else { %>
+                    <div class="text-gray-400">-</div>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <% if (rt.total_uang_kewajiban && parseFloat(rt.total_uang_kewajiban) > 0) { %>
+                    <div class="amount-display amount-info">
+                      <i class="fas fa-money-bill-wave mr-1"></i>
+                      Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(parseFloat(rt.total_uang_kewajiban)) %>
+                    </div>
+                  <% } else { %>
+                    <div class="text-gray-400">-</div>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <div class="amount-display amount-primary">
+                    <i class="fas fa-coins mr-1"></i>
+                    Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(rt.total_terkumpul || 0) %>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <% if (rt.total_kembalian && parseFloat(rt.total_kembalian) > 0) { %>
+                    <div class="amount-display amount-warning">
+                      <i class="fas fa-exchange-alt mr-1"></i>
+                      Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(parseFloat(rt.total_kembalian)) %>
+                    </div>
+                  <% } else { %>
+                    <div class="text-gray-400">-</div>
+                  <% } %>
+                </td>
+                <td class="text-center">
+                  <% if (rt.total_muzakki > 0) { %>
+                    <span class="status-badge status-active">
+                      <i class="fas fa-check mr-1"></i>Aktif
+                    </span>
+                  <% } else { %>
+                    <span class="status-badge status-inactive">
+                      <i class="fas fa-minus mr-1"></i>Belum Ada
+                    </span>
+                  <% } %>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="2" class="total-label">TOTAL</td>
+                <td class="text-center total-value">
+                  <%= laporanRT.reduce((total, rt) => total + (rt.total_muzakki || 0), 0) %> orang
+                </td>
+                <td class="text-center total-value total-success">
+                  <%= laporanRT.reduce((total, rt) => total + (parseFloat(rt.total_beras_kg) || 0), 0).toFixed(1) %> kg
+                </td>
+                <td class="text-center total-value total-info">
+                  Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(laporanRT.reduce((total, rt) => total + (parseFloat(rt.total_uang_kewajiban) || 0), 0)) %>
+                </td>
+                <td class="text-center total-value total-primary">
+                  Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(laporanRT.reduce((total, rt) => total + (parseFloat(rt.total_terkumpul) || 0), 0)) %>
+                </td>
+                <td class="text-center total-value total-warning">
+                  Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(laporanRT.reduce((total, rt) => total + (parseFloat(rt.total_kembalian) || 0), 0)) %>
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       <% } %>
     </div>
   </div>
 
   <!-- Summary Information -->
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="card">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        <i class="fas fa-info-circle mr-2 text-blue-600"></i>Ringkasan Zakat
-      </h3>
-      <div class="space-y-3 text-sm">
-        <div class="flex justify-between">
-          <span class="text-gray-600">Total RT:</span>
-          <span class="font-medium"><%= laporanRT.length %> RT</span>
+  <div class="info-cards-grid">
+    <div class="info-card info-card-blue">
+      <div class="info-card-header">
+        <div class="info-card-icon">
+          <i class="fas fa-info-circle"></i>
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">RT dengan Muzakki:</span>
-          <span class="font-medium">
+        <h3 class="info-card-title">Ringkasan Zakat</h3>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Total RT:</span>
+          <span class="info-value"><%= laporanRT.length %> RT</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">RT dengan Muzakki:</span>
+          <span class="info-value">
             <%= laporanRT.filter(rt => (rt.total_muzakki || 0) > 0).length %> RT
           </span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">Rata-rata per RT:</span>
-          <span class="font-medium">
-            <% const totalMuzakki = laporanRT.reduce((total, rt) => total +
-            (parseInt(rt.total_muzakki) || 0), 0); const avgMuzakki =
-            laporanRT.length > 0 ? Math.round(totalMuzakki / laporanRT.length) :
-            0; %> <%= avgMuzakki %> muzakki
+        <div class="info-item">
+          <span class="info-label">Rata-rata per RT:</span>
+          <span class="info-value">
+            <% const totalMuzakki = laporanRT.reduce((total, rt) => total + (parseInt(rt.total_muzakki) || 0), 0); const avgMuzakki = laporanRT.length > 0 ? Math.round(totalMuzakki / laporanRT.length) : 0; %> 
+            <%= avgMuzakki %> muzakki
           </span>
         </div>
-        <div class="flex justify-between border-t pt-3">
-          <span class="text-gray-600">Status Pengumpulan:</span>
-          <span class="font-medium text-green-600">
+        <div class="info-item info-item-highlight">
+          <span class="info-label">Status Pengumpulan:</span>
+          <span class="info-value info-value-success">
             <i class="fas fa-chart-line mr-1"></i>
-            <% const rtWithMuzakki = laporanRT.filter(rt => (rt.total_muzakki ||
-            0) > 0).length; const status = rtWithMuzakki > 0 ? 'Aktif' : 'Belum
-            Dimulai'; %> <%= status %>
+            <% const rtWithMuzakki = laporanRT.filter(rt => (rt.total_muzakki || 0) > 0).length; const status = rtWithMuzakki > 0 ? 'Aktif' : 'Belum Dimulai'; %> 
+            <%= status %>
           </span>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">
-        <i class="fas fa-calculator mr-2 text-green-600"></i>Perhitungan Zakat
-      </h3>
-      <div class="space-y-3 text-sm">
-        <div class="p-3 bg-green-50 rounded-lg">
-          <div class="font-medium text-green-800 mb-1">Zakat Beras</div>
-          <div class="text-green-600">2.5 kg per jiwa</div>
+    <div class="info-card info-card-green">
+      <div class="info-card-header">
+        <div class="info-card-icon">
+          <i class="fas fa-calculator"></i>
         </div>
-        <div class="p-3 bg-blue-50 rounded-lg">
-          <div class="font-medium text-blue-800 mb-1">Zakat Uang</div>
-          <div class="text-blue-600">Rp 45.000 per jiwa</div>
+        <h3 class="info-card-title">Perhitungan Zakat</h3>
+      </div>
+      <div class="info-card-content">
+        <div class="calculation-box calculation-green">
+          <div class="calculation-icon">
+            <i class="fas fa-weight"></i>
+          </div>
+          <div class="calculation-text">
+            <div class="calculation-title">Zakat Beras</div>
+            <div class="calculation-value">2.5 kg per jiwa</div>
+          </div>
         </div>
-        <div class="p-3 bg-yellow-50 rounded-lg">
-          <div class="font-medium text-yellow-800 mb-1">Infak Terkumpul</div>
-          <div class="text-yellow-600">
-            Rp <%= totalInfak.toLocaleString('id-ID') %>
+        <div class="calculation-box calculation-blue">
+          <div class="calculation-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="calculation-text">
+            <div class="calculation-title">Zakat Uang</div>
+            <div class="calculation-value">Rp 45.000 per jiwa</div>
+          </div>
+        </div>
+        <div class="calculation-box calculation-yellow">
+          <div class="calculation-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <div class="calculation-text">
+            <div class="calculation-title">Infak Terkumpul</div>
+            <div class="calculation-value">
+              Rp <%= new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(totalInfak) %>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modern Styles -->
+<style>
+  /* Page Wrapper */
+  .page-wrapper {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e40af 100%);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.25);
+    position: relative;
+    overflow: hidden;
+    animation: slideDown 0.5s ease-out;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-animation 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-animation {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header-content-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-icon-box {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-text-box {
+    color: white;
+  }
+
+  .header-title-text {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: white;
+  }
+
+  .header-subtitle-text {
+    font-size: 16px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* Statistics Container */
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .stat-box {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-box:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.1;
+  }
+
+  .stat-box-primary .stat-decoration {
+    background: #3b82f6;
+  }
+
+  .stat-box-success .stat-decoration {
+    background: #10b981;
+  }
+
+  .stat-box-info .stat-decoration {
+    background: #0ea5e9;
+  }
+
+  .stat-box-warning .stat-decoration {
+    background: #f59e0b;
+  }
+
+  .stat-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-icon-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+
+  .stat-icon-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .stat-icon-info {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  }
+
+  .stat-icon-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .stat-content-box {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-value-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label-text {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  /* Table Section */
+  .table-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .table-header-wrapper {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .table-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .table-header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .table-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  .table-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .table-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .table-content-wrapper {
+    padding: 24px;
+  }
+
+  /* Empty State */
+  .empty-state-box {
+    text-align: center;
+    padding: 60px 24px;
+  }
+
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: #9ca3af;
+  }
+
+  .empty-state-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px 0;
+  }
+
+  .empty-state-desc {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0 0 28px 0;
+  }
+
+  .btn-empty-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-empty-state:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+
+  /* Data Table */
+  .table-responsive-wrapper {
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead tr {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .data-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeInRow 0.5s ease forwards;
+  }
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .data-table tbody tr:hover {
+    background: linear-gradient(to right, #eff6ff, #dbeafe);
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  }
+
+  .data-table td {
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  .data-table tfoot tr {
+    background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+    border-top: 2px solid #e5e7eb;
+  }
+
+  .data-table tfoot td {
+    padding: 16px;
+    font-weight: 700;
+  }
+
+  /* Table Cell Content */
+  .cell-content-primary {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .rt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    width: fit-content;
+  }
+
+  .ketua-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .cell-subtitle {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-gray-400 {
+    color: #9ca3af;
+  }
+
+  /* Badges */
+  .badge-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .badge-stat-primary {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .status-active {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-inactive {
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  /* Amount Display */
+  .amount-display {
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .amount-success {
+    color: #059669;
+  }
+
+  .amount-info {
+    color: #0284c7;
+  }
+
+  .amount-primary {
+    color: #2563eb;
+  }
+
+  .amount-warning {
+    color: #d97706;
+  }
+
+  /* Total Row */
+  .total-row {
+    background: linear-gradient(135deg, #f9fafb, #f3f4f6) !important;
+  }
+
+  .total-label {
+    font-weight: 700;
+    color: #111827;
+    font-size: 15px;
+  }
+
+  .total-value {
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .total-success {
+    color: #059669 !important;
+  }
+
+  .total-info {
+    color: #0284c7 !important;
+  }
+
+  .total-primary {
+    color: #2563eb !important;
+  }
+
+  .total-warning {
+    color: #d97706 !important;
+  }
+
+  /* Info Cards Grid */
+  .info-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+  }
+
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .info-card-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .info-card-blue .info-card-header {
+    background: linear-gradient(to right, #eff6ff, #dbeafe);
+  }
+
+  .info-card-green .info-card-header {
+    background: linear-gradient(to right, #f0fdf4, #dcfce7);
+  }
+
+  .info-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+  }
+
+  .info-card-blue .info-card-icon {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+
+  .info-card-green .info-card-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  .info-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  .info-card-content {
+    padding: 24px;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-item-highlight {
+    background: linear-gradient(to right, #f0fdf4, transparent);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: none;
+  }
+
+  .info-label {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .info-value {
+    font-size: 14px;
+    color: #111827;
+    font-weight: 600;
+  }
+
+  .info-value-success {
+    color: #059669 !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Calculation Boxes */
+  .calculation-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .calculation-box:last-child {
+    margin-bottom: 0;
+  }
+
+  .calculation-box:hover {
+    transform: translateX(4px);
+  }
+
+  .calculation-green {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #a7f3d0;
+  }
+
+  .calculation-blue {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid #bfdbfe;
+  }
+
+  .calculation-yellow {
+    background: linear-gradient(135deg, #fefce8, #fef3c7);
+    border: 1px solid #fde68a;
+  }
+
+  .calculation-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .calculation-green .calculation-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+  }
+
+  .calculation-blue .calculation-icon {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+  }
+
+  .calculation-yellow .calculation-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+
+  .calculation-text {
+    flex: 1;
+  }
+
+  .calculation-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .calculation-green .calculation-title {
+    color: #065f46;
+  }
+
+  .calculation-blue .calculation-title {
+    color: #1e40af;
+  }
+
+  .calculation-yellow .calculation-title {
+    color: #92400e;
+  }
+
+  .calculation-value {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .calculation-green .calculation-value {
+    color: #059669;
+  }
+
+  .calculation-blue .calculation-value {
+    color: #2563eb;
+  }
+
+  .calculation-yellow .calculation-value {
+    color: #d97706;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .info-cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-wrapper {
+      padding: 16px;
+    }
+
+    .page-header {
+      padding: 24px;
+    }
+
+    .header-content-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-icon-box {
+      width: 60px;
+      height: 60px;
+      font-size: 28px;
+    }
+
+    .header-title-text {
+      font-size: 24px;
+    }
+
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+
+    .table-content-wrapper {
+      padding: 16px;
+    }
+
+    .data-table {
+      font-size: 12px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 10px 8px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .table-header-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+    }
+
+    .stat-value-text {
+      font-size: 24px;
+    }
+
+    .info-cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Utility Classes */
+  .mr-1 {
+    margin-right: 4px;
+  }
+
+  .mr-2 {
+    margin-right: 8px;
+  }
+</style>
+
+<!-- JavaScript -->
+<script>
+  // Add entrance animations on load
+  document.addEventListener('DOMContentLoaded', function () {
+    const statBoxes = document.querySelectorAll('.stat-box');
+    statBoxes.forEach((box, index) => {
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        box.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
+
+    // Animate info cards
+    const infoCards = document.querySelectorAll('.info-card');
+    infoCards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 400 + (index * 100));
+    });
+  });
+</script>
 
 <%- include('../layouts/footer') %>

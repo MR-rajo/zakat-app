@@ -1,0 +1,1031 @@
+<!-- Master Zakat Modal -->
+<div id="masterZakatModal" class="modal-overlay">
+  <div class="modal-container">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-header-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <div>
+          <h2 class="modal-title">Master Data Zakat</h2>
+          <p class="modal-subtitle">Kelola jenis dan harga zakat fitrah</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="closeMasterZakatModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <!-- Add New Button -->
+      <div class="modal-action-bar">
+        <button type="button" class="btn-modal-primary" onclick="showAddForm()">
+          <i class="fas fa-plus mr-2"></i>
+          <span>Tambah Jenis Zakat</span>
+        </button>
+      </div>
+
+      <!-- Form Section (Hidden by default) -->
+      <div id="zakatFormSection" class="zakat-form-section" style="display: none;">
+        <div class="form-card-modal">
+          <div class="form-card-header">
+            <h3 class="form-card-title" id="formTitle">Tambah Jenis Zakat</h3>
+            <button type="button" class="btn-cancel-form" onclick="hideForm()">
+              <i class="fas fa-times mr-1"></i>Batal
+            </button>
+          </div>
+          <form id="zakatForm" onsubmit="handleSubmit(event)">
+            <input type="hidden" id="zakat_id" name="id">
+            <div class="form-grid-modal">
+              <div class="form-group-modal">
+                <label for="zakat_nama" class="form-label-modal">
+                  <i class="fas fa-tag mr-1"></i>Nama Jenis Zakat <span class="text-red">*</span>
+                </label>
+                <input type="text" id="zakat_nama" name="nama" required 
+                       class="form-input-modal" 
+                       placeholder="Contoh: Beras Premium, Uang Standar">
+              </div>
+
+              <div class="form-group-modal">
+                <label for="zakat_harga" class="form-label-modal">
+                  <i class="fas fa-money-bill-wave mr-1"></i>Harga per Jiwa (Rp) <span class="text-red">*</span>
+                </label>
+                <div class="input-with-prefix-modal">
+                  <span class="input-prefix-modal">Rp</span>
+                  <input type="text" id="zakat_harga_display" 
+                         class="form-input-modal input-with-prefix-field-modal" 
+                         placeholder="0" required>
+                  <input type="hidden" id="zakat_harga" name="harga">
+                </div>
+              </div>
+
+              <div class="form-group-modal">
+                <label for="zakat_kg" class="form-label-modal">
+                  <i class="fas fa-weight mr-1"></i>Kilogram (kg) <span class="text-red">*</span>
+                </label>
+                <input type="number" id="zakat_kg" name="kg" required 
+                       class="form-input-modal" step="0.1" min="0"
+                       placeholder="Contoh: 2.5 (isi 0 untuk zakat uang)">
+                <p class="form-hint-modal">Isi 0 untuk zakat berbentuk uang, atau isi jumlah kg untuk zakat beras</p>
+              </div>
+            </div>
+
+            <div class="form-actions-modal">
+              <button type="button" class="btn-modal-secondary" onclick="hideForm()">
+                <i class="fas fa-times mr-2"></i>Batal
+              </button>
+              <button type="submit" class="btn-modal-primary">
+                <i class="fas fa-save mr-2"></i>
+                <span id="submitBtnText">Simpan</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="modal-table-section">
+        <div class="modal-table-wrapper">
+          <table class="modal-data-table" id="masterZakatTable">
+            <thead>
+              <tr>
+                <th width="5%">No</th>
+                <th width="30%">Nama Jenis Zakat</th>
+                <th width="20%">Harga/Jiwa</th>
+                <th width="15%">Kg/Jiwa</th>
+                <th width="15%">Tipe</th>
+                <th width="15%">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="masterZakatTableBody">
+              <tr>
+                <td colspan="6" class="text-center">
+                  <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i> Memuat data...
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-content">
+    <i class="fas fa-spinner loading-spinner-icon"></i>
+    <div class="loading-text">Memproses data...</div>
+  </div>
+</div>
+
+<!-- Styles for Modal -->
+<style>
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Modal Container */
+  .modal-container {
+    background: white;
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Modal Header */
+  .modal-header {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+    padding: 24px 28px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modal-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .modal-header-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+  }
+
+  .modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+  }
+
+  .modal-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .modal-close-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  /* Modal Body */
+  .modal-body {
+    padding: 24px 28px;
+    overflow-y: auto;
+    max-height: calc(90vh - 100px);
+  }
+
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #1EAF2F;
+    border-radius: 10px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #16a127;
+  }
+
+  /* Modal Action Bar */
+  .modal-action-bar {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-modal-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(30, 175, 47, 0.3);
+  }
+
+  .btn-modal-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 175, 47, 0.4);
+  }
+
+  .btn-modal-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: white;
+    color: #374151;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-modal-secondary:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+  }
+
+  /* Form Section */
+  .zakat-form-section {
+    margin-bottom: 24px;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+    }
+    to {
+      opacity: 1;
+      max-height: 500px;
+    }
+  }
+
+  .form-card-modal {
+    background: linear-gradient(to right, #f9fafb, #ffffff);
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .form-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .form-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  .btn-cancel-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cancel-form:hover {
+    background: #ef4444;
+    color: white;
+  }
+
+  .form-grid-modal {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-label-modal {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .form-input-modal {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .form-input-modal:focus {
+    outline: none;
+    border-color: #1EAF2F;
+    box-shadow: 0 0 0 3px rgba(30, 175, 47, 0.1);
+  }
+
+  .input-with-prefix-modal {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-prefix-modal {
+    position: absolute;
+    left: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .input-with-prefix-field-modal {
+    padding-left: 42px !important;
+  }
+
+  .form-hint-modal {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .form-actions-modal {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* Table Section */
+  .modal-table-section {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .modal-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .modal-data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .modal-data-table thead {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .modal-data-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-data-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+  }
+
+  .modal-data-table tbody tr:hover {
+    background: linear-gradient(to right, #f0fdf4, #dcfce7);
+  }
+
+  .modal-data-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #374151;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-red {
+    color: #ef4444;
+  }
+
+  .loading-spinner {
+    padding: 40px 20px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  /* Badge Tipe */
+  .badge-tipe {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-tipe-beras {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .badge-tipe-uang {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  /* Action Buttons in Table */
+  .btn-table-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: #dbeafe;
+    color: #1e40af;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-table-edit:hover {
+    background: #3b82f6;
+    color: white;
+  }
+
+  .btn-table-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-table-delete:hover {
+    background: #ef4444;
+    color: white;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .modal-container {
+      max-width: 95%;
+      max-height: 95vh;
+    }
+
+    .modal-header {
+      padding: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+    }
+
+    .modal-body {
+      padding: 16px;
+    }
+
+    .form-actions-modal {
+      flex-direction: column;
+    }
+
+    .btn-modal-primary,
+    .btn-modal-secondary {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-data-table {
+      font-size: 11px;
+    }
+
+    .modal-data-table th,
+    .modal-data-table td {
+      padding: 8px 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .modal-header-left {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .form-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+
+  .mr-1 { margin-right: 4px; }
+  .mr-2 { margin-right: 8px; }
+
+  /* SweetAlert2 Override - Show Above Modal */
+  .swal2-container {
+    z-index: 99999 !important;
+  }
+
+  .swal2-popup {
+    z-index: 99999 !important;
+  }
+
+  /* Loading Overlay */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+  }
+
+  .loading-overlay.active {
+    display: flex;
+  }
+
+  .loading-content {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .loading-spinner-icon {
+    font-size: 40px;
+    color: #1EAF2F;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  /* Disable submit button when loading */
+  .btn-modal-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+</style>
+
+<script>
+  // Global variables
+  let masterZakatData = [];
+  let editingZakatId = null;
+
+  // Open Modal
+  function openMasterZakatModal() {
+    document.getElementById('masterZakatModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    loadMasterZakat();
+  }
+
+  // Close Modal
+  function closeMasterZakatModal() {
+    document.getElementById('masterZakatModal').classList.remove('active');
+    document.body.style.overflow = '';
+    hideForm();
+  }
+
+  // Show Add Form
+  function showAddForm() {
+    document.getElementById('zakatFormSection').style.display = 'block';
+    document.getElementById('formTitle').textContent = 'Tambah Jenis Zakat';
+    document.getElementById('submitBtnText').textContent = 'Simpan';
+    document.getElementById('zakatForm').reset();
+    document.getElementById('zakat_id').value = '';
+    document.getElementById('zakat_harga').value = '';
+    document.getElementById('zakat_harga_display').value = '';
+    editingZakatId = null;
+  }
+
+  // Hide Form
+  function hideForm() {
+    document.getElementById('zakatFormSection').style.display = 'none';
+    document.getElementById('zakatForm').reset();
+    editingZakatId = null;
+  }
+
+  // Load Master Zakat Data
+  async function loadMasterZakat() {
+    try {
+      const response = await fetch('/muzakki/api/master-zakat');
+      const data = await response.json();
+      
+      if (data.success) {
+        masterZakatData = data.data;
+        renderTable();
+      } else {
+        throw new Error(data.message || 'Gagal memuat data');
+      }
+    } catch (error) {
+      console.error('Error loading master zakat:', error);
+      document.getElementById('masterZakatTableBody').innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center">
+            <div style="padding: 40px 20px; color: #ef4444;">
+              <i class="fas fa-exclamation-triangle"></i> Gagal memuat data: ${error.message}
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  // Render Table
+  function renderTable() {
+    const tbody = document.getElementById('masterZakatTableBody');
+    
+    if (masterZakatData.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center">
+            <div style="padding: 40px 20px; color: #6b7280;">
+              <i class="fas fa-inbox"></i> Belum ada data jenis zakat
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = masterZakatData.map((item, index) => {
+      const tipe = parseFloat(item.kg) > 0 ? 'beras' : 'uang';
+      const tipeBadge = tipe === 'beras' 
+        ? '<span class="badge-tipe badge-tipe-beras"><i class="fas fa-seedling"></i> Beras</span>'
+        : '<span class="badge-tipe badge-tipe-uang"><i class="fas fa-coins"></i> Uang</span>';
+      
+      return `
+        <tr>
+          <td class="text-center">${index + 1}</td>
+          <td><strong>${item.nama}</strong></td>
+          <td>Rp ${parseFloat(item.harga).toLocaleString('id-ID')}</td>
+          <td>${parseFloat(item.kg) > 0 ? parseFloat(item.kg) + ' kg' : '-'}</td>
+          <td>${tipeBadge}</td>
+          <td>
+            <button class="btn-table-edit" onclick="editZakat(${item.id})">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-table-delete" onclick="deleteZakat(${item.id}, '${item.nama}')">
+              <i class="fas fa-trash"></i> Hapus
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Handle Form Submit
+  async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+      nama: document.getElementById('zakat_nama').value,
+      harga: parseFloat(document.getElementById('zakat_harga').value) || 0,
+      kg: parseFloat(document.getElementById('zakat_kg').value) || 0,
+    };
+
+    // Show loading
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const submitBtn = document.querySelector('#zakatForm button[type="submit"]');
+    
+    loadingOverlay.classList.add('active');
+    submitBtn.disabled = true;
+
+    try {
+      let response;
+      if (editingZakatId) {
+        // Update
+        response = await fetch(`/muzakki/api/master-zakat/${editingZakatId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+      } else {
+        // Create
+        response = await fetch('/muzakki/api/master-zakat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+      }
+
+      const result = await response.json();
+      
+      // Hide loading
+      loadingOverlay.classList.remove('active');
+      submitBtn.disabled = false;
+      
+      if (result.success) {
+        if (typeof Swal !== 'undefined') {
+          await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: result.message,
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            customClass: {
+              container: 'swal2-container-high-zindex'
+            }
+          });
+        } else {
+          alert(result.message);
+        }
+        
+        hideForm();
+        loadMasterZakat();
+      } else {
+        throw new Error(result.message || 'Gagal menyimpan data');
+      }
+    } catch (error) {
+      // Hide loading
+      loadingOverlay.classList.remove('active');
+      submitBtn.disabled = false;
+      
+      console.error('Error saving master zakat:', error);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: error.message,
+          customClass: {
+            container: 'swal2-container-high-zindex'
+          }
+        });
+      } else {
+        alert('Gagal menyimpan data: ' + error.message);
+      }
+    }
+  }
+
+  // Edit Zakat
+  function editZakat(id) {
+    const zakat = masterZakatData.find(z => z.id === id);
+    if (!zakat) return;
+
+    editingZakatId = id;
+    document.getElementById('zakatFormSection').style.display = 'block';
+    document.getElementById('formTitle').textContent = 'Edit Jenis Zakat';
+    document.getElementById('submitBtnText').textContent = 'Update';
+    
+    document.getElementById('zakat_id').value = zakat.id;
+    document.getElementById('zakat_nama').value = zakat.nama;
+    document.getElementById('zakat_harga').value = zakat.harga;
+    document.getElementById('zakat_harga_display').value = parseFloat(zakat.harga).toLocaleString('id-ID');
+    document.getElementById('zakat_kg').value = zakat.kg;
+
+    // Scroll to form
+    document.getElementById('zakatFormSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Delete Zakat
+  async function deleteZakat(id, nama) {
+    const confirmDelete = typeof Swal !== 'undefined' 
+      ? await Swal.fire({
+          title: 'Konfirmasi Hapus',
+          text: `Yakin ingin menghapus "${nama}"? Data yang sudah terhubung akan terpengaruh.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Ya, Hapus',
+          cancelButtonText: 'Batal',
+          reverseButtons: true,
+          customClass: {
+            container: 'swal2-container-high-zindex'
+          }
+        })
+      : { isConfirmed: confirm(`Yakin ingin menghapus "${nama}"?`) };
+
+    if (!confirmDelete.isConfirmed) return;
+
+    // Show loading
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.classList.add('active');
+
+    try {
+      const response = await fetch(`/muzakki/api/master-zakat/${id}`, {
+        method: 'DELETE'
+      });
+
+      const result = await response.json();
+      
+      // Hide loading
+      loadingOverlay.classList.remove('active');
+      
+      if (result.success) {
+        if (typeof Swal !== 'undefined') {
+          await Swal.fire({
+            icon: 'success',
+            title: 'Terhapus!',
+            text: result.message,
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            customClass: {
+              container: 'swal2-container-high-zindex'
+            }
+          });
+        } else {
+          alert(result.message);
+        }
+        
+        loadMasterZakat();
+      } else {
+        throw new Error(result.message || 'Gagal menghapus data');
+      }
+    } catch (error) {
+      // Hide loading
+      loadingOverlay.classList.remove('active');
+      
+      console.error('Error deleting master zakat:', error);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: error.message,
+          customClass: {
+            container: 'swal2-container-high-zindex'
+          }
+        });
+      } else {
+        alert('Gagal menghapus data: ' + error.message);
+      }
+    }
+  }
+
+  // Rupiah Input Handlers
+  document.addEventListener('DOMContentLoaded', function() {
+    const hargaDisplay = document.getElementById('zakat_harga_display');
+    const hargaHidden = document.getElementById('zakat_harga');
+
+    if (hargaDisplay) {
+      hargaDisplay.addEventListener('input', function() {
+        const numericValue = this.value.replace(/[^\d]/g, '');
+        const numberValue = parseInt(numericValue) || 0;
+        this.value = numberValue.toLocaleString('id-ID');
+        hargaHidden.value = numberValue;
+      });
+
+      hargaDisplay.addEventListener('focus', function() {
+        const value = hargaHidden.value;
+        if (value && value !== '0') {
+          this.value = value;
+          setTimeout(() => this.select(), 50);
+        }
+      });
+
+      hargaDisplay.addEventListener('blur', function() {
+        const numericValue = this.value.replace(/[^\d]/g, '');
+        const numberValue = parseInt(numericValue) || 0;
+        this.value = numberValue.toLocaleString('id-ID');
+        hargaHidden.value = numberValue;
+      });
+    }
+  });
+
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('masterZakatModal').classList.contains('active')) {
+      closeMasterZakatModal();
+    }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('masterZakatModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeMasterZakatModal();
+    }
+  });
+</script>

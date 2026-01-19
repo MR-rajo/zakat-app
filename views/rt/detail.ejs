@@ -1,5 +1,4 @@
-<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50
-min-h-screen', currentPage: 'rt' }) %>
+<%- include('../layouts/header', { title: title, bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'rt' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
   <!-- Header -->
@@ -232,7 +231,7 @@ min-h-screen', currentPage: 'rt' }) %>
                 </div>
                 <div class="ml-4">
                   <div class="text-sm font-medium text-gray-900">
-                    <%= muzakki.nama %>
+                    <%= muzakki.nama_muzakki_list || 'Muzakki #' + muzakki.id %>
                   </div>
                   <div class="text-sm text-gray-500">
                     <%= muzakki.jenis_zakat === 'uang' ? 'Zakat Uang' : 'Zakat
@@ -289,14 +288,14 @@ min-h-screen', currentPage: 'rt' }) %>
                 </a>
                 <form
                   method="POST"
-                  action="/muzakki/<%= muzakki.id %>/delete"
-                  class="inline"
+                  action="/muzakki/delete/<%= muzakki.id %>?_method=DELETE"
+                  class="inline delete-form"
+                  data-name="<%= muzakki.nama_muzakki_list %>"
                 >
                   <button
                     type="submit"
                     class="text-red-600 hover:text-red-900"
                     title="Hapus Muzakki"
-                    onclick="return confirm('Yakin ingin menghapus data muzakki <%= muzakki.nama %>?')"
                   >
                     <i class="fas fa-trash"></i>
                   </button>
@@ -320,5 +319,24 @@ min-h-screen', currentPage: 'rt' }) %>
     <% } %>
   </div>
 </div>
+
+<script>
+  // Handle delete forms with SweetAlert2
+  document.querySelectorAll(".delete-form").forEach((form) => {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const muzakkiName = this.getAttribute("data-name") || "muzakki ini";
+
+      showDeleteConfirm(
+        muzakkiName,
+        `Yakin ingin menghapus data muzakki ini?`
+      ).then((result) => {
+        if (result.isConfirmed) {
+          this.submit();
+        }
+      });
+    });
+  });
+</script>
 
 <%- include('../layouts/footer') %>

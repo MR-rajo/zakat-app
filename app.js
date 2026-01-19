@@ -151,6 +151,10 @@ app.get("/dashboard", isAuthenticated, async (req, res) => {
     // Get recent muzakki
     const [recentMuzakki] = await db.execute(`
       SELECT m.*, rt.nomor_rt as rt_nama,
+        (SELECT GROUP_CONCAT(md.nama_muzakki SEPARATOR ', ') 
+         FROM muzakki_details md 
+         WHERE md.muzakki_id = m.id 
+         LIMIT 3) as nama,
         CASE 
           WHEN m.jenis_zakat = 'uang' THEN m.jumlah_uang 
           ELSE m.jumlah_beras_kg * 12000 
@@ -171,7 +175,7 @@ app.get("/dashboard", isAuthenticated, async (req, res) => {
     // Get RT statistics
     const [rtStats] = await db.execute(`
       SELECT
-        rt.nomor_rt as nama,
+        rt.nomor_rt,
         COUNT(m.id) as total_muzakki,
         COALESCE(SUM(CASE 
           WHEN m.jenis_zakat = 'uang' THEN m.jumlah_uang 
@@ -247,9 +251,15 @@ app.get("/", async (req, res) => {
         total_infak: infakResult[0].total_infak,
       };
 
+      // Handle query parameters for flash messages
+      const success = req.query.success;
+      const error = req.query.error;
+
       res.render("home", {
         title: "Sistem Manajemen Zakat Fitrah",
         stats: stats || {},
+        success: success || null,
+        error: error || null,
         layout: false, // Gunakan layout khusus untuk home
       });
     } catch (error) {
@@ -262,6 +272,8 @@ app.get("/", async (req, res) => {
           total_rt_aktif: 0,
           total_infak: 0,
         },
+        success: req.query.success || null,
+        error: req.query.error || null,
         layout: false,
       });
     }

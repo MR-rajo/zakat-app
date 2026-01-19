@@ -1,45 +1,864 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">
-      <i class="fas fa-user-cog mr-2 text-primary-600"></i>Manajemen User
-    </h1>
-    <p class="text-gray-600 mt-1">
-      Kelola user dan hak akses sistem (Khusus Admin)
-    </p>
+<%- include('../layouts/header', { 
+  title: 'Manajemen User - Zakat Fitrah App', 
+  bodyClass: 'bg-gray-50',
+  currentPage: 'users' 
+}) %>
+
+<style>
+  .page-wrapper {
+    padding: 30px;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
+  }
+
+  .header-title {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-subtitle {
+    color: #6b7280;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(30, 175, 47, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(30, 175, 47, 0.4);
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid #f3f4f6;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: #e5e7eb;
+  }
+
+  .stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .stat-details {
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1;
+  }
+
+  .search-filter-bar {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f3f4f6;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 16px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 14px;
+    transition: all 0.3s;
+    background: #f9fafb;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #1EAF2F;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(30, 175, 47, 0.1);
+  }
+
+  .form-select {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 14px;
+    transition: all 0.3s;
+    background: #f9fafb;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .form-select:focus {
+    outline: none;
+    border-color: #1EAF2F;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(30, 175, 47, 0.1);
+  }
+
+  .btn-secondary {
+    padding: 14px 24px;
+    background: #f3f4f6;
+    color: #374151;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: white;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+  }
+
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+  }
+
+  .user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .user-info {
+    flex: 1;
+  }
+
+  .user-name {
+    font-weight: 700;
+    color: #111827;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+
+  .user-id {
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  .role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .role-admin {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+  }
+
+  .role-panitia {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+  }
+
+  .mobile-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f3f4f6;
+  }
+
+  @media (max-width: 768px) {
+    .page-wrapper {
+      padding: 20px;
+    }
+
+    .page-header {
+      padding: 24px;
+    }
+
+    .header-title {
+      font-size: 24px;
+    }
+
+    .stats-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      font-size: 22px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+    }
+  }
+</style>
+
+<div class="page-wrapper">
+  
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <h1 class="header-title">
+          <i class="fas fa-user-cog"></i>
+          Manajemen User
+        </h1>
+        <p class="header-subtitle">
+          Kelola user panitia dan hak akses sistem
+        </p>
+      </div>
+      <div>
+        <button onclick="openAddModal()" class="btn-primary">
+          <i class="fas fa-user-plus"></i>
+          <span>Tambah User Baru</span>
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- Placeholder Content -->
-  <div class="card text-center py-12">
-    <i class="fas fa-tools text-6xl text-gray-300 mb-4"></i>
-    <h3 class="text-xl font-medium text-gray-900 mb-2">
-      Fitur Dalam Pengembangan
-    </h3>
-    <p class="text-gray-600 mb-6">
-      Halaman manajemen user sedang dalam tahap pengembangan.<br />
-      Saat ini admin dapat mengelola user melalui database langsung.
-    </p>
-    <a href="/muzakki" class="btn-primary">
-      <i class="fas fa-users mr-2"></i>Kembali ke Data Muzakki
-    </a>
+  <!-- Stats Cards -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-details">
+        <div class="stat-label">Total User</div>
+        <div class="stat-value"><%= users.length %></div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <div class="stat-details">
+        <div class="stat-label">Admin</div>
+        <div class="stat-value"><%= users.filter(u => u.role === 'admin').length %></div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+        <i class="fas fa-user-tie"></i>
+      </div>
+      <div class="stat-details">
+        <div class="stat-label">Panitia</div>
+        <div class="stat-value"><%= users.filter(u => u.role === 'panitia').length %></div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+        <i class="fas fa-user-clock"></i>
+      </div>
+      <div class="stat-details">
+        <div class="stat-label">Aktif Hari Ini</div>
+        <div class="stat-value"><%= users.length %></div>
+      </div>
+    </div>
   </div>
 
-  <!-- Future Features Preview -->
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="card text-center">
-      <i class="fas fa-user-plus text-3xl text-gray-400 mb-3"></i>
-      <h4 class="font-semibold text-gray-900 mb-2">Tambah User</h4>
-      <p class="text-sm text-gray-600">Menambahkan user panitia baru</p>
+  <!-- Search & Filter Bar -->
+  <div class="search-filter-bar">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+      <div class="input-wrapper">
+        <i class="fas fa-search input-icon"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Cari nama atau nomor WA..." 
+          class="form-input"
+          onkeyup="filterTable()"
+        >
+      </div>
+      
+      <div class="input-wrapper">
+        <i class="fas fa-filter input-icon"></i>
+        <select 
+          id="filterRole" 
+          class="form-select"
+          onchange="filterTable()"
+        >
+          <option value="">Semua Role</option>
+          <option value="admin">Admin</option>
+          <option value="panitia">Panitia</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button onclick="resetFilter()" class="btn-secondary" style="flex: 1;">
+          <i class="fas fa-redo mr-2"></i>Reset
+        </button>
+        <button onclick="exportTable()" class="btn-success" style="flex: 1;">
+          <i class="fas fa-file-excel mr-2"></i>Export
+        </button>
+      </div>
     </div>
-    <div class="card text-center">
-      <i class="fas fa-user-edit text-3xl text-gray-400 mb-3"></i>
-      <h4 class="font-semibold text-gray-900 mb-2">Edit User</h4>
-      <p class="text-sm text-gray-600">Mengubah data dan role user</p>
+  </div>
+
+  <!-- Desktop Table View -->
+  <div class="card desktop-view" style="overflow: hidden;">
+    <div style="overflow-x: auto;">
+      <table class="data-table" id="usersTable">
+        <thead>
+          <tr>
+            <th style="width: 60px;">No</th>
+            <th>Nama Lengkap</th>
+            <th>Nomor WhatsApp</th>
+            <th style="width: 120px;">Role</th>
+            <th style="width: 180px;">Terdaftar</th>
+            <th style="width: 200px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users.length === 0) { %>
+            <tr>
+              <td colspan="6" style="text-center py-12;">
+                <div class="empty-state-box">
+                  <i class="fas fa-users empty-state-icon"></i>
+                  <h3 class="empty-state-title">Belum Ada User</h3>
+                  <p class="empty-state-desc">Klik tombol "Tambah User Baru" untuk menambahkan user pertama</p>
+                </div>
+              </td>
+            </tr>
+          <% } else { %>
+            <% users.forEach((user, index) => { %>
+              <tr data-role="<%= user.role %>">
+                <td style="text-align: center;"><%= index + 1 %></td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="user-avatar">
+                      <%= user.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="user-info">
+                      <div class="user-name"><%= user.name %></div>
+                      <div class="user-id">ID: #<%= user.id %></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <a href="https://wa.me/<%= user.nomor_wa %>" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; color: #059669; font-weight: 600; text-decoration: none;">
+                    <i class="fab fa-whatsapp" style="font-size: 18px;"></i>
+                    <%= user.nomor_wa %>
+                  </a>
+                </td>
+                <td>
+                  <% if (user.role === 'admin') { %>
+                    <span class="role-badge role-admin">
+                      <i class="fas fa-crown"></i>Admin
+                    </span>
+                  <% } else { %>
+                    <span class="role-badge role-panitia">
+                      <i class="fas fa-user"></i>Panitia
+                    </span>
+                  <% } %>
+                </td>
+                <td style="font-size: 14px; color: #6b7280;">
+                  <%= new Date(user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                </td>
+                <td>
+                  <div class="action-buttons-group">
+                    <button onclick='editUser(<%= JSON.stringify(user) %>)' class="btn-icon btn-icon-primary" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="resetPassword(<%= user.id %>, '<%= user.name %>')" class="btn-icon btn-icon-info" title="Reset Password">
+                      <i class="fas fa-key"></i>
+                    </button>
+                    <button onclick="deleteUser(<%= user.id %>, '<%= user.name %>')" class="btn-icon btn-icon-danger" title="Hapus">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } %>
+        </tbody>
+      </table>
     </div>
-    <div class="card text-center">
-      <i class="fas fa-user-shield text-3xl text-gray-400 mb-3"></i>
-      <h4 class="font-semibold text-gray-900 mb-2">Kelola Role</h4>
-      <p class="text-sm text-gray-600">Mengatur hak akses user</p>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="mobile-view">
+    <% if (users.length === 0) { %>
+      <div class="empty-state-box" style="text-align: center; padding: 48px 24px;">
+        <i class="fas fa-users" style="font-size: 64px; color: #d1d5db; margin-bottom: 16px;"></i>
+        <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 8px;">Belum Ada User</h3>
+        <p style="color: #6b7280; margin-bottom: 16px;">Klik tombol di atas untuk menambahkan user pertama</p>
+      </div>
+    <% } else { %>
+      <% users.forEach((user, index) => { %>
+        <div class="mobile-card" data-role="<%= user.role %>">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="user-avatar" style="width: 48px; height: 48px; font-size: 18px;">
+                <%= user.name.charAt(0).toUpperCase() %>
+              </div>
+              <div>
+                <div class="user-name"><%= user.name %></div>
+                <div class="user-id">ID: #<%= user.id %></div>
+              </div>
+            </div>
+            <% if (user.role === 'admin') { %>
+              <span class="role-badge role-admin" style="font-size: 11px;">
+                <i class="fas fa-crown"></i>Admin
+              </span>
+            <% } else { %>
+              <span class="role-badge role-panitia" style="font-size: 11px;">
+                <i class="fas fa-user"></i>Panitia
+              </span>
+            <% } %>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px;">
+            <div>
+              <div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Nomor WhatsApp</div>
+              <div style="font-size: 13px; color: #111827;">
+                <a href="https://wa.me/<%= user.nomor_wa %>" target="_blank" style="color: #059669; text-decoration: none;">
+                  <i class="fab fa-whatsapp"></i> <%= user.nomor_wa %>
+                </a>
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Terdaftar</div>
+              <div style="font-size: 13px; color: #111827;">
+                <%= new Date(user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding-top: 12px; border-top: 1px solid #f3f4f6;">
+            <div class="action-buttons-group">
+              <button onclick='editUser(<%= JSON.stringify(user) %>)' class="btn-icon btn-icon-primary" style="flex: 1; padding: 10px;">
+                <i class="fas fa-edit mr-1"></i>Edit
+              </button>
+              <button onclick="resetPassword(<%= user.id %>, '<%= user.name %>')" class="btn-icon btn-icon-info" style="flex: 1; padding: 10px;">
+                <i class="fas fa-key mr-1"></i>Reset
+              </button>
+              <button onclick="deleteUser(<%= user.id %>, '<%= user.name %>')" class="btn-icon btn-icon-danger" style="flex: 1; padding: 10px;">
+                <i class="fas fa-trash mr-1"></i>Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+</div>
+
+<!-- Modal Add/Edit User -->
+<div id="userModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; overflow-y: auto; padding: 20px;">
+  <div style="max-width: 500px; margin: 40px auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalSlideIn 0.3s ease;">
+    <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
+      <h3 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0;" id="modalTitle">
+        <i class="fas fa-user-plus mr-2 text-primary-600"></i>Tambah User Baru
+      </h3>
     </div>
+    
+    <form id="userForm" method="POST" style="padding: 24px;">
+      <input type="hidden" id="userId" name="id">
+      <input type="hidden" id="formMethod" name="_method" value="POST">
+      
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 14px;">
+          <i class="fas fa-user mr-2"></i>Nama Lengkap
+        </label>
+        <input 
+          type="text" 
+          id="userName" 
+          name="name" 
+          required 
+          style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 14px; transition: all 0.3s;"
+          placeholder="Masukkan nama lengkap"
+          onfocus="this.style.borderColor='#1EAF2F'"
+          onblur="this.style.borderColor='#e5e7eb'"
+        >
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 14px;">
+          <i class="fab fa-whatsapp mr-2"></i>Nomor WhatsApp
+        </label>
+        <input 
+          type="text" 
+          id="userWA" 
+          name="nomor_wa" 
+          required 
+          style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 14px; transition: all 0.3s;"
+          placeholder="Contoh: 628123456789"
+          onfocus="this.style.borderColor='#1EAF2F'"
+          onblur="this.style.borderColor='#e5e7eb'"
+        >
+        <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 4px;">
+          Format: 628xxx (dimulai dengan 62)
+        </small>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 14px;">
+          <i class="fas fa-shield-alt mr-2"></i>Role
+        </label>
+        <select 
+          id="userRole" 
+          name="role" 
+          required 
+          style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 14px; transition: all 0.3s;"
+          onfocus="this.style.borderColor='#1EAF2F'"
+          onblur="this.style.borderColor='#e5e7eb'"
+        >
+          <option value="panitia">Panitia</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div id="passwordField" style="margin-bottom: 20px;">
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px; font-size: 14px;">
+          <i class="fas fa-lock mr-2"></i>Password
+        </label>
+        <input 
+          type="password" 
+          id="userPassword" 
+          name="password" 
+          style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 14px; transition: all 0.3s;"
+          placeholder="Minimal 6 karakter"
+          onfocus="this.style.borderColor='#1EAF2F'"
+          onblur="this.style.borderColor='#e5e7eb'"
+        >
+        <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 4px;">
+          Kosongkan jika tidak ingin mengubah password
+        </small>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 28px;">
+        <button 
+          type="button" 
+          onclick="closeModal()" 
+          style="flex: 1; padding: 14px; background: #f3f4f6; color: #374151; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px;"
+          onmouseover="this.style.background='#e5e7eb'"
+          onmouseout="this.style.background='#f3f4f6'"
+        >
+          <i class="fas fa-times mr-2"></i>Batal
+        </button>
+        <button 
+          type="submit" 
+          style="flex: 1; padding: 14px; background: linear-gradient(135deg, #1EAF2F, #16a127); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px; box-shadow: 0 4px 12px rgba(30, 175, 47, 0.3);"
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(30, 175, 47, 0.4)'"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(30, 175, 47, 0.3)'"
+        >
+          <i class="fas fa-save mr-2"></i>Simpan
+        </button>
+      </div>
+    </form>
   </div>
 </div>
+
+<style>
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  let isEditMode = false;
+
+  function openAddModal() {
+    isEditMode = false;
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus mr-2" style="color: #1EAF2F;"></i>Tambah User Baru';
+    document.getElementById('userForm').action = '/users';
+    document.getElementById('formMethod').value = 'POST';
+    document.getElementById('userId').value = '';
+    document.getElementById('userName').value = '';
+    document.getElementById('userWA').value = '';
+    document.getElementById('userRole').value = 'panitia';
+    document.getElementById('userPassword').value = '';
+    document.getElementById('userPassword').required = true;
+    document.getElementById('passwordField').querySelector('small').textContent = 'Minimal 6 karakter';
+    document.getElementById('userModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function editUser(user) {
+    isEditMode = true;
+    document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit mr-2" style="color: #1EAF2F;"></i>Edit User';
+    document.getElementById('userForm').action = '/users/' + user.id + '?_method=PUT';
+    document.getElementById('formMethod').value = 'PUT';
+    document.getElementById('userId').value = user.id;
+    document.getElementById('userName').value = user.name;
+    document.getElementById('userWA').value = user.nomor_wa;
+    document.getElementById('userRole').value = user.role;
+    document.getElementById('userPassword').value = '';
+    document.getElementById('userPassword').required = false;
+    document.getElementById('passwordField').querySelector('small').textContent = 'Kosongkan jika tidak ingin mengubah password';
+    document.getElementById('userModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('userModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  function deleteUser(id, name) {
+    Swal.fire({
+      title: 'Konfirmasi Hapus',
+      html: `Apakah Anda yakin ingin menghapus user <strong>${name}</strong>?<br><small style="color: #6b7280;">Tindakan ini tidak dapat dibatalkan.</small>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-trash mr-2"></i>Ya, Hapus',
+      cancelButtonText: '<i class="fas fa-times mr-2"></i>Batal',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-xl',
+        confirmButton: 'px-6 py-3 rounded-lg font-semibold',
+        cancelButton: 'px-6 py-3 rounded-lg font-semibold'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/users/' + id + '?_method=DELETE';
+        document.body.appendChild(form);
+        form.submit();
+      }
+    });
+  }
+
+  function resetPassword(id, name) {
+    Swal.fire({
+      title: 'Reset Password',
+      html: `Reset password untuk user <strong>${name}</strong>?<br><small style="color: #6b7280;">Password akan direset ke default (123456).</small>`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-key mr-2"></i>Reset',
+      cancelButtonText: '<i class="fas fa-times mr-2"></i>Batal',
+      confirmButtonColor: '#3b82f6',
+      cancelButtonColor: '#6b7280',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('/users/' + id + '/reset-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Berhasil!',
+              text: data.message,
+              confirmButtonColor: '#1EAF2F'
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal!',
+              text: data.message,
+              confirmButtonColor: '#ef4444'
+            });
+          }
+        })
+        .catch(err => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Terjadi kesalahan saat reset password',
+            confirmButtonColor: '#ef4444'
+          });
+        });
+      }
+    });
+  }
+
+  function filterTable() {
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const roleValue = document.getElementById('filterRole').value.toLowerCase();
+    const table = document.getElementById('usersTable');
+    const rows = table.getElementsByTagName('tr');
+    const mobileCards = document.querySelectorAll('.mobile-card');
+
+    // Filter desktop table
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      const nameCell = row.cells[1]?.textContent.toLowerCase() || '';
+      const waCell = row.cells[2]?.textContent.toLowerCase() || '';
+      const role = row.getAttribute('data-role')?.toLowerCase() || '';
+      
+      const matchSearch = nameCell.includes(searchValue) || waCell.includes(searchValue);
+      const matchRole = roleValue === '' || role === roleValue;
+      
+      row.style.display = matchSearch && matchRole ? '' : 'none';
+    }
+
+    // Filter mobile cards
+    mobileCards.forEach(card => {
+      const name = card.querySelector('.user-name')?.textContent.toLowerCase() || '';
+      const wa = card.textContent.toLowerCase();
+      const role = card.getAttribute('data-role')?.toLowerCase() || '';
+      
+      const matchSearch = name.includes(searchValue) || wa.includes(searchValue);
+      const matchRole = roleValue === '' || role === roleValue;
+      
+      card.style.display = matchSearch && matchRole ? '' : 'none';
+    });
+  }
+
+  function resetFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterRole').value = '';
+    filterTable();
+  }
+
+  function exportTable() {
+    Swal.fire({
+      icon: 'info',
+      title: 'Export Data',
+      text: 'Fitur export akan segera tersedia',
+      confirmButtonColor: '#1EAF2F'
+    });
+  }
+
+  // Close modal when clicking outside
+  document.getElementById('userModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeModal();
+    }
+  });
+
+  // Handle form submit
+  document.getElementById('userForm')?.addEventListener('submit', function(e) {
+    const password = document.getElementById('userPassword').value;
+    if (!isEditMode && password.length < 6) {
+      e.preventDefault();
+      Swal.fire({
+        icon: 'error',
+        title: 'Password Terlalu Pendek',
+        text: 'Password minimal 6 karakter',
+        confirmButtonColor: '#ef4444'
+      });
+      return false;
+    }
+  });
+</script>
+
+<!-- Include User Modal -->
+<%- include('partials/user-modal') %>
+
+<%- include('../layouts/footer') %>

@@ -1,319 +1,922 @@
-<%- include('../layouts/header', { title: 'Edit Muzakki - Zakat Fitrah App', bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
+﻿<%- include('../layouts/header', { title: 'Edit Muzakki - Zakat Fitrah App', bodyClass: 'bg-gray-50', currentPage: 'muzakki' }) %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center mb-4">
-            <a href="/muzakki" class="text-primary-600 hover:text-primary-800 mr-4">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1 class="text-3xl font-bold text-gray-900">
-                <i class="fas fa-edit mr-2 text-primary-600"></i>Edit Muzakki
-            </h1>
+<div class="page-wrapper">
+    <!-- Modern Header -->
+    <div class="page-header">
+        <div class="header-content-wrapper">
+            <div class="header-left-section">
+                <a href="/muzakki" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="header-icon-box">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <div class="header-text-box">
+                    <h1 class="header-title-text">Edit Data Muzakki</h1>
+                    <p class="header-subtitle-text">
+                        <% if (muzakkiDetails && muzakkiDetails.length > 0) { %>
+                            <%= muzakkiDetails.map(d => d.nama_muzakki).join(', ') %>
+                        <% } else { %>
+                            ID #<%= muzakki.id %>
+                        <% } %>
+                    </p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="info-badge">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Mode Edit</span>
+                </div>
+            </div>
         </div>
-        <p class="text-gray-600">Edit data muzakki: <strong><%= muzakki.nama %></strong></p>
     </div>
 
-    <!-- Form -->
-    <div class="card">
+    <!-- Form Container -->
+    <div class="form-container">
         <form action="/muzakki/<%= muzakki.id %>?_method=PUT" method="POST" id="muzakkiForm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- RT Selection -->
-                <div>
-                    <label for="rt_id" class="block text-sm font-medium text-gray-700">
-                        <i class="fas fa-map-marker-alt mr-1 text-gray-500"></i>RT *
-                    </label>
-                    <select id="rt_id" name="rt_id" required class="form-select mt-1">
-                        <option value="">Pilih RT</option>
-                        <% rtList.forEach(function(rt) { %>
-                        <option value="<%= rt.id %>" <%= rt.id === muzakki.rt_id ? 'selected' : '' %>>
-                            <%= rt.nomor_rt %> - <%= rt.ketua_rt %>
-                        </option>
-                        <% }); %>
-                    </select>
-                </div>
-
-                <!-- Data Identitas Muzakki -->
-                <div class="md:col-span-2">
-                    <div class="bg-gray-50 p-4 rounded-lg border">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-md font-semibold text-gray-800">
-                                <i class="fas fa-id-card mr-2 text-blue-600"></i>Data Identitas Muzakki
-                            </h3>
-                        </div>
-
-                        <!-- Container untuk semua section muzakki -->
-                        <div id="muzakkiContainer">
-                            <% if (muzakkiDetails.length > 0) { %>
-                                <% muzakkiDetails.forEach(function(detail, index) { %>
-                                <div class="muzakki-section <%= index > 0 ? 'border-t pt-4 mt-4' : '' %>" data-index="<%= index %>">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h4 class="text-sm font-medium text-gray-700">
-                                            <i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki #<%= index + 1 %>
-                                        </h4>
-                                        <% if (index > 0) { %>
-                                        <button
-                                            type="button"
-                                            class="text-red-600 hover:text-red-800 text-sm"
-                                            onclick="removeMuzakkiSection(<%= index %>)"
-                                        >
-                                            <i class="fas fa-trash mr-1"></i>Hapus
-                                        </button>
-                                        <% } %>
-                                    </div>
-                                    
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                        <!-- Nama Muzakki -->
-                                        <div class="md:col-span-3">
-                                            <label for="nama_<%= index %>" class="block text-sm font-medium text-gray-700">
-                                                <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap Muzakki *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="nama_<%= index %>"
-                                                name="muzakki[<%= index %>][nama]"
-                                                required
-                                                class="form-input mt-1"
-                                                value="<%= detail.nama_muzakki || '' %>"
-                                                placeholder="Masukkan nama lengkap muzakki"
-                                            />
-                                        </div>
-
-                                        <!-- Bin/Binti -->
-                                        <div>
-                                            <label for="bin_binti_<%= index %>" class="block text-sm font-medium text-gray-700">
-                                                <i class="fas fa-venus-mars mr-1 text-gray-500"></i>Bin/Binti
-                                            </label>
-                                            <select
-                                                id="bin_binti_<%= index %>"
-                                                name="muzakki[<%= index %>][bin_binti]"
-                                                class="form-select mt-1"
-                                            >
-                                                <option value="">Pilih</option>
-                                                <option value="bin" <%= (detail.bin_binti === 'bin') ? 'selected' : '' %>>Bin (Anak Laki-laki)</option>
-                                                <option value="binti" <%= (detail.bin_binti === 'binti') ? 'selected' : '' %>>Binti (Anak Perempuan)</option>
-                                            </select>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Bin untuk laki-laki, Binti untuk perempuan
-                                            </p>
-                                        </div>
-
-                                        <!-- Nama Orang Tua -->
-                                        <div class="md:col-span-2">
-                                            <label for="nama_orang_tua_<%= index %>" class="block text-sm font-medium text-gray-700">
-                                                <i class="fas fa-users mr-1 text-gray-500"></i>Nama Orang Tua
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="nama_orang_tua_<%= index %>"
-                                                name="muzakki[<%= index %>][nama_orang_tua]"
-                                                class="form-input mt-1"
-                                                value="<%= detail.nama_orang_tua || '' %>"
-                                                placeholder="Masukkan nama ayah atau ibu sesuai bin/binti"
-                                            />
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Nama ayah jika "bin", nama ibu jika "binti"
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }); %>
-                            <% } else { %>
-                                <!-- Default single muzakki if no details -->
-                                <div class="muzakki-section" data-index="0">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h4 class="text-sm font-medium text-gray-700">
-                                            <i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki #1
-                                        </h4>
-                                    </div>
-                                    
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                        <!-- Nama Muzakki -->
-                                        <div class="md:col-span-3">
-                                            <label for="nama_0" class="block text-sm font-medium text-gray-700">
-                                                <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap Muzakki *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="nama_0"
-                                                name="muzakki[0][nama]"
-                                                required
-                                                class="form-input mt-1"
-                                                placeholder="Masukkan nama lengkap muzakki"
-                                            />
-                                        </div>
-
-                                        <!-- Bin/Binti -->
-                                        <div>
-                                            <label for="bin_binti_0" class="block text-sm font-medium text-gray-700">
-                                                <i class="fas fa-venus-mars mr-1 text-gray-500"></i>Bin/Binti
-                                            </label>
-                                            <select
-                                                id="bin_binti_0"
-                                                name="muzakki[0][bin_binti]"
-                                                class="form-select mt-1"
-                                            >
-                                                <option value="">Pilih</option>
-                                                <option value="bin">Bin (Anak Laki-laki)</option>
-                                                <option value="binti">Binti (Anak Perempuan)</option>
-                                            </select>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Bin untuk laki-laki, Binti untuk perempuan
-                                            </p>
-                                        </div>
-
-                                        <!-- Nama Orang Tua -->
-                                        <div class="md:col-span-2">
-                                            <label for="nama_orang_tua_0" class="block text-sm font-medium text-gray-700">
-                                                <i class="fas fa-users mr-1 text-gray-500"></i>Nama Orang Tua
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="nama_orang_tua_0"
-                                                name="muzakki[0][nama_orang_tua]"
-                                                class="form-input mt-1"
-                                                placeholder="Masukkan nama ayah atau ibu sesuai bin/binti"
-                                            />
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Nama ayah jika "bin", nama ibu jika "binti"
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            <% } %>
-                        </div>
+            <!-- RT Selection Card -->
+            <div class="form-card">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <button
-                        type="button"
-                        id="addMuzakkiBtn"
-                        class="bg-green-600 text-white mt-4 text-sm px-3 py-1"
-                        onclick="addMuzakkiSection()"
-                    >
-                        <i class="fas fa-plus mr-1"></i>Tambah Muzakki
+                    <div class="card-header-text">
+                        <h3 class="card-title">Lokasi RT</h3>
+                        <p class="card-subtitle">Pilih RT tempat muzakki terdaftar</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="rt_id" class="form-label">
+                            <i class="fas fa-home"></i> RT <span class="required">*</span>
+                        </label>
+                        <select id="rt_id" name="rt_id" required class="form-select">
+                            <option value="">Pilih RT</option>
+                            <% rtList.forEach(function(rt) { %>
+                            <option value="<%= rt.id %>" <%= rt.id === muzakki.rt_id ? 'selected' : '' %>>
+                                RT <%= rt.nomor_rt %> - <%= rt.ketua_rt %>
+                            </option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Identitas Muzakki Card -->
+            <div class="form-card">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title">Data Identitas Muzakki</h3>
+                        <p class="card-subtitle">Informasi lengkap muzakki yang ditanggung</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Container untuk semua section muzakki -->
+                    <div id="muzakkiContainer">
+                        <% if (muzakkiDetails.length > 0) { %>
+                            <% muzakkiDetails.forEach(function(detail, index) { %>
+                            <div class="muzakki-section" data-index="<%= index %>">
+                                <div class="muzakki-section-header">
+                                    <h4 class="muzakki-section-title">
+                                        <i class="fas fa-user-circle"></i> Muzakki #<%= index + 1 %>
+                                    </h4>
+                                    <% if (index > 0) { %>
+                                    <button type="button" class="btn-remove-muzakki" onclick="removeMuzakkiSection(<%= index %>)">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Hapus</span>
+                                    </button>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <!-- Nama Muzakki -->
+                                    <div class="form-group form-group-full">
+                                        <label for="nama_<%= index %>" class="form-label">
+                                            <i class="fas fa-user"></i> Nama Lengkap Muzakki <span class="required">*</span>
+                                        </label>
+                                        <input type="text" id="nama_<%= index %>" name="muzakki[<%= index %>][nama]" 
+                                               required class="form-input" 
+                                               value="<%= detail.nama_muzakki %>"
+                                               placeholder="Masukkan nama lengkap muzakki">
+                                    </div>
+
+                                    <!-- Bin/Binti -->
+                                    <div class="form-group">
+                                        <label for="bin_binti_<%= index %>" class="form-label">
+                                            <i class="fas fa-venus-mars"></i> Bin/Binti
+                                        </label>
+                                        <select id="bin_binti_<%= index %>" name="muzakki[<%= index %>][bin_binti]" class="form-select">
+                                            <option value="">Pilih</option>
+                                            <option value="bin" <%= detail.bin_binti === 'bin' ? 'selected' : '' %>>Bin (Anak Laki-laki)</option>
+                                            <option value="binti" <%= detail.bin_binti === 'binti' ? 'selected' : '' %>>Binti (Anak Perempuan)</option>
+                                        </select>
+                                        <p class="form-hint">Bin untuk laki-laki, Binti untuk perempuan</p>
+                                    </div>
+
+                                    <!-- Nama Orang Tua -->
+                                    <div class="form-group">
+                                        <label for="nama_orang_tua_<%= index %>" class="form-label">
+                                            <i class="fas fa-users"></i> Nama Orang Tua
+                                        </label>
+                                        <input type="text" id="nama_orang_tua_<%= index %>" name="muzakki[<%= index %>][nama_orang_tua]" 
+                                               class="form-input" 
+                                               value="<%= detail.nama_orang_tua || '' %>"
+                                               placeholder="Masukkan nama ayah atau ibu">
+                                        <p class="form-hint">Nama ayah jika "bin", nama ibu jika "binti"</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                        <% } else { %>
+                            <!-- Default single muzakki if no details -->
+                            <div class="muzakki-section" data-index="0">
+                                <div class="muzakki-section-header">
+                                    <h4 class="muzakki-section-title">
+                                        <i class="fas fa-user-circle"></i> Muzakki #1
+                                    </h4>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group form-group-full">
+                                        <label for="nama_0" class="form-label">
+                                            <i class="fas fa-user"></i> Nama Lengkap Muzakki <span class="required">*</span>
+                                        </label>
+                                        <input type="text" id="nama_0" name="muzakki[0][nama]" required class="form-input" 
+                                               placeholder="Masukkan nama lengkap muzakki">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="bin_binti_0" class="form-label">
+                                            <i class="fas fa-venus-mars"></i> Bin/Binti
+                                        </label>
+                                        <select id="bin_binti_0" name="muzakki[0][bin_binti]" class="form-select">
+                                            <option value="">Pilih</option>
+                                            <option value="bin">Bin (Anak Laki-laki)</option>
+                                            <option value="binti">Binti (Anak Perempuan)</option>
+                                        </select>
+                                        <p class="form-hint">Bin untuk laki-laki, Binti untuk perempuan</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="nama_orang_tua_0" class="form-label">
+                                            <i class="fas fa-users"></i> Nama Orang Tua
+                                        </label>
+                                        <input type="text" id="nama_orang_tua_0" name="muzakki[0][nama_orang_tua]" 
+                                               class="form-input" placeholder="Masukkan nama ayah atau ibu">
+                                        <p class="form-hint">Nama ayah jika "bin", nama ibu jika "binti"</p>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                    <button type="button" id="addMuzakkiBtn" class="btn-add-muzakki" onclick="addMuzakkiSection()">
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah Muzakki</span>
                     </button>
                 </div>
+            </div>
 
-                <!-- Jumlah Jiwa -->
-                <div>
-                    <label for="jumlah_jiwa" class="block text-sm font-medium text-gray-700">
-                        <i class="fas fa-users mr-1 text-gray-500"></i>Jumlah Jiwa *
-                    </label>
-                    <input type="number" id="jumlah_jiwa" name="jumlah_jiwa" required min="1" 
-                           class="form-input mt-1" 
-                           value="<%= muzakki.jumlah_jiwa %>"
-                           placeholder="Jumlah jiwa yang ditanggung"
-                           onchange="calculateZakat()">
-                    <p class="text-xs text-gray-500 mt-1">Jumlah jiwa yang ditanggung zakatnya</p>
+            <!-- Perhitungan Zakat Card -->
+            <div class="form-card">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <div class="card-header-text">
+                        <h3 class="card-title">Perhitungan Zakat</h3>
+                        <p class="card-subtitle">Perhitungan otomatis berdasarkan jumlah jiwa dan jenis zakat</p>
+                    </div>
                 </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <!-- Jumlah Jiwa -->
+                        <div class="form-group">
+                            <label for="jumlah_jiwa" class="form-label">
+                                <i class="fas fa-users"></i> Jumlah Jiwa <span class="required">*</span>
+                            </label>
+                            <input type="number" id="jumlah_jiwa" name="jumlah_jiwa" required min="1" 
+                                   class="form-input" 
+                                   value="<%= muzakki.jumlah_jiwa %>"
+                                   placeholder="Jumlah jiwa yang ditanggung"
+                                   onchange="calculateZakat()">
+                            <p class="form-hint">Jumlah jiwa yang ditanggung zakatnya</p>
+                        </div>
 
-                <!-- Jenis Zakat -->
-                <div>
-                    <label for="jenis_zakat" class="block text-sm font-medium text-gray-700">
-                        <i class="fas fa-hand-holding mr-1 text-gray-500"></i>Jenis Zakat *
-                    </label>
-                    <select id="jenis_zakat" name="jenis_zakat" required class="form-select mt-1" onchange="calculateZakat()">
-                        <option value="">Pilih jenis zakat</option>
-                        <option value="beras" <%= muzakki.jenis_zakat === 'beras' ? 'selected' : '' %>>
-                            Beras (2.5 kg/jiwa)
-                        </option>
-                        <option value="uang" <%= muzakki.jenis_zakat === 'uang' ? 'selected' : '' %>>
-                            Uang (Rp 45.000/jiwa)
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Kewajiban Display -->
-                <div class="md:col-span-2">
-                    <div class="bg-gray-50 p-4 rounded-lg border">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-700">Kewajiban Zakat</h4>
-                                <p class="text-lg font-bold text-primary-600" id="kewajiban_display">
-                                    <% if (muzakki.jenis_zakat === 'beras') { %>
-                                        <%= muzakki.jumlah_beras_kg %> kg beras
+                        <!-- Jenis Zakat -->
+                        <div class="form-group">
+                            <label for="master_zakat_id" class="form-label">
+                                <i class="fas fa-hand-holding"></i> Jenis Zakat <span class="required">*</span>
+                            </label>
+                            <select id="master_zakat_id" name="master_zakat_id" required class="form-select" onchange="calculateZakat()">
+                                <option value="">Pilih jenis zakat</option>
+                                <% masterZakatList.forEach(function(zakat) { %>
+                                <option value="<%= zakat.id %>" 
+                                        data-harga="<%= zakat.harga %>" 
+                                        data-kg="<%= zakat.kg %>"
+                                        <%= zakat.id === muzakki.master_zakat_id ? 'selected' : '' %>>
+                                    <%= zakat.nama %> 
+                                    <% if (parseFloat(zakat.kg) > 0) { %>
+                                        (<%= zakat.kg %> kg/jiwa)
                                     <% } else { %>
-                                        Rp <%= muzakki.jumlah_uang.toLocaleString('id-ID') %>
+                                        (Rp <%= Math.floor(parseFloat(zakat.harga)).toLocaleString('id-ID') %>/jiwa)
                                     <% } %>
-                                </p>
+                                </option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Kewajiban Display -->
+                        <div class="form-group form-group-full">
+                            <div class="kewajiban-box">
+                                <div class="kewajiban-icon">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                                <div class="kewajiban-content">
+                                    <div class="kewajiban-label">Kewajiban Zakat</div>
+                                    <div class="kewajiban-value" id="kewajiban_display">
+                                        <% if (muzakki.jenis_zakat === 'beras') { %>
+                                            <%= parseFloat(muzakki.jumlah_beras_kg || 0).toFixed(1) %> kg beras
+                                        <% } else { %>
+                                            Rp <%= muzakki.jumlah_uang ? parseInt(muzakki.jumlah_uang).toLocaleString('id-ID') : '0' %>
+                                        <% } %>
+                                    </div>
+                                </div>
                             </div>
-                            <i class="fas fa-calculator text-2xl text-gray-300"></i>
+                        </div>
+
+                        <!-- Jumlah Bayar -->
+                        <div class="form-group form-group-full">
+                            <label for="jumlah_bayar" class="form-label">
+                                <i class="fas fa-money-bill-wave"></i> Jumlah Bayar <span class="required">*</span>
+                            </label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">Rp</span>
+                                <input type="text" id="jumlah_bayar_display" 
+                                       class="form-input input-with-prefix-field" 
+                                       value="<%= muzakki.jumlah_bayar ? parseInt(muzakki.jumlah_bayar).toLocaleString('id-ID') : '' %>"
+                                       placeholder="0"
+                                       oninput="handleRupiahInput(this)"
+                                       onfocus="prepareRupiahInput(this)"
+                                       onblur="finalizeRupiahInput(this)">
+                                <input type="hidden" id="jumlah_bayar" name="jumlah_bayar" 
+                                       value="<%= muzakki.jumlah_bayar %>" required>
+                            </div>
+                            <p class="form-hint">
+                                Jika lebih dari kewajiban, selisihnya akan menjadi kembalian yang bisa disedekahkan
+                            </p>
+                            <% if (muzakki.kembalian > 0) { %>
+                            <div class="alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Kembalian saat ini: <strong>Rp <%= muzakki.kembalian ? parseInt(muzakki.kembalian).toLocaleString('id-ID') : '0' %></strong></span>
+                            </div>
+                            <% } %>
+                        </div>
+
+                        <!-- Catatan -->
+                        <div class="form-group form-group-full">
+                            <label for="catatan" class="form-label">
+                                <i class="fas fa-sticky-note"></i> Catatan (Opsional)
+                            </label>
+                            <textarea id="catatan" name="catatan" rows="3" 
+                                      class="form-input" 
+                                      placeholder="Catatan tambahan atau keterangan khusus"><%= muzakki.catatan || '' %></textarea>
                         </div>
                     </div>
-                </div>
-
-                <!-- Jumlah Bayar -->
-                <div class="md:col-span-2">
-                    <label for="jumlah_bayar" class="block text-sm font-medium text-gray-700">
-                        <i class="fas fa-money-bill-wave mr-1 text-gray-500"></i>Jumlah Bayar (Rp) *
-                    </label>
-                    <div class="relative mt-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span class="text-gray-500 font-medium">Rp</span>
-                        </div>
-                        <input type="text" id="jumlah_bayar_display" 
-                               class="form-input pl-10" 
-                               value="<%= muzakki.jumlah_bayar ? parseInt(muzakki.jumlah_bayar).toLocaleString('id-ID') : '' %>"
-                               placeholder="0">
-                        <input type="hidden" id="jumlah_bayar" name="jumlah_bayar" 
-                               value="<%= muzakki.jumlah_bayar %>" required>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">
-                        Jika lebih dari kewajiban, selisihnya akan menjadi kembalian yang bisa disedekahkan
-                    </p>
-                    <% if (muzakki.kembalian > 0) { %>
-                    <div class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                        <p class="text-sm text-yellow-800">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Kembalian saat ini: <strong>Rp <%= muzakki.kembalian.toLocaleString('id-ID') %></strong>
-                        </p>
-                    </div>
-                    <% } %>
-                </div>
-
-                <!-- Catatan -->
-                <div class="md:col-span-2">
-                    <label for="catatan" class="block text-sm font-medium text-gray-700">
-                        <i class="fas fa-sticky-note mr-1 text-gray-500"></i>Catatan (Opsional)
-                    </label>
-                    <textarea id="catatan" name="catatan" rows="3" 
-                              class="form-input mt-1" 
-                              placeholder="Catatan tambahan atau keterangan khusus"><%= muzakki.catatan || '' %></textarea>
                 </div>
             </div>
 
             <!-- Submit Buttons -->
-            <div class="mt-8 flex justify-end space-x-4">
+            <div class="form-actions">
                 <a href="/muzakki" class="btn-secondary">
-                    <i class="fas fa-times mr-2"></i>Batal
+                    <i class="fas fa-times"></i>
+                    <span>Batal</span>
                 </a>
                 <button type="submit" class="btn-primary">
-                    <i class="fas fa-save mr-2"></i>Update Data
+                    <i class="fas fa-save"></i>
+                    <span>Update Data</span>
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Data History -->
-    <div class="mt-6 card">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-            <i class="fas fa-history mr-2 text-gray-600"></i>Informasi Data
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-                <span class="text-gray-600">Dibuat:</span>
-                <div class="font-medium"><%= new Date(muzakki.created_at).toLocaleString('id-ID') %></div>
+    <!-- Data History Card -->
+    <div class="info-grid">
+        <div class="info-card info-card-blue">
+            <div class="info-card-icon">
+                <i class="fas fa-history"></i>
             </div>
-            <div>
-                <span class="text-gray-600">Diupdate:</span>
-                <div class="font-medium"><%= new Date(muzakki.updated_at).toLocaleString('id-ID') %></div>
-            </div>
-            <div>
-                <span class="text-gray-600">Pencatat:</span>
-                <div class="font-medium">ID: <%= muzakki.user_id %></div>
+            <div class="info-card-content">
+                <h3 class="info-card-title">Informasi Data</h3>
+                <ul class="info-card-list">
+                    <li><strong>Dibuat:</strong> <%= new Date(muzakki.created_at).toLocaleString('id-ID') %></li>
+                    <li><strong>Diupdate:</strong> <%= new Date(muzakki.updated_at).toLocaleString('id-ID') %></li>
+                    <li><strong>Pencatat:</strong> User ID <%= muzakki.user_id %></li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modern Styles -->
+<style>
+    /* Page Wrapper */
+    .page-wrapper {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: pulse-animation 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse-animation {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+    }
+
+    .header-content-wrapper {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-left-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .back-button {
+        width: 44px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateX(-4px);
+    }
+
+    .header-icon-box {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-text-box {
+        color: white;
+    }
+
+    .header-title-text {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: white;
+    }
+
+    .header-subtitle-text {
+        font-size: 16px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.95);
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .info-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 12px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    /* Form Container */
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Form Card */
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(to right, #f9fafb, #f3f4f6);
+        padding: 24px 28px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .card-header-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+    }
+
+    .card-header-text {
+        flex: 1;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 4px 0;
+    }
+
+    .card-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 28px;
+    }
+
+    /* Form Grid */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group-full {
+        grid-column: span 2;
+    }
+
+    .form-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .required {
+        color: #ef4444;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: #1EAF2F;
+        box-shadow: 0 0 0 3px rgba(30, 175, 47, 0.1);
+    }
+
+    .form-hint {
+        font-size: 12px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    /* Input with Prefix */
+    .input-with-prefix {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-prefix {
+        position: absolute;
+        left: 16px;
+        font-weight: 600;
+        color: #6b7280;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .input-with-prefix-field {
+        padding-left: 48px;
+    }
+
+    /* Muzakki Section */
+    .muzakki-section {
+        padding: 20px;
+        background: linear-gradient(to right, #f9fafb, #ffffff);
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        margin-bottom: 16px;
+    }
+
+    .muzakki-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .muzakki-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .muzakki-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1EAF2F;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-remove-muzakki {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: #fee2e2;
+        color: #991b1b;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-remove-muzakki:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+    /* Button Add Muzakki */
+    .btn-add-muzakki {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 16px;
+    }
+
+    .btn-add-muzakki:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 175, 47, 0.3);
+    }
+
+    /* Kewajiban Box */
+    .kewajiban-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px solid #86efac;
+        border-radius: 12px;
+    }
+
+    .kewajiban-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+    }
+
+    .kewajiban-content {
+        flex: 1;
+    }
+
+    .kewajiban-label {
+        font-size: 13px;
+        color: #065f46;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .kewajiban-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.3;
+    }
+
+    /* Alert Info */
+    .alert-info {
+        margin-top: 8px;
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #f59e0b;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: #92400e;
+        font-weight: 500;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 24px 0;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(30, 175, 47, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 175, 47, 0.4);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    /* Info Grid */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        display: flex;
+        gap: 16px;
+    }
+
+    .info-card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .info-card-blue .info-card-icon {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+
+    .info-card-content {
+        flex: 1;
+    }
+
+    .info-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 12px 0;
+    }
+
+    .info-card-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .info-card-list li {
+        font-size: 14px;
+        color: #6b7280;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .info-card-list li::before {
+        content: 'â€¢';
+        position: absolute;
+        left: 0;
+        color: #1EAF2F;
+        font-weight: 700;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group-full,
+        .form-group-double {
+            grid-column: span 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-wrapper {
+            padding: 16px;
+        }
+
+        .page-header {
+            padding: 24px;
+        }
+
+        .header-content-wrapper {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .header-title-text {
+            font-size: 24px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .muzakki-section {
+            padding: 16px;
+        }
+
+        .muzakki-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .btn-remove-muzakki {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-left-section {
+            gap: 12px;
+        }
+
+        .back-button {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+        }
+
+        .header-icon-box {
+            width: 50px;
+            height: 50px;
+            font-size: 22px;
+        }
+
+        .header-title-text {
+            font-size: 20px;
+        }
+
+        .header-subtitle-text {
+            font-size: 14px;
+        }
+    }
+
+    /* Utility Classes */
+    .mr-1 {
+        margin-right: 4px;
+    }
+</style>
 
 <script>
     // Global variable untuk tracking jumlah muzakki
@@ -322,74 +925,68 @@
     // Function untuk menambah section muzakki baru
     function addMuzakkiSection() {
         const container = document.getElementById("muzakkiContainer");
-        const newIndex = muzakkiCount;
+        const currentSections = document.querySelectorAll(".muzakki-section");
+        const newIndex = currentSections.length;
 
-        // HTML untuk section muzakki baru
+        // Cek maksimal 5 muzakki
+        if (newIndex >= 5) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Batas Tercapai',
+                    text: 'Maksimal 5 muzakki per keluarga',
+                    confirmButtonColor: '#1EAF2F'
+                });
+            } else {
+                alert('Maksimal 5 muzakki per keluarga');
+            }
+            return;
+        }
+
+        // HTML untuk section muzakki baru dengan modern design
         const newSection = `
-            <div class="muzakki-section border-t pt-4 mt-4" data-index="${newIndex}">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="text-sm font-medium text-gray-700">
-                        <i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki #${newIndex + 1}
+            <div class="muzakki-section" data-index="${newIndex}">
+                <div class="muzakki-section-header">
+                    <h4 class="muzakki-section-title">
+                        <i class="fas fa-user-circle"></i> Muzakki #${newIndex + 1}
                     </h4>
-                    <button
-                        type="button"
-                        class="text-red-600 hover:text-red-800 text-sm"
-                        onclick="removeMuzakkiSection(${newIndex})"
-                    >
-                        <i class="fas fa-trash mr-1"></i>Hapus
+                    <button type="button" class="btn-remove-muzakki" onclick="removeMuzakkiSection(${newIndex})">
+                        <i class="fas fa-trash"></i>
+                        <span>Hapus</span>
                     </button>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="form-grid">
                     <!-- Nama Muzakki -->
-                    <div class="md:col-span-3">
-                        <label for="nama_${newIndex}" class="block text-sm font-medium text-gray-700">
-                            <i class="fas fa-user mr-1 text-gray-500"></i>Nama Lengkap Muzakki *
+                    <div class="form-group form-group-full">
+                        <label for="nama_${newIndex}" class="form-label">
+                            <i class="fas fa-user"></i> Nama Lengkap Muzakki <span class="required">*</span>
                         </label>
-                        <input
-                            type="text"
-                            id="nama_${newIndex}"
-                            name="muzakki[${newIndex}][nama]"
-                            required
-                            class="form-input mt-1"
-                            placeholder="Masukkan nama lengkap muzakki"
-                        />
+                        <input type="text" id="nama_${newIndex}" name="muzakki[${newIndex}][nama]" 
+                               required class="form-input" placeholder="Masukkan nama lengkap muzakki">
                     </div>
 
                     <!-- Bin/Binti -->
-                    <div>
-                        <label for="bin_binti_${newIndex}" class="block text-sm font-medium text-gray-700">
-                            <i class="fas fa-venus-mars mr-1 text-gray-500"></i>Bin/Binti
+                    <div class="form-group">
+                        <label for="bin_binti_${newIndex}" class="form-label">
+                            <i class="fas fa-venus-mars"></i> Bin/Binti
                         </label>
-                        <select
-                            id="bin_binti_${newIndex}"
-                            name="muzakki[${newIndex}][bin_binti]"
-                            class="form-select mt-1"
-                        >
+                        <select id="bin_binti_${newIndex}" name="muzakki[${newIndex}][bin_binti]" class="form-select">
                             <option value="">Pilih</option>
                             <option value="bin">Bin (Anak Laki-laki)</option>
                             <option value="binti">Binti (Anak Perempuan)</option>
                         </select>
-                        <p class="text-xs text-gray-500 mt-1">
-                            Bin untuk laki-laki, Binti untuk perempuan
-                        </p>
+                        <p class="form-hint">Bin untuk laki-laki, Binti untuk perempuan</p>
                     </div>
 
                     <!-- Nama Orang Tua -->
-                    <div class="md:col-span-2">
-                        <label for="nama_orang_tua_${newIndex}" class="block text-sm font-medium text-gray-700">
-                            <i class="fas fa-users mr-1 text-gray-500"></i>Nama Orang Tua
+                    <div class="form-group">
+                        <label for="nama_orang_tua_${newIndex}" class="form-label">
+                            <i class="fas fa-users"></i> Nama Orang Tua
                         </label>
-                        <input
-                            type="text"
-                            id="nama_orang_tua_${newIndex}"
-                            name="muzakki[${newIndex}][nama_orang_tua]"
-                            class="form-input mt-1"
-                            placeholder="Masukkan nama ayah atau ibu sesuai bin/binti"
-                        />
-                        <p class="text-xs text-gray-500 mt-1">
-                            Nama ayah jika "bin", nama ibu jika "binti"
-                        </p>
+                        <input type="text" id="nama_orang_tua_${newIndex}" name="muzakki[${newIndex}][nama_orang_tua]" 
+                               class="form-input" placeholder="Masukkan nama ayah atau ibu">
+                        <p class="form-hint">Nama ayah jika "bin", nama ibu jika "binti"</p>
                     </div>
                 </div>
             </div>
@@ -398,27 +995,112 @@
         // Tambahkan section baru ke container
         container.insertAdjacentHTML("beforeend", newSection);
 
-        // Update counter
-        muzakkiCount++;
+        // Update counter muzakki
+        muzakkiCount = document.querySelectorAll(".muzakki-section").length;
 
-        // Update visibility tombol tambah (maksimal 5 muzakki)
+        // Update visibility tombol tambah
         updateAddButtonVisibility();
 
-        // Scroll ke section yang baru ditambahkan
-        const newSectionElement = container.lastElementChild;
-        newSectionElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Scroll ke section yang baru ditambahkan dengan smooth animation
+        setTimeout(() => {
+            const newSectionElement = container.lastElementChild;
+            if (newSectionElement) {
+                newSectionElement.scrollIntoView({ 
+                    behavior: "smooth", 
+                    block: "center",
+                    inline: "nearest"
+                });
+                
+                // Focus ke input nama baru
+                const namaInput = newSectionElement.querySelector(`#nama_${newIndex}`);
+                if (namaInput) {
+                    setTimeout(() => namaInput.focus(), 500);
+                }
+            }
+        }, 100);
+
+        // Show success notification
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Section Ditambahkan',
+                text: `Muzakki #${newIndex + 1} berhasil ditambahkan`,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
     }
 
     // Function untuk menghapus section muzakki
     function removeMuzakkiSection(index) {
-        if (confirm("Apakah Anda yakin ingin menghapus data muzakki ini?")) {
-            const section = document.querySelector(`[data-index="${index}"]`);
-            if (section) {
-                section.remove();
-                muzakkiCount--;
-                updateAddButtonVisibility();
-                updateMuzakkiNumbers();
+        const sections = document.querySelectorAll(".muzakki-section");
+        
+        // Tidak bisa hapus jika hanya tinggal 1 section
+        if (sections.length <= 1) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tidak Dapat Dihapus',
+                    text: 'Minimal harus ada 1 muzakki',
+                    confirmButtonColor: '#1EAF2F'
+                });
+            } else {
+                alert('Minimal harus ada 1 muzakki');
             }
+            return;
+        }
+
+        const confirmMessage = "Apakah Anda yakin ingin menghapus data muzakki ini?";
+        
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi Hapus',
+                text: confirmMessage,
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    performRemove(index);
+                }
+            });
+        } else {
+            if (confirm(confirmMessage)) {
+                performRemove(index);
+            }
+        }
+    }
+
+    function performRemove(index) {
+        const section = document.querySelector(`[data-index="${index}"]`);
+        if (section) {
+            // Animate removal
+            section.style.transition = 'all 0.3s ease';
+            section.style.opacity = '0';
+            section.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                section.remove();
+                
+                // Update counter dan re-index semua sections
+                updateMuzakkiNumbers();
+                updateMuzakkiCounter();
+                updateAddButtonVisibility();
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Data Dihapus',
+                        text: 'Muzakki berhasil dihapus',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            }, 300);
         }
     }
 
@@ -426,11 +1108,59 @@
     function updateMuzakkiNumbers() {
         const sections = document.querySelectorAll(".muzakki-section");
         sections.forEach((section, index) => {
-            const title = section.querySelector("h4");
+            // Update data-index attribute
+            section.setAttribute('data-index', index);
+            
+            // Update title
+            const title = section.querySelector(".muzakki-section-title");
             if (title) {
-                title.innerHTML = `<i class="fas fa-user-circle mr-1 text-blue-500"></i>Muzakki #${index + 1}`;
+                title.innerHTML = `<i class="fas fa-user-circle"></i> Muzakki #${index + 1}`;
             }
+            
+            // Update remove button onclick
+            const removeBtn = section.querySelector('button[onclick*="removeMuzakkiSection"]');
+            if (removeBtn && index > 0) {
+                removeBtn.setAttribute('onclick', `removeMuzakkiSection(${index})`);
+            }
+            
+            // Update input names dan IDs
+            const inputs = section.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                const id = input.getAttribute('id');
+                
+                if (name && name.includes('[')) {
+                    const newName = name.replace(/\[\d+\]/, `[${index}]`);
+                    input.setAttribute('name', newName);
+                }
+                
+                if (id && id.includes('_')) {
+                    const parts = id.split('_');
+                    if (parts.length > 1) {
+                        parts[parts.length - 1] = index.toString();
+                        input.setAttribute('id', parts.join('_'));
+                    }
+                }
+            });
+            
+            // Update labels
+            const labels = section.querySelectorAll('label[for]');
+            labels.forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr && forAttr.includes('_')) {
+                    const parts = forAttr.split('_');
+                    if (parts.length > 1) {
+                        parts[parts.length - 1] = index.toString();
+                        label.setAttribute('for', parts.join('_'));
+                    }
+                }
+            });
         });
+    }
+
+    // Function untuk update counter muzakki
+    function updateMuzakkiCounter() {
+        muzakkiCount = document.querySelectorAll(".muzakki-section").length;
     }
 
     // Function untuk mengatur visibility tombol tambah
@@ -445,117 +1175,178 @@
         }
     }
 
-    // Currency formatting functions
-    function formatRupiah(amount) {
-        const number = amount.toString().replace(/[^,\d]/g, '');
-        const split = number.split(',');
-        const sisa = split[0].length % 3;
-        let rupiah = split[0].substr(0, sisa);
-        const ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+    // Rupiah formatting functions
+    function formatToRupiah(number) {
+        if (!number || number === 0) return "0";
+        return new Intl.NumberFormat("id-ID").format(number);
+    }
 
-        if (ribuan) {
-            const separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
+    function parseFromRupiah(rupiahString) {
+        if (!rupiahString) return 0;
+        const cleanNumber = rupiahString.replace(/[^\d]/g, "");
+        return parseInt(cleanNumber) || 0;
+    }
+
+    // Handle rupiah input in real-time
+    function handleRupiahInput(input) {
+        const cursorPosition = input.selectionStart;
+        const oldValue = input.value;
+        const numericValue = input.value.replace(/[^\d]/g, "");
+        const numberValue = parseInt(numericValue) || 0;
+        const formattedValue = formatToRupiah(numberValue);
+        
+        input.value = formattedValue;
+        document.getElementById("jumlah_bayar").value = numberValue;
+        
+        const newLength = formattedValue.length;
+        const oldLength = oldValue.length;
+        const newCursorPosition = cursorPosition + (newLength - oldLength);
+        
+        setTimeout(() => {
+            input.setSelectionRange(newCursorPosition, newCursorPosition);
+        }, 0);
+    }
+
+    // Prepare input when focused
+    function prepareRupiahInput(input) {
+        const hiddenValue = document.getElementById("jumlah_bayar").value;
+        if (hiddenValue && hiddenValue !== "0") {
+            input.value = hiddenValue;
+            setTimeout(() => input.select(), 50);
+        }
+    }
+
+    // Finalize input when focus is lost
+    function finalizeRupiahInput(input) {
+        const numericValue = parseFromRupiah(input.value);
+        const formattedValue = formatToRupiah(numericValue);
+        input.value = formattedValue;
+        document.getElementById("jumlah_bayar").value = numericValue;
+    }
+
+    // Enhanced calculate zakat function
+    function calculateZakat() {
+        const jiwaEl = document.getElementById("jumlah_jiwa");
+        const masterZakatSelect = document.getElementById("master_zakat_id");
+        const kewajibanDisplay = document.getElementById("kewajiban_display");
+
+        if (!jiwaEl || !masterZakatSelect || !kewajibanDisplay) {
+            return;
         }
 
-        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-        return rupiah;
+        const jiwa = parseInt(jiwaEl.value) || 0;
+        const selectedValue = masterZakatSelect.value;
+
+        if (jiwa > 0 && selectedValue) {
+            const selectedOption = masterZakatSelect.options[masterZakatSelect.selectedIndex];
+            const hargaStr = selectedOption.getAttribute('data-harga');
+            const kgStr = selectedOption.getAttribute('data-kg');
+            const harga = parseFloat(hargaStr) || 0;
+            const kg = parseFloat(kgStr) || 0;
+
+            if (kg > 0) {
+                // Jenis beras
+                const totalKg = jiwa * kg;
+                const totalUang = jiwa * harga;
+                kewajibanDisplay.innerHTML = `
+                    <div>
+                        <div style="font-size: 28px; color: #16a127;">${totalKg.toFixed(1)} kg beras</div>
+                        <div style="font-size: 16px; color: #6b7280; margin-top: 4px;">
+                            Setara Rp ${formatToRupiah(totalUang)}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Jenis uang
+                const kewajiban = jiwa * harga;
+                kewajibanDisplay.innerHTML = `<div style="color: #1EAF2F;">Rp ${formatToRupiah(kewajiban)}</div>`;
+            }
+        } else {
+            kewajibanDisplay.innerHTML = '<span style="color: #9ca3af;">-</span>';
+        }
     }
 
-    function parseCurrency(value) {
-        return parseInt(value.replace(/\./g, '')) || 0;
-    }
+    // Initialize on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        const displayInput = document.getElementById("jumlah_bayar_display");
 
-    // Initialize currency formatting
-    document.addEventListener('DOMContentLoaded', function() {
-        const displayInput = document.getElementById('jumlah_bayar_display');
-        const hiddenInput = document.getElementById('jumlah_bayar');
+        if (displayInput) {
+            // Prevent non-numeric input
+            displayInput.addEventListener("keypress", function (e) {
+                if (
+                    !/[0-9]/.test(e.key) &&
+                    !["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight"].includes(e.key)
+                ) {
+                    e.preventDefault();
+                }
+            });
 
-        // Format on input
-        displayInput.addEventListener('input', function(e) {
-            const value = e.target.value;
-            const formatted = formatRupiah(value);
-            e.target.value = formatted;
-            hiddenInput.value = parseCurrency(value);
-        });
+            // Handle paste events
+            displayInput.addEventListener("paste", function (e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData("text");
+                const numericValue = pastedText.replace(/[^\d]/g, "");
+                if (numericValue) {
+                    this.value = numericValue;
+                    handleRupiahInput(this);
+                }
+            });
+        }
 
-        // Format on paste
-        displayInput.addEventListener('paste', function(e) {
-            setTimeout(() => {
-                const value = e.target.value;
-                const formatted = formatRupiah(value);
-                e.target.value = formatted;
-                hiddenInput.value = parseCurrency(value);
-            }, 10);
-        });
-
+        // Initialize calculation
         calculateZakat();
         updateAddButtonVisibility();
     });
 
-        // Format on paste
-        displayInput.addEventListener('paste', function(e) {
-            setTimeout(() => {
-                const value = e.target.value;
-                const formatted = formatRupiah(value);
-                e.target.value = formatted;
-                hiddenInput.value = parseCurrency(value);
-            }, 10);
-        });
-
-        calculateZakat();
-    });
-
-    // Calculate zakat on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        calculateZakat();
-    });
-
-    // Enhanced calculate zakat function
-    function calculateZakat() {
-        const jiwa = parseInt(document.getElementById('jumlah_jiwa').value) || 0;
-        const jenisZakat = document.getElementById('jenis_zakat').value;
-        const kewajibanDisplay = document.getElementById('kewajiban_display');
-        
-        if (jiwa > 0 && jenisZakat) {
-            let kewajiban = 0;
-            if (jenisZakat === 'beras') {
-                kewajiban = jiwa * 2.5; // 2.5 kg per jiwa
-                kewajibanDisplay.textContent = kewajiban.toFixed(1) + ' kg beras';
-                kewajibanDisplay.className = 'text-lg font-bold text-green-600';
-            } else if (jenisZakat === 'uang') {
-                kewajiban = jiwa * 45000; // Rp 45.000 per jiwa
-                kewajibanDisplay.textContent = 'Rp ' + kewajiban.toLocaleString('id-ID');
-                kewajibanDisplay.className = 'text-lg font-bold text-blue-600';
-            }
-        } else {
-            kewajibanDisplay.textContent = '-';
-            kewajibanDisplay.className = 'text-lg font-bold text-gray-400';
-        }
-    }
-
     // Form validation
-    document.getElementById('muzakkiForm').addEventListener('submit', function(e) {
-        const jiwa = parseInt(document.getElementById('jumlah_jiwa').value);
-        const jenisZakat = document.getElementById('jenis_zakat').value;
-        const jumlahBayar = parseFloat(document.getElementById('jumlah_bayar').value);
+    document.getElementById("muzakkiForm").addEventListener("submit", function (e) {
+        const jiwa = parseInt(document.getElementById("jumlah_jiwa").value);
+        const masterZakatId = document.getElementById("master_zakat_id").value;
+        const jumlahBayar = parseInt(document.getElementById("jumlah_bayar").value);
 
         // Validasi basic fields
         if (jiwa <= 0) {
             e.preventDefault();
-            alert('Jumlah jiwa harus lebih dari 0');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Input Tidak Valid',
+                    text: 'Jumlah jiwa harus lebih dari 0',
+                    confirmButtonColor: '#1EAF2F'
+                });
+            } else {
+                alert('Jumlah jiwa harus lebih dari 0');
+            }
             return false;
         }
 
-        if (!jenisZakat) {
+        if (!masterZakatId) {
             e.preventDefault();
-            alert('Pilih jenis zakat terlebih dahulu');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Belum Lengkap',
+                    text: 'Pilih jenis zakat terlebih dahulu',
+                    confirmButtonColor: '#1EAF2F'
+                });
+            } else {
+                alert('Pilih jenis zakat terlebih dahulu');
+            }
             return false;
         }
 
         if (jumlahBayar <= 0) {
             e.preventDefault();
-            alert('Jumlah bayar harus lebih dari 0');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Input Tidak Valid',
+                    text: 'Jumlah bayar harus lebih dari 0',
+                    confirmButtonColor: '#1EAF2F'
+                });
+            } else {
+                alert('Jumlah bayar harus lebih dari 0');
+            }
             return false;
         }
 
@@ -566,7 +1357,7 @@
 
         muzakkiSections.forEach((section, index) => {
             const namaInput = section.querySelector(`input[name^="muzakki"][name$="[nama]"]`);
-            if (!namaInput.value.trim()) {
+            if (namaInput && !namaInput.value.trim()) {
                 hasEmptyName = true;
                 emptyNameIndex = index + 1;
             }
@@ -574,20 +1365,63 @@
 
         if (hasEmptyName) {
             e.preventDefault();
-            alert(`Nama muzakki #${emptyNameIndex} tidak boleh kosong`);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Belum Lengkap',
+                    text: `Nama muzakki #${emptyNameIndex} tidak boleh kosong`,
+                    confirmButtonColor: '#1EAF2F'
+                });
+            } else {
+                alert(`Nama muzakki #${emptyNameIndex} tidak boleh kosong`);
+            }
             return false;
         }
 
         // Konfirmasi final
+        e.preventDefault();
         const muzakkiCount = muzakkiSections.length;
-        const confirmMessage = 
-            `Apakah perubahan data sudah benar?\n\n` +
-            `- Jumlah Muzakki: ${muzakkiCount} orang\n` +
-            `- Jumlah Jiwa: ${jiwa} jiwa\n` +
-            `- Jenis Zakat: ${jenisZakat}\n` +
-            `- Jumlah Bayar: Rp ${jumlahBayar.toLocaleString('id-ID')}`;
-        
-        return confirm(confirmMessage);
+        const masterZakatSelect = document.getElementById("master_zakat_id");
+        const jenisZakatText = masterZakatSelect.options[masterZakatSelect.selectedIndex].text;
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'question',
+                title: 'Konfirmasi Perubahan Data',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p><strong>Jumlah Muzakki:</strong> ${muzakkiCount} orang</p>
+                        <p><strong>Jumlah Jiwa:</strong> ${jiwa} jiwa</p>
+                        <p><strong>Jenis Zakat:</strong> ${jenisZakatText}</p>
+                        <p><strong>Jumlah Bayar:</strong> Rp ${formatToRupiah(jumlahBayar)}</p>
+                        <br>
+                        <p style="color: #6b7280;">Apakah perubahan data sudah benar?</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Update Data',
+                cancelButtonText: 'Periksa Lagi',
+                confirmButtonColor: '#1EAF2F',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("muzakkiForm").submit();
+                }
+            });
+        } else {
+            const confirmMessage = `Apakah perubahan data sudah benar?\n\n` +
+                `- Jumlah Muzakki: ${muzakkiCount} orang\n` +
+                `- Jumlah Jiwa: ${jiwa} jiwa\n` +
+                `- Jenis Zakat: ${jenisZakatText}\n` +
+                `- Jumlah Bayar: Rp ${formatToRupiah(jumlahBayar)}`;
+            
+            if (confirm(confirmMessage)) {
+                document.getElementById("muzakkiForm").submit();
+            }
+        }
+
+        return false;
     });
 </script>
 

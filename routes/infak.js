@@ -15,8 +15,12 @@ router.get("/", async (req, res) => {
                 i.keterangan,
                 i.created_at,
                 i.updated_at,
-                m.nama as muzakki_name,
-                r.nomor_rt
+                (SELECT GROUP_CONCAT(md.nama_muzakki SEPARATOR ', ') 
+                 FROM muzakki_details md 
+                 WHERE md.muzakki_id = m.id 
+                 LIMIT 3) as muzakki_name,
+                r.nomor_rt,
+                m.jumlah_jiwa
             FROM infak i
             LEFT JOIN muzakki m ON i.muzakki_id = m.id
             LEFT JOIN rt r ON m.rt_id = r.id

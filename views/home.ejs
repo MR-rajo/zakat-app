@@ -228,32 +228,238 @@
       /* ===============================
          END CAROUSEL CUSTOM STYLES
          =============================== */
+
+      /* ===============================
+         FLASH MESSAGE STYLES
+         =============================== */
+      #success-message,
+      #error-message {
+        animation: slideInRight 0.3s ease-out;
+        transition: all 0.3s ease;
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Flash message hover effects */
+      #success-message:hover,
+      #error-message:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      /* ===============================
+         END FLASH MESSAGE STYLES
+         =============================== */
+
+      /* ===============================
+         ENHANCED MOBILE RESPONSIVENESS
+         =============================== */
+      @media (max-width: 640px) {
+        .bismillah-text {
+          font-size: 1.25rem !important;
+          line-height: 1.8;
+        }
+
+        .floating-animation {
+          animation-duration: 4s;
+        }
+
+        /* Mobile navigation improvements */
+        nav .flex.flex-col span:first-child {
+          font-size: 1rem;
+        }
+
+        /* Hero section mobile adjustments */
+        #home {
+          padding-top: 5rem;
+          padding-bottom: 2rem;
+        }
+
+        /* Enhanced mobile typography */
+        h1 {
+          line-height: 1.2;
+        }
+
+        /* Button responsiveness */
+        .group {
+          min-height: 3rem;
+        }
+      }
+
+      /* Font for Arabic text */
+      .font-arabic {
+        font-family: "Times New Roman", "Amiri", "Traditional Arabic", serif;
+        font-weight: 600;
+      }
+
+      /* Enhanced gradient backgrounds */
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #059669 0%,
+          #0d9488 25%,
+          #0891b2 50%,
+          #0284c7 75%,
+          #0369a1 100%
+        );
+        background-size: 300% 300%;
+        animation: gradientShift 8s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      /* Enhanced glass effect for mobile */
+      @media (max-width: 768px) {
+        .bg-white\/10,
+        .bg-white\/15 {
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(20px);
+        }
+      }
+
+      /* Enhanced navbar blur effect */
+      nav.backdrop-blur-md {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Mobile menu animation styles */
+      #mobile-menu {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #mobile-menu:not(.hidden) {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Mobile menu button animation */
+      #mobile-menu-btn {
+        transition: all 0.2s ease;
+      }
+
+      #mobile-menu-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Icon rotation animation */
+      #mobile-menu-btn i {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Smooth scrolling for mobile */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Enhanced hover effects for mobile touch */
+      @media (hover: none) and (pointer: coarse) {
+        .hover\:scale-105:hover {
+          transform: scale(1.02);
+        }
+
+        .group:active {
+          transform: scale(0.98);
+        }
+      }
+
+      /* ===============================
+         END ENHANCED MOBILE RESPONSIVENESS
+         =============================== */
     </style>
   </head>
   <body
     class="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 islamic-pattern"
   >
+    <!-- Flash Messages -->
+    <% if (typeof success !== 'undefined' && success) { %>
+    <div
+      id="success-message"
+      class="fixed top-4 right-4 z-50 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-lg max-w-md"
+    >
+      <div class="flex items-center">
+        <i class="fas fa-check-circle mr-3 text-green-500"></i>
+        <div>
+          <p class="font-medium"><%= success %></p>
+        </div>
+        <button
+          onclick="closeMessage('success-message')"
+          class="ml-4 text-green-500 hover:text-green-700"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <% } %> <% if (typeof error !== 'undefined' && error) { %>
+    <div
+      id="error-message"
+      class="fixed top-4 right-4 z-50 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg max-w-md"
+    >
+      <div class="flex items-center">
+        <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
+        <div>
+          <p class="font-medium"><%= error %></p>
+        </div>
+        <button
+          onclick="closeMessage('error-message')"
+          class="ml-4 text-red-500 hover:text-red-700"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <% } %>
+
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
+    <nav
+      class="fixed w-full z-50 transition-all duration-300 backdrop-blur-md bg-white/95 shadow-lg border-b border-emerald-100"
+      id="navbar"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4">
+        <div class="flex justify-between items-center py-3 md:py-2">
           <div class="flex items-center space-x-3">
-            <div class="bg-white p-2 rounded-lg shadow-md">
+            <div
+              class="bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-xl shadow-lg"
+            >
               <img
                 src="/images/logo-dkm.png"
                 alt="Logo Musholla Nurul Fitrah"
-                class="w-8 h-8 object-contain"
+                class="w-8 h-8 md:w-10 md:h-10 object-contain filter brightness-0 invert"
               />
             </div>
-            <span class="text-xl font-bold text-gray-800"
-              >Musholla Nurul Fitrah</span
-            >
+            <div class="flex flex-col">
+              <span
+                class="text-lg md:text-xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent leading-tight"
+              >
+                Musholla Nurul Fitrah
+              </span>
+            </div>
           </div>
 
           <div class="hidden md:flex items-center space-x-8">
             <a
               href="#home"
-              class="text-gray-700 hover:text-emerald-600 transition-colors crescent-moon"
+              class="text-gray-700 hover:text-emerald-600 transition-colors"
               >Beranda</a
             >
             <a
@@ -273,42 +479,66 @@
             >
           </div>
 
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-3">
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+              <button
+                id="mobile-menu-btn"
+                class="p-2 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all duration-200"
+              >
+                <i class="fas fa-bars text-lg"></i>
+              </button>
+            </div>
+
+            <!-- Desktop Login Button -->
             <a
               href="/auth/login"
-              class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-lg hover:shadow-xl islamic-glow"
+              class="hidden md:flex items-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-2.5 rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <i class="fas fa-moon mr-2"></i>Masuk
             </a>
-          </div>
 
-          <!-- Mobile menu button -->
-          <div class="md:hidden">
-            <button
-              id="mobile-menu-btn"
-              class="text-gray-700 hover:text-primary-600"
+            <!-- Mobile Login Button -->
+            <a
+              href="/auth/login"
+              class="md:hidden flex items-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 font-medium shadow-lg text-sm"
             >
-              <i class="fas fa-bars text-xl"></i>
-            </button>
+              <i class="fas fa-moon mr-1.5"></i>Masuk
+            </a>
           </div>
         </div>
       </div>
 
       <!-- Mobile menu -->
-      <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
-        <div class="px-4 py-3 space-y-3">
-          <a href="#home" class="block text-gray-700 hover:text-emerald-600"
-            >☪️ Beranda</a
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden bg-white/98 backdrop-blur-lg shadow-2xl border-t border-emerald-100"
+      >
+        <div class="px-6 py-4 space-y-2">
+          <a
+            href="#home"
+            class="flex items-center px-4 py-3 rounded-xl text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-medium"
           >
-          <a href="#features" class="block text-gray-700 hover:text-emerald-600"
-            >⭐ Fitur</a
+            Beranda
+          </a>
+          <a
+            href="#features"
+            class="flex items-center px-4 py-3 rounded-xl text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-medium"
           >
-          <a href="#stats" class="block text-gray-700 hover:text-emerald-600"
-            >📊 Statistik</a
+            Fitur
+          </a>
+          <a
+            href="#stats"
+            class="flex items-center px-4 py-3 rounded-xl text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-medium"
           >
-          <a href="#about" class="block text-gray-700 hover:text-emerald-600"
-            >🕌 Tentang</a
+            Statistik
+          </a>
+          <a
+            href="#about"
+            class="flex items-center px-4 py-3 rounded-xl text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-200 font-medium"
           >
+            Tentang
+          </a>
         </div>
       </div>
     </nav>
@@ -316,67 +546,89 @@
     <!-- Hero Section -->
     <section
       id="home"
-      class="min-h-screen flex items-center justify-center gradient-bg relative overflow-hidden"
+      class="min-h-screen flex items-center justify-center gradient-bg relative overflow-hidden pt-20 md:pt-24"
     >
-      <!-- Background decoration -->
-      <div class="absolute inset-0 overflow-hidden">
-        <div
-          class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full floating-animation"
-        ></div>
-        <div
-          class="absolute -bottom-40 -left-40 w-80 h-80 bg-white opacity-10 rounded-full floating-animation"
-          style="animation-delay: 1s"
-        ></div>
-      </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center fade-in">
-          <!-- Bismillah -->
-          <div class="mb-8">
-            <p class="bismillah-text text-2xl md:text-3xl font-bold mb-6">
-              بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ
-            </p>
-            <p class="text-white/90 text-lg mb-4 italic">
-              "Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang"
-            </p>
-          </div>
-
-          <div class="mb-8">
-            <div
-              class="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-2xl mb-6 floating-animation p-4 islamic-glow"
-            >
-              <img
-                src="/images/logo-dkm.png"
-                alt="Logo Musholla Nurul Fitrah"
-                class="w-16 h-16 object-contain"
-              />
+          <!-- Main Content Section -->
+          <div class="mb-8 md:mb-12">
+            <!-- Enhanced Logo -->
+            <div class="flex justify-center mb-8">
+              <div class="relative">
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full blur-md opacity-30 animate-pulse"
+                ></div>
+                <div
+                  class="relative bg-white/95 rounded-full shadow-xl p-3 md:p-4 backdrop-blur-sm border border-white/30"
+                >
+                  <img
+                    src="/images/logo-dkm.png"
+                    alt="Logo Musholla Nurul Fitrah"
+                    class="w-12 h-12 md:w-16 md:h-16 object-contain"
+                  />
+                </div>
+              </div>
             </div>
-            <h1
-              class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight"
-            >
-              Berkah Ramadhan<br />
-              <span class="text-yellow-300">🌙 Zakat Fitrah ⭐</span>
-            </h1>
-            <p
-              class="text-xl md:text-xl text-white/90 mb-4 max-w-3xl mx-auto italic leading-relaxed"
-            >
-              "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ"
-            </p>
-            <p
-              class="text-lg md:text-lg text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed"
-            >
-              "Dan dirikanlah shalat, tunaikanlah zakat" - Al-Baqarah: 43<br />
-              Tunaikan zakat fitrah Anda dengan mudah dan transparan dalam
-              sistem digital yang berkah.
-            </p>
+
+            <!-- Enhanced Title -->
+            <div class="space-y-4 md:space-y-6">
+              <h1
+                class="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
+              >
+                <span class="block">Berkah Ramadhan</span>
+                <span
+                  class="block mt-2 bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 bg-clip-text text-transparent"
+                >
+                  🌙 Zakat Fitrah ⭐
+                </span>
+              </h1>
+
+              <!-- Quranic Verse -->
+              <div
+                class="bg-white/15 backdrop-blur-sm rounded-xl p-4 md:p-6 mx-auto max-w-3xl border border-white/25"
+              >
+                <p
+                  class="text-lg md:text-xl lg:text-2xl text-white/95 mb-3 font-arabic leading-relaxed"
+                >
+                  "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ"
+                </p>
+                <div
+                  class="w-12 h-0.5 bg-gradient-to-r from-transparent via-white to-transparent mx-auto mb-3 opacity-60"
+                ></div>
+                <p
+                  class="text-sm md:text-base lg:text-lg text-white/85 leading-relaxed"
+                >
+                  "Dan dirikanlah shalat, tunaikanlah zakat" -
+                  <span class="font-semibold">Al-Baqarah: 43</span>
+                </p>
+              </div>
+
+              <!-- Description -->
+              <p
+                class="text-base md:text-lg lg:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed px-4"
+              >
+                Tunaikan zakat fitrah Anda dengan mudah dan transparan dalam
+                sistem digital yang berkah.
+                <span class="block mt-2 text-white/80 text-sm md:text-base">
+                  Platform terpercaya untuk mengelola zakat fitrah dengan
+                  transparansi dan kemudahan.
+                </span>
+              </p>
+            </div>
+
+            <!-- Enhanced CTA Buttons -->
             <div
-              class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8 md:mt-12 px-4"
             >
               <a
                 href="/auth/login"
-                class="bg-white text-emerald-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105 islamic-glow"
+                class="group w-full sm:w-auto bg-white/95 text-emerald-700 px-6 md:px-8 py-3 md:py-4 rounded-2xl font-bold hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 islamic-glow text-center"
               >
-                <i class="fas fa-hands-praying mr-2"></i>🕌 Kelola Zakat
+                <i
+                  class="fas fa-hands-praying mr-2 group-hover:animate-bounce"
+                ></i>
+                <span class="text-sm md:text-base">🕌 Kelola Zakat Fitrah</span>
               </a>
               <a
                 href="#features"
@@ -1768,6 +2020,36 @@
     </footer>
 
     <script>
+      // Flash message functions
+      function closeMessage(messageId) {
+        const message = document.getElementById(messageId);
+        if (message) {
+          message.style.opacity = "0";
+          message.style.transform = "translateX(100%)";
+          setTimeout(() => {
+            message.remove();
+          }, 300);
+        }
+      }
+
+      // Auto hide flash messages after 5 seconds
+      window.addEventListener("DOMContentLoaded", function () {
+        const successMessage = document.getElementById("success-message");
+        const errorMessage = document.getElementById("error-message");
+
+        if (successMessage) {
+          setTimeout(() => {
+            closeMessage("success-message");
+          }, 5000);
+        }
+
+        if (errorMessage) {
+          setTimeout(() => {
+            closeMessage("error-message");
+          }, 7000);
+        }
+      });
+
       // Navbar scroll effect
       window.addEventListener("scroll", function () {
         const navbar = document.getElementById("navbar");
@@ -1778,23 +2060,66 @@
         }
       });
 
-      // Mobile menu toggle
+      // Enhanced Mobile menu toggle with animations
       const mobileMenuBtn = document.getElementById("mobile-menu-btn");
       const mobileMenu = document.getElementById("mobile-menu");
+      const navbar = document.getElementById("navbar");
 
-      mobileMenuBtn.addEventListener("click", function () {
-        mobileMenu.classList.toggle("hidden");
+      // Add mobile menu toggle functionality
+      mobileMenuBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const isHidden = mobileMenu.classList.contains("hidden");
+
+        if (isHidden) {
+          mobileMenu.classList.remove("hidden");
+          // Add entrance animation
+          setTimeout(() => {
+            mobileMenu.style.opacity = "1";
+            mobileMenu.style.transform = "translateY(0)";
+          }, 10);
+
+          // Change hamburger to X
+          const icon = mobileMenuBtn.querySelector("i");
+          icon.classList.remove("fa-bars");
+          icon.classList.add("fa-times");
+        } else {
+          // Add exit animation
+          mobileMenu.style.opacity = "0";
+          mobileMenu.style.transform = "translateY(-10px)";
+          setTimeout(() => {
+            mobileMenu.classList.add("hidden");
+          }, 200);
+
+          // Change X back to hamburger
+          const icon = mobileMenuBtn.querySelector("i");
+          icon.classList.remove("fa-times");
+          icon.classList.add("fa-bars");
+        }
       });
 
-      // Smooth scrolling for anchor links
+      // Enhanced smooth scrolling for anchor links
       document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         anchor.addEventListener("click", function (e) {
           e.preventDefault();
           const target = document.querySelector(this.getAttribute("href"));
           if (target) {
-            target.scrollIntoView({
+            // Close mobile menu if open
+            if (!mobileMenu.classList.contains("hidden")) {
+              mobileMenu.style.opacity = "0";
+              setTimeout(() => {
+                mobileMenu.classList.add("hidden");
+                const icon = mobileMenuBtn.querySelector("i");
+                icon.classList.remove("fa-times");
+                icon.classList.add("fa-bars");
+              }, 200);
+            }
+
+            // Smooth scroll with offset for fixed navbar
+            const offsetTop =
+              target.offsetTop - (window.innerWidth < 768 ? 80 : 100);
+            window.scrollTo({
+              top: offsetTop,
               behavior: "smooth",
-              block: "start",
             });
           }
         });
@@ -1804,18 +2129,68 @@
       document.addEventListener("click", function (e) {
         if (
           !mobileMenuBtn.contains(e.target) &&
-          !mobileMenu.contains(e.target)
+          !mobileMenu.contains(e.target) &&
+          !mobileMenu.classList.contains("hidden")
         ) {
-          mobileMenu.classList.add("hidden");
+          mobileMenu.style.opacity = "0";
+          setTimeout(() => {
+            mobileMenu.classList.add("hidden");
+            const icon = mobileMenuBtn.querySelector("i");
+            icon.classList.remove("fa-times");
+            icon.classList.add("fa-bars");
+          }, 200);
         }
       });
 
-      // Close mobile menu when clicking on links
-      mobileMenu.addEventListener("click", function (e) {
-        if (e.target.tagName === "A") {
-          mobileMenu.classList.add("hidden");
+      // Enhanced navbar scroll effect
+      let lastScrollY = window.scrollY;
+      window.addEventListener("scroll", function () {
+        const currentScrollY = window.scrollY;
+
+        if (currentScrollY > 50) {
+          navbar.classList.add("shadow-xl");
+          navbar.style.backgroundColor = "rgba(255, 255, 255, 0.98)";
+        } else {
+          navbar.classList.remove("shadow-xl");
+          navbar.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
         }
+
+        // Hide navbar on scroll down, show on scroll up (mobile only)
+        if (window.innerWidth < 768) {
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            navbar.style.transform = "translateY(-100%)";
+          } else {
+            navbar.style.transform = "translateY(0)";
+          }
+        }
+
+        lastScrollY = currentScrollY;
       });
+
+      // Add touch swipe support for mobile
+      let touchStartY = 0;
+      let touchEndY = 0;
+
+      document.addEventListener("touchstart", function (e) {
+        touchStartY = e.changedTouches[0].screenY;
+      });
+
+      document.addEventListener("touchend", function (e) {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartY - touchEndY;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          // Add subtle haptic feedback if supported
+          if (navigator.vibrate) {
+            navigator.vibrate(10);
+          }
+        }
+      }
 
       // ===============================
       // CAROUSEL FUNCTIONALITY

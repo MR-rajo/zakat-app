@@ -1,0 +1,1185 @@
+<!-- Modern Modal for Create/Edit Distribusi -->
+<div id="distribusiModal" class="modal-overlay">
+  <div class="modal-container">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-header-content">
+        <div class="modal-icon-wrapper">
+          <i class="fas fa-share-alt"></i>
+        </div>
+        <div class="modal-title-box">
+          <h2 class="modal-title" id="modalTitle">Tambah Distribusi Baru</h2>
+          <p class="modal-subtitle" id="modalSubtitle">Isi form berikut untuk mendistribusikan zakat</p>
+        </div>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="closeDistribusiModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <form id="distribusiForm" method="POST" action="/distribusi">
+        <input type="hidden" id="formMethod" name="_method" value="">
+        <input type="hidden" id="distribusiId" name="id" value="">
+
+        <!-- Form Content -->
+        <div class="form-content">
+          <!-- Section 1: Mustahik -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-user-friends"></i>
+              </div>
+              <span>Pilih Mustahik</span>
+            </h3>
+            
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-search"></i>
+                Cari dan Pilih Mustahik
+                <span class="required">*</span>
+              </label>
+              <select id="mustahik_id" name="mustahik_id" class="form-select select2-mustahik" required>
+                <option value="">-- Pilih Mustahik --</option>
+                <% if (typeof mustahiks !== 'undefined' && mustahiks.length > 0) { %>
+                  <% mustahiks.forEach(m => { %>
+                    <option value="<%= m.id %>" 
+                            data-nama="<%= m.nama %>"
+                            data-kategori="<%= m.kategori %>" 
+                            data-rt="<%= m.rt_nama || 'Tidak ada RT' %>">
+                      <%= m.nama %> - <%= m.kategori %> (<%= m.rt_nama ? 'RT ' + m.rt_nama : 'Tidak ada RT' %>)
+                    </option>
+                  <% }) %>
+                <% } %>
+              </select>
+              <small class="form-hint">
+                <i class="fas fa-info-circle"></i>
+                Ketik untuk mencari mustahik berdasarkan nama, kategori, atau RT
+              </small>
+            </div>
+
+            <div class="mustahik-info-card" id="mustahikInfo" style="display: none;">
+              <div class="info-header">
+                <div class="info-avatar">
+                  <span id="mustahikInitial">M</span>
+                </div>
+                <div class="info-details">
+                  <h4 class="info-name" id="mustahikName">-</h4>
+                  <span class="info-badge" id="mustahikKategori">-</span>
+                </div>
+              </div>
+              <div class="info-body">
+                <div class="info-item">
+                  <i class="fas fa-home"></i>
+                  <span id="mustahikRT">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Detail Distribusi -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <div class="section-icon">
+                <i class="fas fa-box"></i>
+              </div>
+              <span>Detail Distribusi</span>
+            </h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-tag"></i>
+                  Jenis Zakat
+                  <span class="required">*</span>
+                </label>
+                <select id="jenis_zakat" name="jenis_zakat" class="form-select" required>
+                  <option value="">-- Pilih Jenis --</option>
+                  <option value="beras">Beras</option>
+                  <option value="uang">Uang</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <i class="fas fa-weight"></i>
+                  Jumlah
+                  <span class="required">*</span>
+                </label>
+                <div class="input-with-addon">
+                  <input type="number" id="jumlah" name="jumlah" class="form-input" 
+                         placeholder="0" step="0.01" min="0" required>
+                  <span class="input-addon" id="jumlahUnit">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-calendar-alt"></i>
+                Tanggal Distribusi
+                <span class="required">*</span>
+              </label>
+              <input type="date" id="tanggal_distribusi" name="tanggal_distribusi" 
+                     class="form-input" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-info-circle"></i>
+                Status
+                <span class="required">*</span>
+              </label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="status" value="pending" checked>
+                  <span class="radio-custom"></span>
+                  <div class="radio-content">
+                    <i class="fas fa-clock"></i>
+                    <span>Pending</span>
+                  </div>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="status" value="disalurkan">
+                  <span class="radio-custom"></span>
+                  <div class="radio-content">
+                    <i class="fas fa-truck"></i>
+                    <span>Disalurkan</span>
+                  </div>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="status" value="diterima">
+                  <span class="radio-custom"></span>
+                  <div class="radio-content">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Diterima</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-comment-alt"></i>
+                Catatan
+              </label>
+              <textarea id="catatan" name="catatan" class="form-textarea" 
+                        placeholder="Tambahkan catatan jika diperlukan..." rows="3"></textarea>
+              <small class="form-hint">Opsional - Tambahkan catatan tambahan</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeDistribusiModal()">
+            <i class="fas fa-times"></i>
+            Batal
+          </button>
+          <button type="submit" class="btn-success" id="submitBtn">
+            <i class="fas fa-save"></i>
+            <span id="submitBtnText">Simpan Distribusi</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* Modal Container */
+.modal-container {
+  background: white;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-overlay.active .modal-container {
+  transform: scale(1) translateY(0);
+}
+
+/* Modal Header */
+.modal-header {
+  background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.modal-header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.modal-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+}
+
+.modal-title-box {
+  color: white;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.modal-subtitle {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modal-close-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Form Content */
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Form Section */
+.form-section {
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 20px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.form-section:hover {
+  border-color: #1EAF2F;
+  box-shadow: 0 4px 12px rgba(30, 175, 47, 0.1);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 20px 0;
+}
+
+.section-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-label i {
+  color: #1EAF2F;
+}
+
+.required {
+  color: #ef4444;
+  font-size: 16px;
+  margin-left: 2px;
+}
+
+.form-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Form Inputs */
+.form-select,
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-select:focus,
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #1EAF2F;
+  box-shadow: 0 0 0 4px rgba(30, 175, 47, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Select2 Custom Styling */
+.select2-container--default .select2-selection--single {
+  height: auto !important;
+  padding: 12px 16px !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  background: white !important;
+  transition: all 0.3s ease !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+  border-color: #1EAF2F !important;
+  box-shadow: 0 0 0 4px rgba(30, 175, 47, 0.1) !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 !important;
+  line-height: normal !important;
+  color: #111827 !important;
+  font-size: 14px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #9ca3af !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100% !important;
+  right: 10px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: #6b7280 transparent transparent transparent !important;
+  border-width: 6px 5px 0 5px !important;
+  margin-top: -3px !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+  border-color: transparent transparent #6b7280 transparent !important;
+  border-width: 0 5px 6px 5px !important;
+}
+
+/* Select2 Dropdown */
+.select2-dropdown {
+  border: 2px solid #1EAF2F !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  margin-top: 4px !important;
+}
+
+.select2-container--default .select2-search--dropdown {
+  padding: 12px !important;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+  border-bottom: 2px solid #d1fae5 !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border: 2px solid #d1d5db !important;
+  border-radius: 10px !important;
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  outline: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+  border-color: #1EAF2F !important;
+  box-shadow: 0 0 0 3px rgba(30, 175, 47, 0.1) !important;
+}
+
+.select2-container--default .select2-results__option {
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  border-left: 3px solid transparent !important;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+  color: #065f46 !important;
+  border-left-color: #1EAF2F !important;
+}
+
+.select2-container--default .select2-results__option--selected {
+  background: #f0fdf4 !important;
+  color: #166534 !important;
+  font-weight: 600 !important;
+}
+
+.select2-results__option {
+  position: relative !important;
+}
+
+/* Select2 No Results */
+.select2-container--default .select2-results__option[aria-disabled=true] {
+  color: #9ca3af !important;
+  background: #f9fafb !important;
+  font-style: italic !important;
+  text-align: center !important;
+  padding: 16px !important;
+}
+
+/* Select2 Loading */
+.select2-container--default .select2-results__option--loading {
+  color: #6b7280 !important;
+  background: #f9fafb !important;
+  text-align: center !important;
+}
+
+/* Select2 Multiple Lines in Options */
+.select2-results__option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Z-index for dropdown */
+.select2-container {
+  z-index: 10000 !important;
+}
+
+.select2-dropdown {
+  z-index: 10001 !important;
+}
+
+/* Responsive Select2 */
+@media (max-width: 768px) {
+  .select2-container--default .select2-selection--single {
+    padding: 10px 14px !important;
+  }
+  
+  .select2-container--default .select2-results__option {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Custom Select2 Result Item */
+.select2-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.select2-result-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.select2-result-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.select2-result-title {
+  font-weight: 600;
+  color: #111827;
+  font-size: 14px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.select2-result-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge-kategori,
+.badge-rt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-kategori {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-kategori.badge-fakir {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-kategori.badge-miskin {
+  background: #fed7aa;
+  color: #9a3412;
+}
+
+.badge-kategori.badge-amil {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-kategori.badge-mualaf {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-kategori.badge-fisabilillah {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.badge-rt {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.badge-rt i {
+  font-size: 10px;
+}
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* Input with Addon */
+.input-with-addon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-addon .form-input {
+  padding-right: 60px;
+}
+
+.input-addon {
+  position: absolute;
+  right: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+/* Radio Group */
+.radio-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.radio-label {
+  position: relative;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.radio-custom {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d5db;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.radio-label input[type="radio"]:checked ~ .radio-custom {
+  border-color: #1EAF2F;
+  background: #1EAF2F;
+}
+
+.radio-label input[type="radio"]:checked ~ .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.radio-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 12px 40px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.radio-label input[type="radio"]:checked ~ .radio-content {
+  background: #d1fae5;
+  border-color: #1EAF2F;
+  color: #065f46;
+}
+
+.radio-content i {
+  font-size: 16px;
+}
+
+/* Mustahik Info Card */
+.mustahik-info-card {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.info-avatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.info-details {
+  flex: 1;
+}
+
+.info-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 6px 0;
+}
+
+.info-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: white;
+  color: #1EAF2F;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.info-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.info-item i {
+  color: #1EAF2F;
+  width: 16px;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.btn-secondary,
+.btn-success {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-container {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-header {
+    padding: 20px;
+  }
+
+  .modal-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  .modal-subtitle {
+    font-size: 12px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-group {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-secondary,
+  .btn-success {
+    width: 100%;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header-content {
+    gap: 12px;
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-section {
+    padding: 16px;
+  }
+}
+</style>
+
+<!-- jQuery (required for Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+// Modal functions
+function openDistribusiModal(mode = 'create', data = null) {
+  const modal = document.getElementById('distribusiModal');
+  const form = document.getElementById('distribusiForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSubtitle = document.getElementById('modalSubtitle');
+  const submitBtnText = document.getElementById('submitBtnText');
+  
+  // Reset form
+  form.reset();
+  
+  // Reset Select2
+  $('#mustahik_id').val(null).trigger('change');
+  
+  // Hide mustahik info card
+  document.getElementById('mustahikInfo').style.display = 'none';
+  
+  if (mode === 'create') {
+    modalTitle.textContent = 'Tambah Distribusi Baru';
+    modalSubtitle.textContent = 'Isi form berikut untuk mendistribusikan zakat';
+    submitBtnText.textContent = 'Simpan Distribusi';
+    form.action = '/distribusi';
+    document.getElementById('formMethod').value = '';
+    document.getElementById('distribusiId').value = '';
+    
+    // Set default tanggal to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tanggal_distribusi').value = today;
+  } else if (mode === 'edit' && data) {
+    modalTitle.textContent = 'Edit Distribusi';
+    modalSubtitle.textContent = 'Perbarui data distribusi';
+    submitBtnText.textContent = 'Update Distribusi';
+    form.action = `/distribusi/edit/${data.id}`;
+    document.getElementById('formMethod').value = 'PUT';
+    document.getElementById('distribusiId').value = data.id;
+    
+    // Populate form with data
+    setTimeout(() => {
+      // Set mustahik using Select2
+      $('#mustahik_id').val(data.mustahik_id).trigger('change');
+      
+      document.getElementById('jenis_zakat').value = data.jenis_zakat;
+      document.getElementById('jumlah').value = data.jumlah;
+      document.getElementById('tanggal_distribusi').value = data.tanggal_distribusi;
+      document.querySelector(`input[name="status"][value="${data.status}"]`).checked = true;
+      if (data.catatan) {
+        document.getElementById('catatan').value = data.catatan;
+      }
+      
+      // Trigger change events
+      document.getElementById('jenis_zakat').dispatchEvent(new Event('change'));
+    }, 100);
+  }
+  
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDistribusiModal() {
+  const modal = document.getElementById('distribusiModal');
+  modal.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Select2 for mustahik dropdown
+  $('#mustahik_id').select2({
+    placeholder: '-- Pilih Mustahik --',
+    allowClear: true,
+    width: '100%',
+    language: {
+      noResults: function() {
+        return "Mustahik tidak ditemukan";
+      },
+      searching: function() {
+        return "Mencari...";
+      },
+      inputTooShort: function() {
+        return "Ketik untuk mencari mustahik";
+      }
+    },
+    dropdownParent: $('#distribusiModal'),
+    templateResult: formatMustahikOption,
+    templateSelection: formatMustahikSelection
+  });
+
+  // Custom template for dropdown options
+  function formatMustahikOption(option) {
+    if (!option.id) {
+      return option.text;
+    }
+    
+    var $option = $(option.element);
+    var kategori = $option.data('kategori');
+    var rt = $option.data('rt');
+    
+    // Create custom HTML for dropdown option
+    var $result = $('<div class="select2-result-item">' +
+      '<div class="select2-result-icon">' +
+        '<i class="fas fa-user-circle"></i>' +
+      '</div>' +
+      '<div class="select2-result-content">' +
+        '<div class="select2-result-title">' + option.text.split(' - ')[0] + '</div>' +
+        '<div class="select2-result-meta">' +
+          '<span class="badge-kategori badge-' + kategori + '">' + 
+            kategori.charAt(0).toUpperCase() + kategori.slice(1) + 
+          '</span>' +
+          '<span class="badge-rt"><i class="fas fa-home"></i> ' + rt + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>');
+    
+    return $result;
+  }
+
+  // Custom template for selected option
+  function formatMustahikSelection(option) {
+    return option.text || option.element.innerText;
+  }
+
+  // Mustahik selection change (Keep existing functionality)
+  $('#mustahik_id').on('change', function() {
+    var selectedOption = $(this).find('option:selected');
+    const infoCard = document.getElementById('mustahikInfo');
+    
+    if (this.value) {
+      const nama = selectedOption.data('nama');
+      const kategori = selectedOption.data('kategori');
+      const rt = selectedOption.data('rt');
+      
+      document.getElementById('mustahikInitial').textContent = nama.charAt(0).toUpperCase();
+      document.getElementById('mustahikName').textContent = nama;
+      document.getElementById('mustahikKategori').textContent = kategori.charAt(0).toUpperCase() + kategori.slice(1);
+      document.getElementById('mustahikRT').textContent = rt;
+      
+      infoCard.style.display = 'block';
+    } else {
+      infoCard.style.display = 'none';
+    }
+  });
+  
+  // Jenis zakat change
+  document.getElementById('jenis_zakat').addEventListener('change', function() {
+    const unit = this.value === 'beras' ? 'kg' : 'Rp';
+    document.getElementById('jumlahUnit').textContent = unit;
+  });
+  
+  // Form validation before submit
+  document.getElementById('distribusiForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Validate required fields
+    const mustahikId = document.getElementById('mustahik_id').value;
+    const jenisZakat = document.getElementById('jenis_zakat').value;
+    const jumlah = document.getElementById('jumlah').value;
+    const tanggal = document.getElementById('tanggal_distribusi').value;
+    
+    if (!mustahikId) {
+      showError('Pilih mustahik terlebih dahulu');
+      return;
+    }
+    
+    if (!jenisZakat) {
+      showError('Pilih jenis zakat');
+      return;
+    }
+    
+    if (!jumlah || parseFloat(jumlah) <= 0) {
+      showError('Masukkan jumlah yang valid');
+      return;
+    }
+    
+    if (!tanggal) {
+      showError('Pilih tanggal distribusi');
+      return;
+    }
+    
+    // Show loading
+    showLoading('Menyimpan data distribusi...');
+    
+    // Submit form
+    this.submit();
+  });
+  
+  // Close modal on overlay click
+  document.getElementById('distribusiModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeDistribusiModal();
+    }
+  });
+  
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('distribusiModal');
+      if (modal.classList.contains('active')) {
+        closeDistribusiModal();
+      }
+    }
+  });
+});
+
+// Global functions for button clicks
+function openCreateDistribusi() {
+  openDistribusiModal('create');
+}
+
+function openEditDistribusi(id) {
+  // Fetch distribusi data
+  fetch(`/distribusi/detail/${id}`)
+    .then(response => response.json())
+    .then(data => {
+      openDistribusiModal('edit', data);
+    })
+    .catch(error => {
+      console.error('Error fetching distribusi data:', error);
+      showError('Gagal memuat data distribusi');
+    });
+}
+</script>

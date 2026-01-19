@@ -1,138 +1,631 @@
 <%- include('../layouts/header', { title: 'Tambah Mustahik - Zakat Fitrah App',
 bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="mb-6">
-    <div class="flex items-center">
-      <a href="/mustahik" class="text-gray-500 hover:text-gray-700 mr-4">
-        <i class="fas fa-arrow-left text-lg"></i>
-      </a>
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900">
-          <i class="fas fa-user-plus mr-2 text-primary-600"></i>Tambah Mustahik
-        </h1>
-        <p class="text-gray-600 mt-1">Tambahkan data penerima zakat baru</p>
+<div class="page-wrapper">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="header-content-wrapper">
+      <div class="header-left-section">
+        <a href="/mustahik" class="btn-back" title="Kembali">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="header-icon-box">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="header-text-box">
+          <h1 class="header-title-text">Tambah Mustahik</h1>
+          <p class="header-subtitle-text">Tambahkan data penerima zakat baru</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Form -->
-  <div class="bg-white shadow-sm rounded-lg">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h2 class="text-lg font-semibold text-gray-900">
-        <i class="fas fa-edit mr-2 text-primary-600"></i>Form Data Mustahik
-      </h2>
+  <!-- Form Section -->
+  <div class="form-section">
+    <div class="form-header-wrapper">
+      <div class="form-header-left">
+        <div class="form-header-icon">
+          <i class="fas fa-edit"></i>
+        </div>
+        <div class="form-header-text">
+          <h2 class="form-title">Form Data Mustahik</h2>
+          <p class="form-subtitle">Lengkapi form di bawah ini dengan benar</p>
+        </div>
+      </div>
     </div>
 
-    <form method="POST" action="/mustahik/create" class="p-6 space-y-6">
-      <!-- Nama -->
-      <div>
-        <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
-          Nama Lengkap <span class="text-red-500">*</span>
+    <form method="POST" action="/mustahik/create" class="form-content">
+      <!-- Nama Field -->
+      <div class="form-group">
+        <label for="nama" class="form-label">
+          <i class="fas fa-user label-icon"></i>
+          Nama Lengkap <span class="required-mark">*</span>
         </label>
-        <input
-          type="text"
-          id="nama"
-          name="nama"
-          required
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          placeholder="Masukkan nama lengkap mustahik"
-        />
+        <div class="input-wrapper">
+          <div class="input-icon">
+            <i class="fas fa-user-tag"></i>
+          </div>
+          <input
+            type="text"
+            id="nama"
+            name="nama"
+            required
+            class="form-input"
+            placeholder="Masukkan nama lengkap mustahik"
+          />
+        </div>
       </div>
 
-      <!-- RT -->
-      <div>
-        <label for="rt_id" class="block text-sm font-medium text-gray-700 mb-2">
+      <!-- RT Field -->
+      <div class="form-group">
+        <label for="rt_id" class="form-label">
+          <i class="fas fa-home label-icon"></i>
           RT (Rukun Tetangga)
         </label>
-        <select
-          id="rt_id"
-          name="rt_id"
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-        >
-          <option value="">Pilih RT (Opsional)</option>
-          <% rtList.forEach(rt => { %>
-          <option value="<%= rt.id %>">
-            RT <%= rt.nama %> - <%= rt.ketua %>
-          </option>
-          <% }); %>
-        </select>
-        <p class="mt-1 text-sm text-gray-500">
+        <div class="input-wrapper">
+          <div class="input-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <select id="rt_id" name="rt_id" class="form-select">
+            <option value="">Pilih RT (Opsional)</option>
+            <% rtList.forEach(rt => { %>
+            <option value="<%= rt.id %>">
+              RT <%= rt.nama %> - <%= rt.ketua %>
+            </option>
+            <% }); %>
+          </select>
+        </div>
+        <p class="field-helper-text">
+          <i class="fas fa-info-circle mr-1"></i>
           Pilih RT jika mustahik terdaftar di RT tertentu
         </p>
       </div>
 
-      <!-- Kategori -->
-      <div>
-        <label
-          for="kategori"
-          class="block text-sm font-medium text-gray-700 mb-2"
-        >
-          Kategori Mustahik <span class="text-red-500">*</span>
+      <!-- Kategori Field -->
+      <div class="form-group">
+        <label for="kategori" class="form-label">
+          <i class="fas fa-tag label-icon"></i>
+          Kategori Mustahik <span class="required-mark">*</span>
         </label>
-        <select
-          id="kategori"
-          name="kategori"
-          required
-          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-        >
-          <option value="">Pilih Kategori</option>
-          <option value="fakir">
-            Fakir - Orang yang tidak memiliki harta dan penghasilan
-          </option>
-          <option value="miskin">
-            Miskin - Orang yang memiliki harta/penghasilan tidak mencukupi
-          </option>
-          <option value="amil">Amil - Pengelola/pengumpul zakat</option>
-          <option value="mualaf">Mualaf - Orang yang baru masuk Islam</option>
-          <option value="fisabilillah">
-            Fisabilillah - Untuk kepentingan agama Islam
-          </option>
-          <option value="ibnu_sabil">
-            Ibnu Sabil - Musafir yang kehabisan bekal
-          </option>
-          <option value="gharimin">
-            Gharimin - Orang yang berhutang untuk kebaikan
-          </option>
-          <option value="riqab">Riqab - Memerdekakan budak/tawanan</option>
-        </select>
+        <div class="input-wrapper">
+          <div class="input-icon">
+            <i class="fas fa-list-alt"></i>
+          </div>
+          <select id="kategori" name="kategori" required class="form-select">
+            <option value="">Pilih Kategori</option>
+            <option value="fakir">
+              Fakir - Orang yang tidak memiliki harta dan penghasilan
+            </option>
+            <option value="miskin">
+              Miskin - Orang yang memiliki harta/penghasilan tidak mencukupi
+            </option>
+            <option value="amil">Amil - Pengelola/pengumpul zakat</option>
+            <option value="mualaf">Mualaf - Orang yang baru masuk Islam</option>
+            <option value="fisabilillah">
+              Fisabilillah - Untuk kepentingan agama Islam
+            </option>
+            <option value="ibnu_sabil">
+              Ibnu Sabil - Musafir yang kehabisan bekal
+            </option>
+            <option value="gharimin">
+              Gharimin - Orang yang berhutang untuk kebaikan
+            </option>
+            <option value="riqab">Riqab - Memerdekakan budak/tawanan</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Kategori Info -->
-      <div id="kategoriInfo" class="hidden">
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <i class="fas fa-info-circle text-blue-400"></i>
-            </div>
-            <div class="ml-3">
-              <h4 class="text-sm font-medium text-blue-800">
-                Informasi Kategori
-              </h4>
-              <div class="mt-2 text-sm text-blue-700" id="kategoriDescription">
-                <!-- Description will be inserted here by JavaScript -->
-              </div>
+      <!-- Kategori Info Box -->
+      <div id="kategoriInfo" class="info-box-hidden">
+        <div class="info-box-wrapper">
+          <div class="info-box-icon">
+            <i class="fas fa-info-circle"></i>
+          </div>
+          <div class="info-box-content">
+            <h4 class="info-box-title">Informasi Kategori</h4>
+            <div class="info-box-description" id="kategoriDescription">
+              <!-- Description will be inserted here by JavaScript -->
             </div>
           </div>
         </div>
       </div>
 
       <!-- Submit Buttons -->
-      <div
-        class="flex items-center justify-between pt-6 border-t border-gray-200"
-      >
-        <a href="/mustahik" class="btn-secondary">
-          <i class="fas fa-times mr-2"></i>Batal
+      <div class="form-actions">
+        <a href="/mustahik" class="btn-action btn-action-secondary">
+          <i class="fas fa-times mr-2"></i>
+          <span>Batal</span>
         </a>
-        <button type="submit" class="btn-primary">
-          <i class="fas fa-save mr-2"></i>Simpan Data
+        <button type="submit" class="btn-action btn-action-primary">
+          <i class="fas fa-save mr-2"></i>
+          <span>Simpan Data</span>
         </button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- Modern Styles -->
+<style>
+  /* Page Wrapper */
+  .page-wrapper {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-animation 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-animation {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  .header-content-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-back {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-4px);
+  }
+
+  .header-icon-box {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-text-box {
+    color: white;
+  }
+
+  .header-title-text {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: white;
+  }
+
+  .header-subtitle-text {
+    font-size: 15px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* Form Section */
+  .form-section {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .form-header-wrapper {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 20px 24px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .form-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .form-header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(30, 175, 47, 0.3);
+  }
+
+  .form-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+  }
+
+  .form-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  /* Form Content */
+  .form-content {
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Form Group */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+  }
+
+  .label-icon {
+    color: #1EAF2F;
+    font-size: 16px;
+  }
+
+  .required-mark {
+    color: #ef4444;
+    font-weight: 700;
+  }
+
+  /* Input Wrapper */
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    color: #9ca3af;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Form Input */
+  .form-input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #111827;
+    background: white;
+    transition: all 0.3s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #1EAF2F;
+    box-shadow: 0 0 0 4px rgba(30, 175, 47, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Form Select */
+  .form-select {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 15px;
+    color: #111827;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 48px;
+  }
+
+  .form-select:focus {
+    outline: none;
+    border-color: #1EAF2F;
+    box-shadow: 0 0 0 4px rgba(30, 175, 47, 0.1);
+  }
+
+  /* Field Helper Text */
+  .field-helper-text {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    padding-left: 4px;
+  }
+
+  /* Info Box */
+  .info-box-hidden {
+    display: none;
+  }
+
+  .info-box-wrapper {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid #93c5fd;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    animation: slideDown 0.4s ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .info-box-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .info-box-content {
+    flex: 1;
+  }
+
+  .info-box-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e40af;
+    margin: 0 0 8px 0;
+  }
+
+  .info-box-description {
+    font-size: 14px;
+    color: #1e3a8a;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Form Actions */
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #e5e7eb;
+    margin-top: 8px;
+  }
+
+  .btn-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-action-primary {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+  }
+
+  .btn-action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 175, 47, 0.4);
+  }
+
+  .btn-action-secondary {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .btn-action-secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Utility Classes */
+  .mr-1 {
+    margin-right: 4px;
+  }
+
+  .mr-2 {
+    margin-right: 8px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .page-wrapper {
+      padding: 12px;
+      gap: 16px;
+    }
+
+    .page-header {
+      padding: 20px 16px;
+    }
+
+    .header-title-text {
+      font-size: 22px;
+    }
+
+    .header-subtitle-text {
+      font-size: 14px;
+    }
+
+    .header-icon-box {
+      width: 52px;
+      height: 52px;
+      font-size: 24px;
+    }
+
+    .btn-back {
+      width: 42px;
+      height: 42px;
+      font-size: 16px;
+    }
+
+    .form-content {
+      padding: 24px 16px;
+      gap: 20px;
+    }
+
+    .form-header-wrapper {
+      padding: 16px;
+    }
+
+    .form-title {
+      font-size: 18px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .btn-action {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-wrapper {
+      padding: 8px;
+    }
+
+    .header-left-section {
+      gap: 12px;
+    }
+
+    .header-title-text {
+      font-size: 20px;
+    }
+
+    .header-icon-box {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+    }
+
+    .form-input,
+    .form-select {
+      padding: 12px 14px 12px 44px;
+      font-size: 14px;
+    }
+
+    .input-icon {
+      left: 14px;
+      font-size: 14px;
+    }
+
+    .info-box-wrapper {
+      padding: 16px;
+      gap: 12px;
+    }
+
+    .info-box-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+    }
+  }
+</style>
+
+<!-- JavaScript -->
 <script>
   // Category information
   const categoryInfo = {
@@ -153,7 +646,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
       "Riqab adalah untuk memerdekakan budak atau membebaskan tawanan Muslim.",
   };
 
-  // Show category information
+  // Show category information with animation
   document.getElementById("kategori").addEventListener("change", function () {
     const category = this.value;
     const infoDiv = document.getElementById("kategoriInfo");
@@ -161,10 +654,26 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
 
     if (category && categoryInfo[category]) {
       descDiv.textContent = categoryInfo[category];
-      infoDiv.classList.remove("hidden");
+      infoDiv.style.display = 'block';
+      // Trigger reflow for animation
+      void infoDiv.offsetWidth;
     } else {
-      infoDiv.classList.add("hidden");
+      infoDiv.style.display = 'none';
     }
+  });
+
+  // Form entrance animation
+  document.addEventListener('DOMContentLoaded', function () {
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+      group.style.opacity = '0';
+      group.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        group.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        group.style.opacity = '1';
+        group.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
   });
 
   // Form validation
@@ -174,22 +683,48 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'mustahik' }) %>
 
     if (!nama) {
       e.preventDefault();
-      alert("Nama mustahik harus diisi");
+      showError("Nama mustahik harus diisi", "Data Belum Lengkap");
       document.getElementById("nama").focus();
       return;
     }
 
     if (!kategori) {
       e.preventDefault();
-      alert("Kategori mustahik harus dipilih");
+      showError("Kategori mustahik harus dipilih", "Data Belum Lengkap");
       document.getElementById("kategori").focus();
       return;
     }
 
     // Confirm submission
-    if (!confirm("Apakah data yang dimasukkan sudah benar?")) {
-      e.preventDefault();
-    }
+    e.preventDefault();
+    showConfirm(
+      "Apakah data yang dimasukkan sudah benar?",
+      "Konfirmasi Data"
+    ).then((result) => {
+      if (result.isConfirmed) {
+        this.submit();
+      }
+    });
+  });
+
+  // Input focus effects
+  const inputs = document.querySelectorAll('.form-input, .form-select');
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      const icon = this.previousElementSibling;
+      if (icon && icon.classList.contains('input-icon')) {
+        icon.style.color = '#1EAF2F';
+        icon.style.transform = 'scale(1.1)';
+      }
+    });
+    
+    input.addEventListener('blur', function() {
+      const icon = this.previousElementSibling;
+      if (icon && icon.classList.contains('input-icon')) {
+        icon.style.color = '#9ca3af';
+        icon.style.transform = 'scale(1)';
+      }
+    });
   });
 </script>
 

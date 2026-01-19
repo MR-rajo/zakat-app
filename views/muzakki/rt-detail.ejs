@@ -1,262 +1,1824 @@
 <%- include('../layouts/header', { title: 'Detail RT - Zakat Fitrah App',
 bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <!-- Header -->
-  <div class="mb-6">
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center">
-        <a href="/muzakki" class="text-primary-600 hover:text-primary-800 mr-4">
+<div class="page-wrapper">
+  <!-- Modern Header -->
+  <div class="page-header">
+    <div class="header-content-wrapper">
+      <div class="header-left-section">
+        <a href="/muzakki" class="btn-back" title="Kembali">
           <i class="fas fa-arrow-left"></i>
         </a>
-        <h1 class="text-3xl font-bold text-gray-900">
-          <i class="fas fa-users mr-2 text-primary-600"></i>Detail Muzakki RT
-          <%= rt.nomor_rt %>
-        </h1>
+        <div class="header-icon-box">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="header-text-box">
+          <h1 class="header-title-text">Detail Muzakki RT <%= rt.nomor_rt %></h1>
+          <p class="header-subtitle-text">Ketua RT: <%= rt.ketua_rt %></p>
+        </div>
       </div>
-      <div class="flex space-x-2">
-        <a href="/muzakki/create" class="btn-primary">
-          <i class="fas fa-plus mr-2"></i>Tambah Muzakki
+      <div class="header-actions">
+        <a href="/muzakki/create" class="btn-action btn-action-primary">
+          <i class="fas fa-plus mr-2"></i>
+          <span>Tambah Muzakki</span>
         </a>
-        <a href="/muzakki" class="btn-outline">
-          <i class="fas fa-list mr-2"></i>Kembali ke Daftar RT
+        <a href="/muzakki" class="btn-action btn-action-secondary">
+          <i class="fas fa-list mr-2"></i>
+          <span>Daftar RT</span>
         </a>
-      </div>
-    </div>
-    <p class="text-gray-600">
-      Daftar lengkap muzakki di RT <%= rt.nomor_rt %> - <%= rt.ketua_rt %>
-    </p>
-  </div>
-
-  <!-- RT Info Card -->
-  <div class="card mb-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          <i class="fas fa-map-marker-alt mr-2 text-primary-600"></i>Informasi
-          RT
-        </h3>
-        <div class="space-y-2">
-          <div>
-            <span class="text-sm font-medium text-gray-700">Nomor RT:</span>
-            <div class="text-lg font-bold text-primary-600">
-              <%= rt.nomor_rt %>
-            </div>
-          </div>
-          <div>
-            <span class="text-sm font-medium text-gray-700">Ketua RT:</span>
-            <div class="font-medium text-gray-900"><%= rt.ketua_rt %></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          <i class="fas fa-chart-bar mr-2 text-green-600"></i>Statistik Muzakki
-        </h3>
-        <div class="space-y-2">
-          <div>
-            <span class="text-sm font-medium text-gray-700"
-              >Total Data Muzakki:</span
-            >
-            <div class="text-lg font-bold text-blue-600">
-              <%= muzakki.length %> data
-            </div>
-          </div>
-          <div>
-            <span class="text-sm font-medium text-gray-700"
-              >Total Nama Muzakki:</span
-            >
-            <div class="text-lg font-bold text-purple-600">
-              <%= muzakki.reduce((total, m) => total +
-              (parseInt(m.jumlah_muzakki) || 0), 0) %> orang
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">
-          <i class="fas fa-calculator mr-2 text-orange-600"></i>Total Zakat
-        </h3>
-        <div class="space-y-2">
-          <div>
-            <span class="text-sm font-medium text-gray-700">Total Jiwa:</span>
-            <div class="text-lg font-bold text-gray-800">
-              <%= muzakki.reduce((total, m) => total + (parseInt(m.jumlah_jiwa)
-              || 0), 0) %> jiwa
-            </div>
-          </div>
-          <div>
-            <span class="text-sm font-medium text-gray-700"
-              >Total Kembalian:</span
-            >
-            <div class="text-lg font-bold text-yellow-600">
-              Rp <%= Math.floor(muzakki.reduce((total, m) => total +
-              (parseFloat(m.kembalian) || 0), 0)).toLocaleString('id-ID') %>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 
-  <!-- Data Table -->
-  <div class="card">
-    <div class="table-responsive">
+  <!-- Statistics Cards -->
+  <div class="stats-container">
+
+    <div class="stat-box stat-box-purple">
+      <div class="stat-icon-wrapper stat-icon-purple">
+        <i class="fas fa-user-friends"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text"><%= muzakki.reduce((total, m) => total + (parseInt(m.jumlah_jiwa) || 0), 0) %></div>
+        <div class="stat-label-text">Total Jiwa</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+       <div class="stat-box stat-box-cyan">
+      <div class="stat-icon-wrapper stat-icon-cyan">
+        <i class="fas fa-money-bill-wave"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">Rp <%= Math.floor(muzakki.reduce((total, m) => total + (parseFloat(m.jumlah_uang) || 0), 0)).toLocaleString('id-ID') %></div>
+        <div class="stat-label-text">Total Kewajiban Uang</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+    <div class="stat-box stat-box-warning">
+      <div class="stat-icon-wrapper stat-icon-warning">
+        <i class="fas fa-hand-holding-usd"></i>
+      </div>
+      <div class="stat-content-box">
+        <div class="stat-value-text">Rp <%= Math.floor(muzakki.reduce((total, m) => total + (parseFloat(m.kembalian) || 0), 0)).toLocaleString('id-ID') %></div>
+        <div class="stat-label-text">Total Kembalian</div>
+      </div>
+      <div class="stat-decoration"></div>
+    </div>
+
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-header">
+      <div class="filter-title-wrapper">
+        <div class="filter-icon">
+          <i class="fas fa-filter"></i>
+        </div>
+        <div>
+          <h3 class="filter-title">Filter & Pencarian Data</h3>
+          <p class="filter-subtitle">Cari dan filter data muzakki berdasarkan nama atau tanggal</p>
+        </div>
+      </div>
+    </div>
+    <div class="filter-body">
+      <!-- Search Section -->
+      <div class="filter-section-group">
+        <div class="filter-section-title">
+          <i class="fas fa-search"></i>
+          <span>Pencarian</span>
+        </div>
+        <div class="filter-item">
+          <label for="filter_search" class="filter-label">
+            <i class="fas fa-user-search"></i> Nama Muzakki
+          </label>
+          <div class="filter-input-wrapper">
+            <i class="fas fa-search input-icon"></i>
+            <input type="text" id="filter_search" class="filter-input with-icon" placeholder="Ketik nama muzakki...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Filter Section -->
+      <div class="filter-section-group">
+        <div class="filter-section-title">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Filter Tanggal</span>
+        </div>
+        <div class="filter-date-row">
+          <div class="filter-item">
+            <label for="filter_start_date" class="filter-label">
+              <i class="fas fa-calendar-day"></i> Dari Tanggal
+            </label>
+            <input type="date" id="filter_start_date" class="filter-input">
+          </div>
+          <div class="filter-date-separator">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+          <div class="filter-item">
+            <label for="filter_end_date" class="filter-label">
+              <i class="fas fa-calendar-check"></i> Sampai Tanggal
+            </label>
+            <input type="date" id="filter_end_date" class="filter-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="filter-actions-wrapper">
+        <button type="button" id="btn_apply_filter" class="btn-filter btn-filter-primary">
+          <i class="fas fa-check-circle"></i>
+          <span>Terapkan Filter</span>
+        </button>
+        <button type="button" id="btn_reset_filter" class="btn-filter btn-filter-secondary">
+          <i class="fas fa-redo-alt"></i>
+          <span>Reset Filter</span>
+        </button>
+      </div>
+
+      <!-- Filter Info -->
+      <div class="filter-info" id="filter_info" style="display: none;">
+        <i class="fas fa-info-circle"></i>
+        <span id="filter_info_text">Menampilkan semua data</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Table Section -->
+  <div class="table-section">
+    <div class="table-header-wrapper">
+      <div class="table-header-left">
+        <div class="table-header-icon">
+          <i class="fas fa-table"></i>
+        </div>
+        <div class="table-header-text">
+          <h2 class="table-title">Daftar Muzakki RT <%= rt.nomor_rt %></h2>
+          <p class="table-subtitle">Data lengkap muzakki dan zakat fitrah</p>
+        </div>
+      </div>
+      <div class="table-header-right">
+        <button type="button" class="btn-tambah-infak" onclick="openInfakModal()" title="Tambah Infak dari Kembalian">
+          <i class="fas fa-hand-holding-heart"></i>
+          <span>Tambah Infak</span>
+        </button>
+        <span class="table-badge">
+          <i class="fas fa-users"></i>
+          <%= muzakki.length %> Data
+        </span>
+      </div>
+    </div>
+
+    <div class="table-content-wrapper">
       <% if (muzakki.length === 0) { %>
-      <div class="text-center py-12">
-        <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-medium text-gray-900 mb-2">
-          Belum ada data muzakki di RT <%= rt.nomor_rt %>
-        </h3>
-        <p class="text-gray-600 mb-6">
-          Mulai dengan menambahkan data muzakki untuk RT ini
-        </p>
-        <a href="/muzakki/create" class="btn-primary">
-          <i class="fas fa-plus mr-2"></i>Tambah Muzakki
-        </a>
-      </div>
+        <div class="empty-state-box">
+          <div class="empty-state-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3 class="empty-state-title">Belum ada data muzakki di RT <%= rt.nomor_rt %></h3>
+          <p class="empty-state-desc">Mulai dengan menambahkan data muzakki untuk RT ini</p>
+          <a href="/muzakki/create" class="btn-empty-state">
+            <i class="fas fa-plus mr-2"></i>
+            Tambah Muzakki
+          </a>
+        </div>
       <% } else { %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama Muzakki</th>
-            <th>Jumlah Jiwa</th>
-            <th>Jenis Zakat</th>
-            <th>Kewajiban</th>
-            <th>Jumlah Bayar</th>
-            <th>Kembalian</th>
-            <th>Pencatat</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
+        <!-- Desktop View -->
+        <div class="desktop-view">
+          <div class="table-responsive-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Muzakki</th>
+                  <th>Jiwa</th>
+                  <th>Jenis Zakat</th>
+                  <th>Kewajiban</th>
+                  <th>Jumlah Bayar</th>
+                  <th>Kembalian</th>
+                  <th>Pencatat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% muzakki.forEach(function(item, index) { %>
+                  <tr class="table-row-animated" style="animation-delay: <%= index * 0.05 %>s;">
+                    <td class="text-center">
+                      <span class="number-badge"><%= index + 1 %></span>
+                    </td>
+                    <td>
+                      <div class="cell-content-primary">
+                        <div class="muzakki-names-container" data-names="<%= item.nama_muzakki_list || '-' %>" data-id="<%= item.id %>">
+                          <!-- Will be populated by JavaScript -->
+                        </div>
+                        <div class="cell-subtitle"><%= item.jumlah_muzakki || 0 %> orang</div>
+                        <% if (item.catatan) { %>
+                          <div class="cell-note"><%= item.catatan %></div>
+                        <% } %>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge-stat badge-stat-gray">
+                        <i class="fas fa-user-friends"></i>
+                        <%= item.jumlah_jiwa %> jiwa
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <% if (item.jenis_zakat === 'beras') { %>
+                        <span class="badge-zakat badge-zakat-beras">
+                          <i class="fas fa-seedling"></i>
+                          Beras
+                        </span>
+                      <% } else { %>
+                        <span class="badge-zakat badge-zakat-uang">
+                          <i class="fas fa-coins"></i>
+                          Uang
+                        </span>
+                      <% } %>
+                    </td>
+                    <td class="text-center">
+                      <% if (item.jenis_zakat === 'beras') { %>
+                        <div class="amount-display amount-success">
+                          <i class="fas fa-weight"></i>
+                          <%= item.jumlah_beras_kg %> kg
+                        </div>
+                      <% } else { %>
+                        <div class="amount-display amount-info">
+                          Rp <%= Math.floor(item.jumlah_uang).toLocaleString('id-ID') %>
+                        </div>
+                      <% } %>
+                    </td>
+                    <td class="text-center">
+                      <div class="amount-display amount-success">
+                        <i class="fas fa-check-circle"></i>
+                        Rp <%= Math.floor(item.jumlah_bayar).toLocaleString('id-ID') %>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <% if (item.kembalian > 0) { %>
+                        <div class="kembalian-wrapper">
+                          <div class="amount-display amount-warning">
+                            Rp <%= Math.floor(item.kembalian).toLocaleString('id-ID') %>
+                          </div>
+                          <form method="POST" action="/muzakki/<%= item.id %>/sedekahkan-kembalian" class="inline sedekah-form">
+                            <button type="submit" class="btn-sedekah" title="Sedekahkan Kembalian">
+                              <i class="fas fa-hand-holding-heart"></i>
+                              <span>Sedekahkan</span>
+                            </button>
+                          </form>
+                        </div>
+                      <% } else { %>
+                        <div class="text-gray-400">-</div>
+                      <% } %>
+                    </td>
+                    <td>
+                      <div class="pencatat-info">
+                        <div class="pencatat-name"><%= item.pencatat_name || '-' %></div>
+                        <div class="pencatat-date"><%= new Date(item.created_at).toLocaleDateString('id-ID') %></div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="action-buttons-group">
+                        <a href="/muzakki/<%= item.id %>" class="btn-icon btn-icon-info" title="Detail">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="/muzakki/<%= item.id %>/edit" class="btn-icon btn-icon-primary" title="Edit">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="/muzakki/delete/<%= item.id %>?_method=DELETE" class="inline-form delete-form" data-name="<%= item.nama_muzakki_list %>">
+                          <button type="button" class="btn-icon btn-icon-danger" title="Hapus" onclick="confirmDelete(this)">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mobile View -->
+        <div class="mobile-view">
           <% muzakki.forEach(function(item, index) { %>
-          <tr>
-            <td class="text-center">
-              <span
-                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-800 text-sm font-medium"
-              >
-                <%= index + 1 %>
-              </span>
-            </td>
-            <td>
-              <div class="font-medium text-gray-900">
-                <%= item.nama_muzakki_list || '-' %>
+            <div class="mobile-card">
+              <div class="mobile-card-header">
+                <div class="mobile-card-title">
+                  <span class="mobile-card-number"><%= index + 1 %></span>
+                  <div class="mobile-card-name-wrapper">
+                    <div class="muzakki-names-container-mobile" data-names="<%= item.nama_muzakki_list || '-' %>" data-id="mobile-<%= item.id %>">
+                      <!-- Will be populated by JavaScript -->
+                    </div>
+                    <span class="mobile-card-subtitle"><%= item.jumlah_muzakki || 0 %> orang • <%= item.jumlah_jiwa %> jiwa</span>
+                  </div>
+                </div>
+                <% if (item.jenis_zakat === 'beras') { %>
+                  <span class="badge-zakat badge-zakat-beras">
+                    <i class="fas fa-seedling"></i> Beras
+                  </span>
+                <% } else { %>
+                  <span class="badge-zakat badge-zakat-uang">
+                    <i class="fas fa-coins"></i> Uang
+                  </span>
+                <% } %>
               </div>
-              <div class="text-xs text-gray-500">
-                <%= item.jumlah_muzakki || 0 %> orang
+              
+              <div class="mobile-card-body">
+                <div class="mobile-card-row">
+                  <div class="mobile-card-item">
+                    <span class="mobile-card-label">Kewajiban</span>
+                    <span class="mobile-card-value">
+                      <% if (item.jenis_zakat === 'beras') { %>
+                        <%= item.jumlah_beras_kg %> kg
+                      <% } else { %>
+                        Rp <%= Math.floor(item.jumlah_uang).toLocaleString('id-ID') %>
+                      <% } %>
+                    </span>
+                  </div>
+                  <div class="mobile-card-item">
+                    <span class="mobile-card-label">Jumlah Bayar</span>
+                    <span class="mobile-card-value text-success">Rp <%= Math.floor(item.jumlah_bayar).toLocaleString('id-ID') %></span>
+                  </div>
+                </div>
+                <div class="mobile-card-row">
+                  <div class="mobile-card-item">
+                    <span class="mobile-card-label">Kembalian</span>
+                    <% if (item.kembalian > 0) { %>
+                      <span class="mobile-card-value text-warning">Rp <%= Math.floor(item.kembalian).toLocaleString('id-ID') %></span>
+                    <% } else { %>
+                      <span class="mobile-card-value text-muted">-</span>
+                    <% } %>
+                  </div>
+                  <div class="mobile-card-item">
+                    <span class="mobile-card-label">Pencatat</span>
+                    <span class="mobile-card-value"><%= item.pencatat_name || '-' %></span>
+                  </div>
+                </div>
+                <% if (item.catatan) { %>
+                  <div class="mobile-card-note">
+                    <i class="fas fa-sticky-note"></i> <%= item.catatan %>
+                  </div>
+                <% } %>
               </div>
-              <% if (item.catatan) { %>
-              <div class="text-xs text-gray-500 mt-1"><%= item.catatan %></div>
-              <% } %>
-            </td>
-            <td class="text-center">
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-              >
-                <%= item.jumlah_jiwa %> jiwa
-              </span>
-            </td>
-            <td>
-              <% if (item.jenis_zakat === 'beras') { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-              >
-                <i class="fas fa-seedling mr-1"></i>Beras
-              </span>
-              <% } else { %>
-              <span
-                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-              >
-                <i class="fas fa-coins mr-1"></i>Uang
-              </span>
-              <% } %>
-            </td>
-            <td>
-              <% if (item.jenis_zakat === 'beras') { %>
-              <div class="font-medium"><%= item.jumlah_beras_kg %> kg</div>
-              <% } else { %>
-              <div class="font-medium">
-                Rp <%= Math.floor(item.jumlah_uang).toLocaleString('id-ID') %>
+
+              <div class="mobile-card-footer">
+                <% if (item.kembalian > 0) { %>
+                  <form method="POST" action="/muzakki/<%= item.id %>/sedekahkan-kembalian" class="sedekah-form">
+                    <button type="submit" class="btn-sedekah-mobile">
+                      <i class="fas fa-hand-holding-heart"></i> Sedekahkan
+                    </button>
+                  </form>
+                <% } %>
+                <div class="mobile-card-actions">
+                  <a href="/muzakki/<%= item.id %>" class="btn-icon btn-icon-info" title="Detail">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="/muzakki/<%= item.id %>/edit" class="btn-icon btn-icon-primary" title="Edit">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form method="POST" action="/muzakki/delete/<%= item.id %>?_method=DELETE" class="inline-form delete-form" data-name="<%= item.nama_muzakki_list %>">
+                    <button type="button" class="btn-icon btn-icon-danger" title="Hapus" onclick="confirmDelete(this)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
               </div>
-              <% } %>
-            </td>
-            <td>
-              <div class="font-medium text-green-600">
-                Rp <%= Math.floor(item.jumlah_bayar).toLocaleString('id-ID') %>
-              </div>
-            </td>
-            <td>
-              <% if (item.kembalian > 0) { %>
-              <div class="font-medium text-yellow-600 mb-2">
-                Rp <%= Math.floor(item.kembalian).toLocaleString('id-ID') %>
-              </div>
-              <form
-                method="POST"
-                action="/muzakki/<%= item.id %>/sedekahkan-kembalian"
-                class="inline"
-              >
-                <button
-                  type="submit"
-                  class="text-green-600 hover:text-green-900 text-xs"
-                  title="Sedekahkan Kembalian"
-                  onclick="return confirm('Sedekahkan kembalian sebagai infak?')"
-                >
-                  <i class="fas fa-hand-holding-heart mr-1"></i>Sedekahkan
-                </button>
-              </form>
-              <% } else { %>
-              <div class="text-gray-400">-</div>
-              <% } %>
-            </td>
-            <td>
-              <div class="text-sm text-gray-600">
-                <%= item.pencatat_name || '-' %>
-              </div>
-              <div class="text-xs text-gray-400">
-                <%= new Date(item.created_at).toLocaleDateString('id-ID') %>
-              </div>
-            </td>
-            <td>
-              <div class="flex gap-2">
-                <a
-                  href="/muzakki/<%= item.id %>"
-                  class="text-green-600 hover:text-green-900"
-                  title="Detail"
-                >
-                  <i class="fas fa-eye"></i>
-                </a>
-                <a
-                  href="/muzakki/<%= item.id %>/edit"
-                  class="text-blue-600 hover:text-blue-900"
-                  title="Edit"
-                >
-                  <i class="fas fa-edit"></i>
-                </a>
-                <form
-                  method="POST"
-                  action="/muzakki/<%= item.id %>?_method=DELETE"
-                  class="inline"
-                >
-                  <button
-                    type="submit"
-                    class="text-red-600 hover:text-red-900"
-                    title="Hapus"
-                    onclick="return confirm('Yakin ingin menghapus data muzakki ini?')"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
+            </div>
           <% }); %>
-        </tbody>
-      </table>
+        </div>
       <% } %>
     </div>
   </div>
 </div>
+
+<!-- Modern Styles -->
+<style>
+  /* Page Wrapper */
+  .page-wrapper {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Page Header */
+  .page-header {
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 50%, #0f8a1f 100%);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(30, 175, 47, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse-animation 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-animation {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+
+  .header-content-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .header-left-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-back {
+    width: 44px;
+    height: 44px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .btn-back:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateX(-4px);
+  }
+
+  .header-icon-box {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+  }
+
+  .header-text-box { color: white; }
+
+  .header-title-text {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: white;
+  }
+
+  .header-subtitle-text {
+    font-size: 15px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-action-primary {
+    background: white;
+    color: #1EAF2F;
+  }
+
+  .btn-action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn-action-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+
+  .btn-action-secondary:hover {
+    background: white;
+    color: #1EAF2F;
+  }
+
+  /* Filter Section */
+  .filter-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .filter-header {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .filter-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .filter-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+  }
+
+  .filter-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 2px 0;
+  }
+
+  .filter-subtitle {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .filter-body {
+    padding: 24px;
+  }
+
+  .filter-section-group {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .filter-section-group:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .filter-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #4b5563;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-section-title i {
+    color: #6366f1;
+    font-size: 15px;
+  }
+
+  .filter-date-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .filter-date-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 18px;
+    padding-bottom: 10px;
+  }
+
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-label i {
+    color: #6366f1;
+    font-size: 13px;
+  }
+
+  .filter-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .filter-input-wrapper .input-icon {
+    position: absolute;
+    left: 14px;
+    color: #9ca3af;
+    font-size: 14px;
+    pointer-events: none;
+  }
+
+  .filter-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    color: #1f2937;
+  }
+
+  .filter-input.with-icon {
+    padding-left: 42px;
+  }
+
+  .filter-input:hover {
+    border-color: #d1d5db;
+  }
+
+  .filter-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  .filter-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .filter-actions-wrapper {
+    display: flex;
+    gap: 12px;
+    padding-top: 4px;
+    justify-content: flex-end;
+  }
+
+  .btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-filter i {
+    font-size: 15px;
+  }
+
+  .btn-filter-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  }
+
+  .btn-filter-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
+  }
+
+  .btn-filter-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-filter-secondary {
+    background: white;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-filter-secondary:hover {
+    background: #f9fafb;
+    border-color: #6366f1;
+    color: #4f46e5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .filter-info {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #1e40af;
+    font-weight: 600;
+    border-left: 4px solid #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  }
+
+  .filter-info i {
+    font-size: 16px;
+    color: #2563eb;
+  }
+
+  /* Statistics Container */
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-box {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .stat-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  }
+
+  .stat-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0.1;
+  }
+
+  .stat-box-primary .stat-decoration { background: #1EAF2F; }
+  .stat-box-success .stat-decoration { background: #10b981; }
+  .stat-box-info .stat-decoration { background: #3b82f6; }
+  .stat-box-warning .stat-decoration { background: #f59e0b; }
+  .stat-box-purple .stat-decoration { background: #8b5cf6; }
+  .stat-box-cyan .stat-decoration { background: #06b6d4; }
+
+  .stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .stat-icon-primary { background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%); }
+  .stat-icon-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+  .stat-icon-info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+  .stat-icon-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+  .stat-icon-purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+  .stat-icon-cyan { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+
+  .stat-content-box { flex: 1; position: relative; z-index: 1; }
+  .stat-value-text { font-size: 22px; font-weight: 700; color: #111827; line-height: 1; margin-bottom: 4px; }
+  .stat-label-text { font-size: 13px; color: #6b7280; font-weight: 500; }
+
+  /* Table Section */
+  .table-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+  }
+
+  .table-header-wrapper {
+    background: linear-gradient(to right, #f9fafb, #f3f4f6);
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .table-header-left { display: flex; align-items: center; gap: 14px; }
+
+  .table-header-icon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+  }
+
+  .table-title { font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 2px 0; }
+  .table-subtitle { font-size: 13px; color: #6b7280; margin: 0; }
+
+  .table-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-tambah-infak {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  }
+
+  .btn-tambah-infak:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  }
+
+  .btn-tambah-infak i {
+    font-size: 15px;
+  }
+
+  .table-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: #d1fae5;
+    color: #065f46;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .table-content-wrapper { padding: 24px; }
+
+  /* Empty State */
+  .empty-state-box { text-align: center; padding: 60px 24px; }
+  .empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: #9ca3af;
+  }
+  .empty-state-title { font-size: 20px; font-weight: 600; color: #111827; margin: 0 0 8px 0; }
+  .empty-state-desc { font-size: 15px; color: #6b7280; margin: 0 0 24px 0; }
+  .btn-empty-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn-empty-state:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(30, 175, 47, 0.4); }
+
+  /* Data Table */
+  .table-responsive-wrapper { overflow-x: auto; }
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead tr { background: linear-gradient(to right, #f9fafb, #f3f4f6); border-bottom: 2px solid #e5e7eb; }
+  .data-table th { padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; }
+  .data-table tbody tr { border-bottom: 1px solid #e5e7eb; transition: all 0.3s ease; opacity: 0; animation: fadeInRow 0.5s ease forwards; }
+  @keyframes fadeInRow { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .data-table tbody tr:hover { background: linear-gradient(to right, #f0fdf4, #dcfce7); }
+  .data-table td { padding: 14px; font-size: 13px; }
+
+  /* Table Cells */
+  .number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .cell-content-primary { display: flex; flex-direction: column; gap: 2px; }
+  
+  .muzakki-names-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .muzakki-names-list li {
+    font-weight: 600;
+    color: #111827;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .muzakki-name-single {
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
+  }
+
+  .btn-show-more-names {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 4px;
+  }
+
+  .btn-show-more-names:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  }
+
+  .btn-show-more-names i {
+    font-size: 10px;
+  }
+
+  .muzakki-name { font-weight: 600; color: #111827; font-size: 14px; }
+  .cell-subtitle { font-size: 11px; color: #9ca3af; }
+  .cell-note { font-size: 11px; color: #6b7280; font-style: italic; margin-top: 2px; }
+
+  .text-center { text-align: center; }
+  .text-gray-400 { color: #9ca3af; }
+
+  /* Badges */
+  .badge-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-stat-gray { background: #f3f4f6; color: #374151; }
+
+  .badge-zakat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-zakat-beras { background: #d1fae5; color: #065f46; }
+  .badge-zakat-uang { background: #dbeafe; color: #1e40af; }
+
+  /* Amount Display */
+  .amount-display { font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; }
+  .amount-success { color: #059669; }
+  .amount-info { color: #2563eb; }
+  .amount-warning { color: #d97706; }
+
+  /* Kembalian */
+  .kembalian-wrapper { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .btn-sedekah {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .btn-sedekah:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+
+  /* Pencatat */
+  .pencatat-info { text-align: left; }
+  .pencatat-name { font-size: 13px; color: #374151; font-weight: 500; }
+  .pencatat-date { font-size: 11px; color: #9ca3af; }
+
+  /* Action Buttons */
+  .action-buttons-group { display: flex; gap: 6px; align-items: center; justify-content: center; }
+  .inline-form { display: inline; }
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .btn-icon-info { background: #dbeafe; color: #1e40af; }
+  .btn-icon-info:hover { background: #3b82f6; color: white; transform: translateY(-2px); }
+  .btn-icon-primary { background: #d1fae5; color: #065f46; }
+  .btn-icon-primary:hover { background: #1EAF2F; color: white; transform: translateY(-2px); }
+  .btn-icon-danger { background: #fee2e2; color: #991b1b; }
+  .btn-icon-danger:hover { background: #ef4444; color: white; transform: translateY(-2px); }
+
+  /* Mobile View */
+  .desktop-view { display: block; }
+  .mobile-view { display: none; }
+
+  .mobile-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .mobile-card-title { display: flex; align-items: center; gap: 10px; }
+  .mobile-card-number {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .mobile-card-name-wrapper { display: flex; flex-direction: column; }
+  .mobile-card-name { font-size: 15px; font-weight: 600; color: #111827; margin: 0; }
+  
+  .muzakki-names-list-mobile {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .muzakki-names-list-mobile li {
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .mobile-card-subtitle { font-size: 12px; color: #6b7280; }
+
+  .mobile-card-body { margin-bottom: 14px; }
+  .mobile-card-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 10px; }
+  .mobile-card-item { display: flex; flex-direction: column; gap: 2px; }
+  .mobile-card-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; }
+  .mobile-card-value { font-size: 14px; font-weight: 600; color: #111827; }
+  .mobile-card-value.text-success { color: #059669; }
+  .mobile-card-value.text-warning { color: #d97706; }
+  .mobile-card-value.text-muted { color: #9ca3af; }
+  .mobile-card-note { font-size: 12px; color: #6b7280; font-style: italic; padding: 8px; background: #f9fafb; border-radius: 8px; }
+
+  .mobile-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+  }
+  .mobile-card-actions { display: flex; gap: 8px; }
+  .btn-sedekah-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .stats-container { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .page-wrapper { padding: 16px; gap: 16px; }
+    .page-header { padding: 20px; }
+    .header-content-wrapper { flex-direction: column; align-items: flex-start; }
+    .header-left-section { flex-wrap: wrap; }
+    .header-title-text { font-size: 22px; }
+    .header-actions { width: 100%; }
+    .btn-action { flex: 1; justify-content: center; padding: 10px 16px; font-size: 13px; }
+    
+    /* Filter responsive */
+    .filter-body { padding: 16px; }
+    .filter-section-group { padding: 12px; margin-bottom: 12px; }
+    .filter-date-row { grid-template-columns: 1fr; gap: 12px; }
+    .filter-date-separator { display: none; }
+    .filter-actions-wrapper { 
+      flex-direction: column; 
+      gap: 8px; 
+    }
+    .btn-filter { 
+      width: 100%; 
+      justify-content: center; 
+      padding: 12px 20px;
+    }
+    
+    /* Table header responsive */
+    .table-header-right {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    
+    .btn-tambah-infak {
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+    
+    .btn-tambah-infak span {
+      display: none;
+    }
+    
+    .btn-tambah-infak i {
+      margin: 0;
+    }
+    
+    .stats-container { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .stat-box { padding: 14px; }
+    .stat-value-text { font-size: 18px; }
+    .stat-icon-wrapper { width: 40px; height: 40px; font-size: 16px; }
+    .desktop-view { display: none; }
+    .mobile-view { display: block; }
+    .table-content-wrapper { padding: 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .stats-container { grid-template-columns: 1fr 1fr; }
+    .header-left-section { gap: 10px; }
+    .btn-back { width: 36px; height: 36px; font-size: 14px; }
+    .header-icon-box { width: 44px; height: 44px; font-size: 18px; }
+    .mobile-card-row { grid-template-columns: 1fr; gap: 8px; }
+    
+    .table-header-right {
+      width: 100%;
+    }
+    
+    .btn-tambah-infak {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      justify-content: center;
+    }
+    
+    .table-badge {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  /* Utility Classes */
+  .mr-2 { margin-right: 8px; }
+</style>
+
+<script>
+  // Data muzakki untuk filtering (from EJS)
+  const allMuzakkiData = [
+    <% muzakki.forEach(function(item, index) { %>
+      {
+        id: <%= item.id %>,
+        created_at: '<%= item.created_at %>',
+        jumlah_jiwa: <%= item.jumlah_jiwa || 0 %>,
+        jumlah_uang: <%= parseFloat(item.jumlah_uang) || 0 %>,
+        kembalian: <%= parseFloat(item.kembalian) || 0 %>,
+        jumlah_beras_kg: <%= parseFloat(item.jumlah_beras_kg) || 0 %>
+      }<%= index < muzakki.length - 1 ? ',' : '' %>
+    <% }); %>
+  ];
+
+  // Combined filter functionality (search + date)
+  function applyFilters() {
+    const searchInput = document.getElementById('filter_search');
+    const startDateInput = document.getElementById('filter_start_date');
+    const endDateInput = document.getElementById('filter_end_date');
+    const filterInfo = document.getElementById('filter_info');
+    const filterInfoText = document.getElementById('filter_info_text');
+
+    const searchQuery = searchInput.value.toLowerCase().trim();
+    const startDate = startDateInput.value ? new Date(startDateInput.value) : null;
+    const endDate = endDateInput.value ? new Date(endDateInput.value) : null;
+
+    // Validasi tanggal
+    if (startDate && endDate && startDate > endDate) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Tanggal Tidak Valid',
+        text: 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+        confirmButtonColor: '#6366f1'
+      });
+      return;
+    }
+
+    // Set end date to end of day for proper comparison
+    if (endDate) {
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    let filteredCount = 0;
+    let totalJiwa = 0;
+    let totalUang = 0;
+    let totalKembalian = 0;
+
+    // Filter desktop table rows
+    const desktopRows = document.querySelectorAll('.desktop-view tbody tr');
+    desktopRows.forEach((row, index) => {
+      const rowData = allMuzakkiData[index];
+      if (!rowData) return;
+
+      const rowDate = new Date(rowData.created_at);
+      const muzakkiContainer = row.querySelector('.muzakki-names-container');
+      const namesString = muzakkiContainer ? muzakkiContainer.getAttribute('data-names') : '';
+      
+      let shouldShow = true;
+
+      // Filter by date
+      if (startDate && rowDate < startDate) {
+        shouldShow = false;
+      }
+      if (endDate && rowDate > endDate) {
+        shouldShow = false;
+      }
+
+      // Filter by search query
+      if (searchQuery && shouldShow) {
+        const namesLower = namesString.toLowerCase();
+        if (!namesLower.includes(searchQuery)) {
+          shouldShow = false;
+        }
+      }
+
+      if (shouldShow) {
+        row.style.display = '';
+        filteredCount++;
+        totalJiwa += rowData.jumlah_jiwa;
+        totalUang += rowData.jumlah_uang;
+        totalKembalian += rowData.kembalian;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Filter mobile cards
+    const mobileCards = document.querySelectorAll('.mobile-view .mobile-card');
+    mobileCards.forEach((card, index) => {
+      const rowData = allMuzakkiData[index];
+      if (!rowData) return;
+
+      const rowDate = new Date(rowData.created_at);
+      const muzakkiContainer = card.querySelector('.muzakki-names-container-mobile');
+      const namesString = muzakkiContainer ? muzakkiContainer.getAttribute('data-names') : '';
+      
+      let shouldShow = true;
+
+      // Filter by date
+      if (startDate && rowDate < startDate) {
+        shouldShow = false;
+      }
+      if (endDate && rowDate > endDate) {
+        shouldShow = false;
+      }
+
+      // Filter by search query
+      if (searchQuery && shouldShow) {
+        const namesLower = namesString.toLowerCase();
+        if (!namesLower.includes(searchQuery)) {
+          shouldShow = false;
+        }
+      }
+
+      card.style.display = shouldShow ? '' : 'none';
+    });
+
+    // Update statistics
+    updateStatistics(totalJiwa, totalUang, totalKembalian);
+
+    // Show filter info
+    let hasActiveFilter = searchQuery || startDate || endDate;
+    
+    if (hasActiveFilter) {
+      let infoText = 'Menampilkan data';
+      let filterDetails = [];
+      
+      if (searchQuery) {
+        filterDetails.push(`dengan nama "${searchQuery}"`);
+      }
+      
+      if (startDate && endDate) {
+        filterDetails.push(`dari ${formatDate(startDate)} sampai ${formatDate(endDate)}`);
+      } else if (startDate) {
+        filterDetails.push(`mulai ${formatDate(startDate)}`);
+      } else if (endDate) {
+        filterDetails.push(`sampai ${formatDate(endDate)}`);
+      }
+      
+      if (filterDetails.length > 0) {
+        infoText += ' ' + filterDetails.join(' ');
+      }
+      
+      infoText += ` (${filteredCount} data)`;
+      filterInfoText.textContent = infoText;
+      filterInfo.style.display = 'flex';
+    } else {
+      filterInfo.style.display = 'none';
+    }
+  }
+
+  // Keep original applyDateFilter for backward compatibility
+  function applyDateFilter() {
+    applyFilters();
+    
+    // Show notification
+    const searchInput = document.getElementById('filter_search');
+    const searchQuery = searchInput.value.toLowerCase().trim();
+    const filteredCount = document.querySelectorAll('.desktop-view tbody tr[style=""]').length;
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Filter Diterapkan',
+      text: `Menampilkan ${filteredCount} dari ${allMuzakkiData.length} data`,
+      timer: 1500,
+      showConfirmButton: false
+    });
+  }
+
+  // Filter functionality (legacy - kept for compatibility)
+  function applyDateFilterOld() {
+    const startDateInput = document.getElementById('filter_start_date');
+    const endDateInput = document.getElementById('filter_end_date');
+    const filterInfo = document.getElementById('filter_info');
+    const filterInfoText = document.getElementById('filter_info_text');
+
+    const startDate = startDateInput.value ? new Date(startDateInput.value) : null;
+    const endDate = endDateInput.value ? new Date(endDateInput.value) : null;
+
+    // Validasi tanggal
+    if (startDate && endDate && startDate > endDate) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Tanggal Tidak Valid',
+        text: 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir',
+        confirmButtonColor: '#6366f1'
+      });
+      return;
+    }
+
+    // Set end date to end of day for proper comparison
+    if (endDate) {
+      endDate.setHours(23, 59, 59, 999);
+    }
+
+    let filteredCount = 0;
+    let totalJiwa = 0;
+    let totalUang = 0;
+    let totalKembalian = 0;
+
+    // Filter desktop table rows
+    const desktopRows = document.querySelectorAll('.desktop-view tbody tr');
+    desktopRows.forEach((row, index) => {
+      const rowData = allMuzakkiData[index];
+      if (!rowData) return;
+
+      const rowDate = new Date(rowData.created_at);
+      let shouldShow = true;
+
+      if (startDate && rowDate < startDate) {
+        shouldShow = false;
+      }
+      if (endDate && rowDate > endDate) {
+        shouldShow = false;
+      }
+
+      if (shouldShow) {
+        row.style.display = '';
+        filteredCount++;
+        totalJiwa += rowData.jumlah_jiwa;
+        totalUang += rowData.jumlah_uang;
+        totalKembalian += rowData.kembalian;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Filter mobile cards
+    const mobileCards = document.querySelectorAll('.mobile-view .mobile-card');
+    mobileCards.forEach((card, index) => {
+      const rowData = allMuzakkiData[index];
+      if (!rowData) return;
+
+      const rowDate = new Date(rowData.created_at);
+      let shouldShow = true;
+
+      if (startDate && rowDate < startDate) {
+        shouldShow = false;
+      }
+      if (endDate && rowDate > endDate) {
+        shouldShow = false;
+      }
+
+      card.style.display = shouldShow ? '' : 'none';
+    });
+
+    // Update statistics
+    updateStatistics(totalJiwa, totalUang, totalKembalian);
+
+    // Show filter info
+    if (startDate || endDate) {
+      let infoText = 'Menampilkan data ';
+      if (startDate && endDate) {
+        infoText += `dari ${formatDate(startDate)} sampai ${formatDate(endDate)}`;
+      } else if (startDate) {
+        infoText += `mulai ${formatDate(startDate)}`;
+      } else if (endDate) {
+        infoText += `sampai ${formatDate(endDate)}`;
+      }
+      infoText += ` (${filteredCount} data)`;
+      filterInfoText.textContent = infoText;
+      filterInfo.style.display = 'flex';
+    } else {
+      filterInfo.style.display = 'none';
+    }
+
+    // Show notification
+    Swal.fire({
+      icon: 'success',
+      title: 'Filter Diterapkan',
+      text: `Menampilkan ${filteredCount} dari ${allMuzakkiData.length} data`,
+      timer: 1500,
+      showConfirmButton: false
+    });
+  }
+
+  function resetFilter() {
+    const searchInput = document.getElementById('filter_search');
+    const startDateInput = document.getElementById('filter_start_date');
+    const endDateInput = document.getElementById('filter_end_date');
+    const filterInfo = document.getElementById('filter_info');
+
+    // Reset inputs
+    searchInput.value = '';
+    startDateInput.value = '';
+    endDateInput.value = '';
+
+    // Show all rows
+    const desktopRows = document.querySelectorAll('.desktop-view tbody tr');
+    desktopRows.forEach(row => {
+      row.style.display = '';
+    });
+
+    const mobileCards = document.querySelectorAll('.mobile-view .mobile-card');
+    mobileCards.forEach(card => {
+      card.style.display = '';
+    });
+
+    // Reset statistics to original
+    let totalJiwa = 0;
+    let totalUang = 0;
+    let totalKembalian = 0;
+
+    allMuzakkiData.forEach(data => {
+      totalJiwa += data.jumlah_jiwa;
+      totalUang += data.jumlah_uang;
+      totalKembalian += data.kembalian;
+    });
+
+    updateStatistics(totalJiwa, totalUang, totalKembalian);
+
+    // Hide filter info
+    filterInfo.style.display = 'none';
+
+    Swal.fire({
+      icon: 'info',
+      title: 'Filter Direset',
+      text: 'Menampilkan semua data',
+      timer: 1500,
+      showConfirmButton: false
+    });
+  }
+
+  function updateStatistics(totalJiwa, totalUang, totalKembalian) {
+    // Update Total Jiwa
+    const jiwaElement = document.querySelector('.stat-box-purple .stat-value-text');
+    if (jiwaElement) {
+      jiwaElement.textContent = totalJiwa;
+    }
+
+    // Update Total Kewajiban Uang
+    const uangElement = document.querySelector('.stat-box-cyan .stat-value-text');
+    if (uangElement) {
+      uangElement.textContent = 'Rp ' + Math.floor(totalUang).toLocaleString('id-ID');
+    }
+
+    // Update Total Kembalian
+    const kembalianElement = document.querySelector('.stat-box-warning .stat-value-text');
+    if (kembalianElement) {
+      kembalianElement.textContent = 'Rp ' + Math.floor(totalKembalian).toLocaleString('id-ID');
+    }
+  }
+
+  function formatDate(date) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('id-ID', options);
+  }
+
+  // Parse and display muzakki names
+  function parseMuzakkiNames(namesString) {
+    if (!namesString || namesString === '-') return [];
+    // Split by comma or newline
+    return namesString.split(/[,\n]/).map(name => name.trim()).filter(name => name);
+  }
+
+  function displayMuzakkiNames(container, namesString, itemId, isMobile = false) {
+    const names = parseMuzakkiNames(namesString);
+    
+    if (names.length === 0) {
+      container.innerHTML = '<div class="muzakki-name-single">-</div>';
+      return;
+    }
+
+    if (names.length === 1) {
+      container.innerHTML = `<div class="muzakki-name-single">${names[0]}</div>`;
+      return;
+    }
+
+    // Show max 4 names
+    const maxDisplay = 4;
+    const displayNames = names.slice(0, maxDisplay);
+    const hasMore = names.length > maxDisplay;
+
+    const listClass = isMobile ? 'muzakki-names-list-mobile' : 'muzakki-names-list';
+    let html = `<ol class="${listClass}">`;
+    
+    displayNames.forEach((name, index) => {
+      html += `<li>${index + 1}. ${name}</li>`;
+    });
+    
+    html += '</ol>';
+
+    if (hasMore) {
+      const remaining = names.length - maxDisplay;
+      html += `
+        <button type="button" class="btn-show-more-names" onclick="showAllMuzakkiNames('${itemId}', '${namesString.replace(/'/g, "\\'")}')">>
+          <i class="fas fa-eye"></i>
+          <span>Lihat ${remaining} lainnya</span>
+        </button>
+      `;
+    }
+
+    container.innerHTML = html;
+  }
+
+  function showAllMuzakkiNames(itemId, namesString) {
+    const names = parseMuzakkiNames(namesString);
+    
+    let listHtml = '<ol style="text-align: left; padding-left: 20px; margin: 10px 0;">';
+    names.forEach((name, index) => {
+      listHtml += `<li style="margin-bottom: 8px; font-size: 14px; color: #111827;">${name}</li>`;
+    });
+    listHtml += '</ol>';
+
+    Swal.fire({
+      title: 'Daftar Lengkap Muzakki',
+      html: `
+        <div style="max-height: 400px; overflow-y: auto;">
+          <p style="color: #6b7280; font-size: 13px; margin-bottom: 10px;">Total: ${names.length} orang</p>
+          ${listHtml}
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonColor: '#6366f1',
+      confirmButtonText: '<i class="fas fa-check"></i> Tutup',
+      width: '500px'
+    });
+  }
+
+  // Event listeners for filter
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnApplyFilter = document.getElementById('btn_apply_filter');
+    const btnResetFilter = document.getElementById('btn_reset_filter');
+    const searchInput = document.getElementById('filter_search');
+    const startDateInput = document.getElementById('filter_start_date');
+    const endDateInput = document.getElementById('filter_end_date');
+
+    // Populate muzakki names on page load
+    document.querySelectorAll('.muzakki-names-container').forEach(container => {
+      const namesString = container.getAttribute('data-names');
+      const itemId = container.getAttribute('data-id');
+      displayMuzakkiNames(container, namesString, itemId, false);
+    });
+
+    document.querySelectorAll('.muzakki-names-container-mobile').forEach(container => {
+      const namesString = container.getAttribute('data-names');
+      const itemId = container.getAttribute('data-id');
+      displayMuzakkiNames(container, namesString, itemId, true);
+    });
+
+    // Real-time search
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        applyFilters();
+      });
+    }
+
+    if (btnApplyFilter) {
+      btnApplyFilter.addEventListener('click', applyDateFilter);
+    }
+
+    if (btnResetFilter) {
+      btnResetFilter.addEventListener('click', resetFilter);
+    }
+
+    // Apply filter on Enter key
+    if (startDateInput) {
+      startDateInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') applyDateFilter();
+      });
+    }
+
+    if (endDateInput) {
+      endDateInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') applyDateFilter();
+      });
+    }
+  });
+
+  // Confirm Delete with SweetAlert2
+  function confirmDelete(btn) {
+    const form = btn.closest('form');
+    const name = form.getAttribute('data-name') || 'muzakki ini';
+    
+    Swal.fire({
+      title: 'Konfirmasi Hapus',
+      text: `Yakin ingin menghapus data "${name}"? Data ini tidak dapat dikembalikan.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: '<i class="fas fa-trash mr-2"></i>Ya, Hapus',
+      cancelButtonText: '<i class="fas fa-times mr-2"></i>Batal',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  }
+
+  // Handle sedekah forms with SweetAlert2
+  document.querySelectorAll(".sedekah-form").forEach((form) => {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formElement = this;
+
+      Swal.fire({
+        title: 'Sedekahkan Kembalian?',
+        text: 'Kembalian akan disedekahkan sebagai infak. Lanjutkan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: '<i class="fas fa-hand-holding-heart mr-2"></i>Ya, Sedekahkan',
+        cancelButtonText: '<i class="fas fa-times mr-2"></i>Batal',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          formElement.submit();
+        }
+      });
+    });
+  });
+
+  // Add entrance animations on load
+  document.addEventListener('DOMContentLoaded', function() {
+    const statBoxes = document.querySelectorAll('.stat-box');
+    statBoxes.forEach((box, index) => {
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        box.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      }, index * 100);
+    });
+
+    // Animate mobile cards
+    const mobileCards = document.querySelectorAll('.mobile-card');
+    mobileCards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, index * 80);
+    });
+  });
+</script>
+
+<!-- Include Modal Tambah Infak -->
+<%- include('partials/modal-tambah-infak') %>
 
 <%- include('../layouts/footer') %>

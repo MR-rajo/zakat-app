@@ -162,11 +162,9 @@
         });
       }, 5000);
 
-      // Confirm delete actions
+      // Confirm delete actions using SweetAlert2
       function confirmDelete(name) {
-        return confirm(
-          `Apakah Anda yakin ingin menghapus data "${name}"? Tindakan ini tidak dapat dibatalkan.`
-        );
+        return showDeleteConfirm(name).then((result) => result.isConfirmed);
       }
 
       // Format currency input

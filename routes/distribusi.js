@@ -56,6 +56,14 @@ router.get("/", async (req, res) => {
       FROM distribusi_zakat
     `);
 
+    // Get mustahik list for modal dropdown
+    const [mustahiks] = await db.execute(`
+      SELECT m.id, m.nama, m.kategori, r.nomor_rt as rt_nama
+      FROM mustahik m 
+      LEFT JOIN rt r ON m.rt_id = r.id 
+      ORDER BY r.nomor_rt, m.nama
+    `);
+
     // ✅ total ikut dikirim agar bisa dipakai di index.ejs
     res.render("distribusi/index", {
       title: "Distribusi Zakat - Zakat Fitrah App",
@@ -69,6 +77,7 @@ router.get("/", async (req, res) => {
       status: req.query.status || "",
       jenis: req.query.jenis || "",
       currentPage: "distribusi",
+      mustahiks: mustahiks,
       success: req.flash("success"),
       error: req.flash("error"),
     });
