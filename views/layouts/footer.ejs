@@ -72,36 +72,6 @@
         rupiah = split[1] != undefined ? rupiah + "," + split[1] : rupiah;
         return rupiah;
       }
-
-      // Auto calculate zakat
-      function calculateZakat() {
-        const jumlahJiwa = parseInt(
-          document.getElementById("jumlah_jiwa")?.value || 0
-        );
-        const hargaBeras = parseInt(
-          document.getElementById("harga_beras")?.value || 0
-        );
-
-        if (jumlahJiwa > 0 && hargaBeras > 0) {
-          // 2.5 kg per jiwa, dihitung dalam gram lalu dikonversi ke rupiah
-          const totalZakat = jumlahJiwa * 2.5 * hargaBeras;
-          const zakatInput = document.getElementById("jumlah_zakat");
-          if (zakatInput) {
-            zakatInput.value = totalZakat;
-          }
-        }
-      }
-
-      // Initialize auto calculation if on muzakki form
-      document.addEventListener("DOMContentLoaded", function () {
-        const jumlahJiwaInput = document.getElementById("jumlah_jiwa");
-        const hargaBerasInput = document.getElementById("harga_beras");
-
-        if (jumlahJiwaInput && hargaBerasInput) {
-          jumlahJiwaInput.addEventListener("input", calculateZakat);
-          hargaBerasInput.addEventListener("input", calculateZakat);
-        }
-      });
     </script>
   </body>
 </html>

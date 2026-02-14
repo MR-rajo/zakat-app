@@ -19,7 +19,7 @@
 
     <!-- Modal Body -->
     <div class="modal-body">
-      <form id="distribusiForm" method="POST" action="/distribusi">
+      <form id="distribusiForm" method="POST" action="/distribusi" enctype="multipart/form-data">
         <input type="hidden" id="formMethod" name="_method" value="">
         <input type="hidden" id="distribusiId" name="id" value="">
 
@@ -117,16 +117,6 @@
 
             <div class="form-group">
               <label class="form-label">
-                <i class="fas fa-calendar-alt"></i>
-                Tanggal Distribusi
-                <span class="required">*</span>
-              </label>
-              <input type="date" id="tanggal_distribusi" name="tanggal_distribusi" 
-                     class="form-input" required>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">
                 <i class="fas fa-info-circle"></i>
                 Status
                 <span class="required">*</span>
@@ -159,14 +149,36 @@
               </div>
             </div>
 
+            <!-- Bukti Foto Upload -->
             <div class="form-group">
               <label class="form-label">
-                <i class="fas fa-comment-alt"></i>
-                Catatan
+                <i class="fas fa-camera"></i>
+                Bukti Foto Distribusi
               </label>
-              <textarea id="catatan" name="catatan" class="form-textarea" 
-                        placeholder="Tambahkan catatan jika diperlukan..." rows="3"></textarea>
-              <small class="form-hint">Opsional - Tambahkan catatan tambahan</small>
+              <div class="file-upload-wrapper">
+                <input type="file" id="bukti_foto" name="bukti_foto" 
+                       class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif"
+                       onchange="handleFileSelect(this)">
+                <label for="bukti_foto" class="file-upload-label">
+                  <div class="file-upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                  </div>
+                  <div class="file-upload-text">
+                    <span class="file-upload-title">Klik untuk upload foto</span>
+                    <span class="file-upload-hint">atau drag & drop file di sini</span>
+                  </div>
+                </label>
+                <div class="file-preview" id="filePreview" style="display: none;">
+                  <img id="previewImage" src="" alt="Preview">
+                  <button type="button" class="remove-file-btn" onclick="removeFile()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <small class="form-hint">
+                <i class="fas fa-info-circle"></i>
+                Format: JPG, JPEG, PNG, GIF (Maks. 5MB) - Opsional
+              </small>
             </div>
           </div>
         </div>
@@ -879,6 +891,105 @@
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
+/* File Upload Styles */
+.file-upload-wrapper {
+  position: relative;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-upload-label:hover {
+  border-color: #1EAF2F;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.file-upload-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #1EAF2F 0%, #16a127 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+}
+
+.file-upload-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-upload-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.file-upload-hint {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.file-preview {
+  position: relative;
+  margin-top: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+}
+
+.file-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+}
+
+.remove-file-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.remove-file-btn:hover {
+  background: rgba(220, 38, 38, 1);
+  transform: scale(1.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .modal-container {
@@ -983,19 +1094,15 @@ function openDistribusiModal(mode = 'create', data = null) {
     modalTitle.textContent = 'Tambah Distribusi Baru';
     modalSubtitle.textContent = 'Isi form berikut untuk mendistribusikan zakat';
     submitBtnText.textContent = 'Simpan Distribusi';
-    form.action = '/distribusi';
+    form.action = '/distribusi/create';
     document.getElementById('formMethod').value = '';
     document.getElementById('distribusiId').value = '';
-    
-    // Set default tanggal to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('tanggal_distribusi').value = today;
   } else if (mode === 'edit' && data) {
     modalTitle.textContent = 'Edit Distribusi';
     modalSubtitle.textContent = 'Perbarui data distribusi';
     submitBtnText.textContent = 'Update Distribusi';
-    form.action = `/distribusi/edit/${data.id}`;
-    document.getElementById('formMethod').value = 'PUT';
+    form.action = `/distribusi/update/${data.id}`;
+    document.getElementById('formMethod').value = '';
     document.getElementById('distribusiId').value = data.id;
     
     // Populate form with data
@@ -1005,10 +1112,22 @@ function openDistribusiModal(mode = 'create', data = null) {
       
       document.getElementById('jenis_zakat').value = data.jenis_zakat;
       document.getElementById('jumlah').value = data.jumlah;
-      document.getElementById('tanggal_distribusi').value = data.tanggal_distribusi;
-      document.querySelector(`input[name="status"][value="${data.status}"]`).checked = true;
-      if (data.catatan) {
-        document.getElementById('catatan').value = data.catatan;
+      
+      // Set status
+      const statusRadio = document.querySelector(`input[name="status"][value="${data.status}"]`);
+      if (statusRadio) {
+        statusRadio.checked = true;
+      }
+      
+      // Show existing photo if available
+      if (data.bukti_foto) {
+        const preview = document.getElementById('filePreview');
+        const previewImage = document.getElementById('previewImage');
+        const uploadLabel = document.querySelector('.file-upload-label');
+        
+        previewImage.src = data.bukti_foto;
+        preview.style.display = 'block';
+        uploadLabel.style.display = 'none';
       }
       
       // Trigger change events
@@ -1118,30 +1237,46 @@ document.addEventListener('DOMContentLoaded', function() {
     const mustahikId = document.getElementById('mustahik_id').value;
     const jenisZakat = document.getElementById('jenis_zakat').value;
     const jumlah = document.getElementById('jumlah').value;
-    const tanggal = document.getElementById('tanggal_distribusi').value;
     
     if (!mustahikId) {
-      showError('Pilih mustahik terlebih dahulu');
+      Swal.fire({
+        icon: 'error',
+        title: 'Validasi Gagal',
+        text: 'Pilih mustahik terlebih dahulu',
+        confirmButtonColor: '#ef4444'
+      });
       return;
     }
     
     if (!jenisZakat) {
-      showError('Pilih jenis zakat');
+      Swal.fire({
+        icon: 'error',
+        title: 'Validasi Gagal',
+        text: 'Pilih jenis zakat',
+        confirmButtonColor: '#ef4444'
+      });
       return;
     }
     
     if (!jumlah || parseFloat(jumlah) <= 0) {
-      showError('Masukkan jumlah yang valid');
-      return;
-    }
-    
-    if (!tanggal) {
-      showError('Pilih tanggal distribusi');
+      Swal.fire({
+        icon: 'error',
+        title: 'Validasi Gagal',
+        text: 'Masukkan jumlah yang valid',
+        confirmButtonColor: '#ef4444'
+      });
       return;
     }
     
     // Show loading
-    showLoading('Menyimpan data distribusi...');
+    Swal.fire({
+      title: 'Menyimpan Data',
+      text: 'Mohon tunggu...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     
     // Submit form
     this.submit();
@@ -1165,21 +1300,97 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// File upload preview functions
+function handleFileSelect(input) {
+  const file = input.files[0];
+  if (file) {
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      alert('Hanya file gambar (JPG, JPEG, PNG, GIF) yang diperbolehkan!');
+      input.value = '';
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert('Ukuran file maksimal 5MB!');
+      input.value = '';
+      return;
+    }
+    
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('filePreview');
+      const previewImage = document.getElementById('previewImage');
+      const uploadLabel = document.querySelector('.file-upload-label');
+      
+      previewImage.src = e.target.result;
+      preview.style.display = 'block';
+      uploadLabel.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function removeFile() {
+  const input = document.getElementById('bukti_foto');
+  const preview = document.getElementById('filePreview');
+  const uploadLabel = document.querySelector('.file-upload-label');
+  
+  input.value = '';
+  preview.style.display = 'none';
+  uploadLabel.style.display = 'flex';
+}
+
 // Global functions for button clicks
 function openCreateDistribusi() {
   openDistribusiModal('create');
 }
 
 function openEditDistribusi(id) {
+  // Show loading
+  Swal.fire({
+    title: 'Memuat Data',
+    text: 'Mohon tunggu...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
   // Fetch distribusi data
-  fetch(`/distribusi/detail/${id}`)
-    .then(response => response.json())
-    .then(data => {
-      openDistribusiModal('edit', data);
+  fetch(`/distribusi/api/${id}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(result => {
+      Swal.close();
+      if (result.success) {
+        openDistribusiModal('edit', result.data);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: result.message || 'Gagal memuat data distribusi',
+          confirmButtonColor: '#ef4444'
+        });
+      }
     })
     .catch(error => {
+      Swal.close();
       console.error('Error fetching distribusi data:', error);
-      showError('Gagal memuat data distribusi');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'Gagal memuat data distribusi',
+        confirmButtonColor: '#ef4444'
+      });
     });
 }
 </script>

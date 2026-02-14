@@ -321,7 +321,7 @@ router.post("/", async (req, res) => {
         "success_msg",
         `Data muzakki berhasil ditambahkan dengan ${muzakkiArray.length} orang muzakki`
       );
-      res.redirect("/muzakki");
+      res.redirect(`/muzakki/${muzakkiId}`);
     } catch (error) {
       // Rollback on error
       await db.query("ROLLBACK");
@@ -548,7 +548,7 @@ router.put("/:id", async (req, res) => {
         "success_msg",
         `Data muzakki berhasil diupdate dengan ${muzakki.length} orang muzakki`
       );
-      res.redirect("/muzakki");
+      res.redirect(`/muzakki/${id}`);
     } catch (error) {
       // Rollback transaction on error
       await db.query("ROLLBACK");
@@ -976,14 +976,48 @@ router.delete("/api/master-zakat/:id", async (req, res) => {
 });
 
 // GET /muzakki/export-excel - Export all muzakki data to Excel with sheets per RT
-router.get("/export-excel", async (req, res) => {
-  const ExcelJS = require('exceljs');
+// CRITICAL: Disable JSON middleware for this route to prevent response corruption
+router.get("/export-excel", (req, res, next) => {
+  // Mark this as a binary response route
+  res.locals.isBinaryResponse = true;
+  next();
+}, async (req, res) => {
+  let ExcelJS;
+  
+  try {
+    // Import ExcelJS
+    ExcelJS = require('exceljs');
+  } catch (error) {
+    console.error("ExcelJS not installed:", error);
+    return res.status(500).json({
+      success: false,
+      message: "ExcelJS library tidak tersedia. Silakan install dengan: npm install exceljs"
+    });
+  }
   
   try {
     const db = req.app.locals.db;
 
+    // Ultimate Safe Sanitizer for Excel
+    const sanitizeForExcel = (str) => {
+      if (str === null || str === undefined) return '';
+      // Convert to string
+      let s = String(str);
+      // Remove null bytes and control characters (keep tabs, newlines)
+      s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+      // Truncate to safe Excel limit (30,000 chars to be safe, max is 32,767)
+      if (s.length > 30000) {
+        s = s.substring(0, 30000) + '... (truncated)';
+      }
+      return s;
+    };
+
     // Create workbook
     const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Zakat Fitrah App';
+    workbook.lastModifiedBy = 'System';
+    workbook.created = new Date();
+    workbook.modified = new Date();
 
     // Get all RT data
     const [rtList] = await db.execute(`
@@ -992,15 +1026,16 @@ router.get("/export-excel", async (req, res) => {
       ORDER BY nomor_rt
     `);
 
-    // If no RT found, return empty workbook
+    // If no RT found, create empty worksheet
     if (rtList.length === 0) {
       const worksheet = workbook.addWorksheet('Data Kosong');
-      worksheet.addRow(['Tidak ada data RT']);
-    }
+      worksheet.addRow(['Tidak ada data RT tersedia']);
+      worksheet.getCell('A1').font = { bold: true, color: { argb: 'FFFF0000' } };
+    } else {
 
     // Create a sheet for each RT
     for (const rt of rtList) {
-      // Get muzakki data for this RT
+      // Get muzakki data for this RT optimized with subquery for details
       const [muzakkiData] = await db.execute(`
         SELECT 
           m.id,
@@ -1011,44 +1046,66 @@ router.get("/export-excel", async (req, res) => {
           m.jumlah_bayar,
           m.kembalian,
           m.created_at,
-          u.name as pencatat_name
+          u.name as pencatat_name,
+          (
+            SELECT GROUP_CONCAT(nama_muzakki SEPARATOR ', ') 
+            FROM muzakki_details 
+            WHERE muzakki_id = m.id
+          ) as nama_muzakki_list
         FROM muzakki m
         LEFT JOIN users u ON m.user_id = u.id
         WHERE m.rt_id = ?
         ORDER BY m.created_at DESC
       `, [rt.id]);
 
-      // For each muzakki, get detail names
-      for (let i = 0; i < muzakkiData.length; i++) {
-        const [details] = await db.execute(`
-          SELECT GROUP_CONCAT(nama_muzakki SEPARATOR ', ') as nama_muzakki_list
-          FROM muzakki_details
-          WHERE muzakki_id = ?
-        `, [muzakkiData[i].id]);
-        
-        muzakkiData[i].nama_muzakki_list = details[0]?.nama_muzakki_list || '-';
+      // Create safe sheet name (max 31 chars, no invalid chars)
+      // Invalid chars: \ / ? * [ ] :
+      let sheetName = `RT ${rt.nomor_rt}`.trim();
+      sheetName = sheetName.replace(/[\/\\\?\*\[\]\:]/g, '_');
+      if (sheetName.length > 31) {
+        sheetName = sheetName.substring(0, 31);
+      }
+      
+      // Ensure unique sheet name
+      let uniqueName = sheetName;
+      let counter = 1;
+      while (workbook.getWorksheet(uniqueName)) {
+        uniqueName = `${sheetName.substring(0, 28)}(${counter})`;
+        counter++;
       }
 
-      // Create worksheet
-      const sheetName = `RT ${String(rt.nomor_rt).padStart(2, '0')}`;
-      const worksheet = workbook.addWorksheet(sheetName);
+      const worksheet = workbook.addWorksheet(uniqueName);
 
-      // Add title
+      // Add title with styling
       worksheet.mergeCells('A1:J1');
-      worksheet.getCell('A1').value = `DATA MUZAKKI RT ${rt.nomor_rt}`;
-      worksheet.getCell('A1').font = { bold: true, size: 14 };
-      worksheet.getCell('A1').alignment = { horizontal: 'center' };
+      const titleCell = worksheet.getCell('A1');
+      titleCell.value = `DATA MUZAKKI RT ${sanitizeForExcel(rt.nomor_rt)}`;
+      titleCell.font = { bold: true, size: 14, color: { argb: 'FF1EAF2F' } };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      titleCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE8F5E9' }
+      };
+      worksheet.getRow(1).height = 25;
 
-      // Add ketua info
+      // Add ketua info with styling
       worksheet.mergeCells('A2:J2');
-      worksheet.getCell('A2').value = `Ketua RT: ${rt.ketua_rt || '-'}`;
-      worksheet.getCell('A2').font = { italic: true };
-      worksheet.getCell('A2').alignment = { horizontal: 'center' };
+      const ketuaCell = worksheet.getCell('A2');
+      ketuaCell.value = `Ketua RT: ${sanitizeForExcel(rt.ketua_rt) || '-'}`;
+      ketuaCell.font = { italic: true, size: 11 };
+      ketuaCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      ketuaCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF5F5F5' }
+      };
+      worksheet.getRow(2).height = 20;
 
       // Empty row
       worksheet.addRow([]);
 
-      // Header row
+      // Header row with styling
       const headerRow = worksheet.addRow([
         'No',
         'Nama Muzakki',
@@ -1063,8 +1120,24 @@ router.get("/export-excel", async (req, res) => {
       ]);
 
       // Style header
-      headerRow.font = { bold: true };
-      headerRow.alignment = { horizontal: 'center' };
+      headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+      headerRow.height = 20;
+      
+      // Apply green background to header
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF1EAF2F' }
+        };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
 
       // Set column widths
       worksheet.getColumn(1).width = 5;
@@ -1078,7 +1151,7 @@ router.get("/export-excel", async (req, res) => {
       worksheet.getColumn(9).width = 20;
       worksheet.getColumn(10).width = 15;
 
-      // Add data
+      // Add data with styling
       let totalJiwa = 0;
       let totalBeras = 0;
       let totalUang = 0;
@@ -1097,22 +1170,62 @@ router.get("/export-excel", async (req, res) => {
         totalUang += uang;
         totalBayar += bayar;
         totalKembalian += kembalian;
+        
+        // Handle date safely
+        let dateStr = '-';
+        if (item.created_at) {
+          try {
+             const date = new Date(item.created_at);
+             if (!isNaN(date.getTime())) {
+                dateStr = date.toLocaleDateString('id-ID');
+             }
+          } catch (e) {
+             // SIlently ignore date error
+             dateStr = '-';
+          }
+        }
 
-        worksheet.addRow([
+        const dataRow = worksheet.addRow([
           index + 1,
-          item.nama_muzakki_list,
+          sanitizeForExcel(item.nama_muzakki_list || '-'),
           jiwa,
           item.jenis_zakat === 'beras' ? 'Beras' : 'Uang',
           beras,
           uang,
           bayar,
           kembalian,
-          item.pencatat_name || '-',
-          new Date(item.created_at).toLocaleDateString('id-ID')
+          sanitizeForExcel(item.pencatat_name || '-'),
+          dateStr
         ]);
+
+        // Apply borders and alignment
+        dataRow.eachCell((cell, colNumber) => {
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FFE0E0E0' } },
+            left: { style: 'thin', color: { argb: 'FFE0E0E0' } },
+            bottom: { style: 'thin', color: { argb: 'FFE0E0E0' } },
+            right: { style: 'thin', color: { argb: 'FFE0E0E0' } }
+          };
+
+          // Center align for specific columns
+          if ([1, 3, 4, 5, 6, 7, 8, 10].includes(colNumber)) {
+            cell.alignment = { horizontal: 'center', vertical: 'middle' };
+          } else {
+            cell.alignment = { vertical: 'middle' };
+          }
+
+          // Alternate row colors
+          if (index % 2 === 0) {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFF9FAFB' }
+            };
+          }
+        });
       });
 
-      // Add total row
+      // Add total row with styling
       if (muzakkiData.length > 0) {
         worksheet.addRow([]);
         const totalRow = worksheet.addRow([
@@ -1120,38 +1233,123 @@ router.get("/export-excel", async (req, res) => {
           'TOTAL',
           totalJiwa,
           '',
-          totalBeras,
-          totalUang,
-          totalBayar,
-          totalKembalian,
+          Math.round(totalBeras * 100) / 100, // Round to 2 decimal places
+          Math.round(totalUang),
+          Math.round(totalBayar),
+          Math.round(totalKembalian),
           '',
           ''
         ]);
-        totalRow.font = { bold: true };
+        
+        totalRow.font = { bold: true, color: { argb: 'FF1EAF2F' } };
+        totalRow.height = 22;
+        
+        totalRow.eachCell((cell) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFE8F5E9' }
+          };
+          cell.border = {
+            top: { style: 'double', color: { argb: 'FF1EAF2F' } },
+            left: { style: 'thin' },
+            bottom: { style: 'double', color: { argb: 'FF1EAF2F' } },
+            right: { style: 'thin' }
+          };
+          cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        });
+      } else {
+        // No data message
+        const noDataRow = worksheet.addRow(['', 'Belum ada data muzakki untuk RT ini', '', '', '', '', '', '', '', '']);
+        worksheet.mergeCells(`B${noDataRow.number}:J${noDataRow.number}`);
+        const noDataCell = worksheet.getCell(`B${noDataRow.number}`);
+        noDataCell.font = { italic: true, color: { argb: 'FF9CA3AF' } };
+        noDataCell.alignment = { horizontal: 'center', vertical: 'middle' };
       }
     }
+    }
 
-    // Generate buffer
+    console.log('📊 Generating Excel buffer...');
+    
+    // CRITICAL: Generate buffer instead of streaming for stability
     const buffer = await workbook.xlsx.writeBuffer();
+    
+    // Validate buffer thoroughly
+    if (!buffer || buffer.length === 0) {
+      throw new Error('Buffer generation failed: empty buffer');
+    }
+    
+    // Validate buffer is actually an Excel file (starts with PK signature)
+    if (buffer[0] !== 0x50 || buffer[1] !== 0x4B) {
+      throw new Error('Buffer validation failed: not a valid ZIP/XLSX format');
+    }
+    
+    const fileSize = buffer.length;
+    console.log(`✅ Excel generated successfully. Size: ${fileSize} bytes (${(fileSize / 1024).toFixed(2)} KB)`);
 
-    // Set headers
-    const filename = `Data_Muzakki_${new Date().toISOString().split('T')[0]}.xlsx`;
+    // CRITICAL: Ensure headers haven't been sent
+    if (res.headersSent) {
+      console.error('❌ ABORT: Headers already sent, cannot send file');
+      return;
+    }
+
+    // Prepare safe filename
+    const dateString = new Date().toISOString().split('T')[0];
+    const filename = `Data_Muzakki_${dateString}.xlsx`;
+
+    // CRITICAL: Clear any existing headers first
+    res.removeHeader('Content-Type');
+    res.removeHeader('Content-Encoding');
+    
+    // Set headers in correct order
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', buffer.length);
-
-    // Send buffer
-    res.send(buffer);
-
-  } catch (error) {
-    console.error("Error exporting to Excel:", error);
-    console.error("Stack:", error.stack);
+    res.setHeader('Content-Length', fileSize.toString());
     
+    // CRITICAL: Force identity encoding to prevent compression corruption
+    res.setHeader('Content-Encoding', 'identity');
+    res.setHeader('Transfer-Encoding', '');
+    
+    // Prevent caching
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
+    // Prevent any transformations
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+
+    // CRITICAL: Send buffer and immediately return
+    // DO NOT call res.end() after res.send()
+    res.send(buffer);
+    
+    console.log('✅ Excel file sent successfully');
+    
+    // Explicitly return to prevent any further processing
+    return;
+    
+    // Do NOT call res.end() after res.send()
+    
+  } catch (error) {
+    console.error("❌ Error exporting to Excel:", error);
+    console.error("Stack trace:", error.stack);
+    
+    // CRITICAL: Only send error response if headers haven't been sent
     if (!res.headersSent) {
-      res.status(500).json({
-        success: false,
-        message: "Terjadi kesalahan saat export ke Excel: " + error.message
-      });
+      // Try to send JSON error
+      try {
+        res.status(500).json({
+          success: false,
+          message: "Terjadi kesalahan saat export ke Excel",
+          error: error.message,
+          detail: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+      } catch (sendError) {
+        // If JSON fails, send plain text
+        console.error("❌ Failed to send error JSON:", sendError);
+        res.status(500).send('Error generating Excel file');
+      }
+    } else {
+      console.error("❌ Cannot send error: headers already sent");
     }
   }
 });

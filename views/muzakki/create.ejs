@@ -963,73 +963,32 @@
 
     // Enhanced calculate zakat function
     function calculateZakat() {
-      console.log('=== Calculate Zakat Called ===');
-      
       const jiwaEl = document.getElementById("jumlah_jiwa");
       const masterZakatSelect = document.getElementById("master_zakat_id");
-      const kewajibanDisplay = document.getElementById("kewajiban_display");
-      
+
       // Preview elements
       const previewJumlahUang = document.getElementById("preview_jumlah_uang");
       const previewJumlahBerasKg = document.getElementById("preview_jumlah_beras_kg");
       const inputJumlahUang = document.getElementById("jumlah_uang");
       const inputJumlahBerasKg = document.getElementById("jumlah_beras_kg");
 
-      console.log('Elements:', {
-        jiwaEl: !!jiwaEl,
-        masterZakatSelect: !!masterZakatSelect,
-        kewajibanDisplay: !!kewajibanDisplay,
-        previewJumlahUang: !!previewJumlahUang,
-        previewJumlahBerasKg: !!previewJumlahBerasKg
-      });
-
-      if (!jiwaEl || !masterZakatSelect || !kewajibanDisplay) {
-        console.error('Element tidak ditemukan!');
+      if (!jiwaEl || !masterZakatSelect) {
         return;
       }
 
       const jiwa = parseInt(jiwaEl.value) || 0;
       const selectedValue = masterZakatSelect.value;
-      
-      console.log('Values:', {
-        jiwa: jiwa,
-        selectedValue: selectedValue
-      });
 
       if (jiwa > 0 && selectedValue) {
         const selectedOption = masterZakatSelect.options[masterZakatSelect.selectedIndex];
-        const hargaStr = selectedOption.getAttribute('data-harga');
-        const kgStr = selectedOption.getAttribute('data-kg');
-        
-        console.log('Attributes:', {
-          hargaStr: hargaStr,
-          kgStr: kgStr
-        });
-        
-        const harga = parseFloat(hargaStr) || 0;
-        const kg = parseFloat(kgStr) || 0;
-        
-        console.log('Parsed:', {
-          harga: harga,
-          kg: kg
-        });
-        
+        const harga = parseFloat(selectedOption.getAttribute('data-harga')) || 0;
+        const kg = parseFloat(selectedOption.getAttribute('data-kg')) || 0;
+
         if (kg > 0) {
           // Jenis beras
           const totalKg = jiwa * kg;
           const totalUang = jiwa * harga;
-          
-          console.log('BERAS - Total KG:', totalKg, 'Total Uang:', totalUang);
-          
-          // Update kewajiban display
-          kewajibanDisplay.innerHTML = 
-            '<div class="text-lg font-bold text-green-600">' +
-              totalKg.toFixed(1) + ' kg beras' +
-            '</div>' +
-            '<div class="text-sm text-gray-600">' +
-              '(Senilai Rp ' + Math.floor(totalUang).toLocaleString("id-ID") + ')' +
-            '</div>';
-          
+
           // Update preview dan hidden inputs
           if (previewJumlahUang) {
             previewJumlahUang.textContent = 'Rp ' + Math.floor(totalUang).toLocaleString("id-ID");
@@ -1043,24 +1002,10 @@
           if (inputJumlahBerasKg) {
             inputJumlahBerasKg.value = totalKg.toFixed(1);
           }
-          
-          console.log('✅ Beras display updated');
         } else {
           // Jenis uang
           const totalUang = jiwa * harga;
-          
-          console.log('UANG - Total:', totalUang);
-          
-          // Update kewajiban display
-          kewajibanDisplay.innerHTML = 
-            '<div class="text-lg font-bold text-blue-600">' +
-              'Rp ' + Math.floor(totalUang).toLocaleString("id-ID") +
-            '</div>' +
-            '<div class="text-sm text-gray-600">' +
-              jiwa + ' jiwa × Rp ' + Math.floor(harga).toLocaleString("id-ID") + 
-              ' = Rp ' + Math.floor(totalUang).toLocaleString("id-ID") +
-            '</div>';
-          
+
           // Update preview dan hidden inputs
           if (previewJumlahUang) {
             previewJumlahUang.textContent = 'Rp ' + Math.floor(totalUang).toLocaleString("id-ID");
@@ -1074,19 +1019,9 @@
           if (inputJumlahBerasKg) {
             inputJumlahBerasKg.value = 0;
           }
-          
-          console.log('✅ Uang display updated');
         }
-        
-        console.log('Final HTML:', kewajibanDisplay.innerHTML);
-        console.log('Preview Values:', {
-          jumlah_uang: inputJumlahUang ? inputJumlahUang.value : 'N/A',
-          jumlah_beras_kg: inputJumlahBerasKg ? inputJumlahBerasKg.value : 'N/A'
-        });
       } else {
         // Reset semua ke default
-        kewajibanDisplay.innerHTML = '<span style="color: #9ca3af;">-</span>';
-        
         if (previewJumlahUang) {
           previewJumlahUang.textContent = 'Rp 0';
         }
@@ -1099,18 +1034,7 @@
         if (inputJumlahBerasKg) {
           inputJumlahBerasKg.value = 0;
         }
-        
-        console.log('Reset to default -');
-        
-        if (jiwa === 0) {
-          console.log('Jumlah jiwa masih 0, tambahkan muzakki terlebih dahulu');
-        }
-        if (!masterZakatSelect.value) {
-          console.log('Jenis zakat belum dipilih');
-        }
       }
-      
-      console.log('=== End Calculate Zakat ===');
     }
 
     // Function untuk menambah section muzakki baru

@@ -6,7 +6,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
   <div class="page-header">
     <div class="header-content-wrapper">
       <div class="header-left-section">
-        <a href="/muzakki" class="btn-back" title="Kembali">
+        <a href="/muzakki/rt/<%= muzakki.rt_id %>" class="btn-back" title="Kembali ke RT">
           <i class="fas fa-arrow-left"></i>
         </a>
         <div class="header-icon-box">
@@ -22,7 +22,7 @@ bodyClass: 'bg-gray-50 min-h-screen', currentPage: 'muzakki' }) %>
           <i class="fas fa-edit mr-2"></i>
           <span>Edit Data</span>
         </a>
-        <a href="/muzakki" class="btn-action btn-action-secondary">
+        <a href="/muzakki/rt/<%= muzakki.rt_id %>" class="btn-action btn-action-secondary">
           <i class="fas fa-list mr-2"></i>
           <span>Kembali</span>
         </a>

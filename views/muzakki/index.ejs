@@ -989,217 +989,128 @@
       });
 
       if (result.isConfirmed) {
-        // Show loading with progress
+        // Show simple loading state
         Swal.fire({
-          title: '<strong style="color: #111827;">Memproses Export...</strong>',
+          title: '<strong style="color: #111827;">Menghasilkan File Excel...</strong>',
           html: `
-            <div style="padding: 20px;">
-              <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #dcfce7, #bbf7d0); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 2s infinite;">
-                <i class="fas fa-file-excel" style="font-size: 36px; color: #059669;"></i>
+            <div style="padding: 30px; text-align: center;">
+              <div style="width: 80px; height: 80px; margin: 0 auto 20px; border: 5px solid #f3f4f6; border-top-color: #059669; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+              <div style="font-size: 16px; color: #6b7280; margin-bottom: 8px;">
+                Sedang memproses data muzakki...
               </div>
-              <div style="margin-bottom: 20px;">
-                <div style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Sedang membuat file Excel...</div>
-                <div class="progress-bar-container">
-                  <div class="progress-bar-fill" id="progressBarFill"></div>
-                </div>
-                <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">
-                  <span id="progressText">0%</span> - <span id="progressStatus">Memulai...</span>
-                </div>
+              <div style="font-size: 13px; color: #9ca3af;">
+                Mohon tunggu sebentar
               </div>
             </div>
             <style>
-              @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.1); opacity: 0.8; }
-              }
-              .progress-bar-container {
-                width: 100%;
-                height: 8px;
-                background: #e5e7eb;
-                border-radius: 10px;
-                overflow: hidden;
-                position: relative;
-              }
-              .progress-bar-fill {
-                height: 100%;
-                background: linear-gradient(90deg, #059669, #10b981, #34d399);
-                border-radius: 10px;
-                width: 0%;
-                transition: width 0.3s ease;
-                position: relative;
-                overflow: hidden;
-              }
-              .progress-bar-fill::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                animation: shimmer 1.5s infinite;
-              }
-              @keyframes shimmer {
-                0% { transform: translateX(-100%); }
-                100% { transform: translateX(100%); }
-              }
-              .export-excel-popup {
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-              }
-              .export-excel-confirm-btn,
-              .export-excel-cancel-btn {
-                padding: 12px 32px;
-                border-radius: 12px;
-                font-weight: 600;
-                font-size: 15px;
-                border: none;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-              }
-              .export-excel-confirm-btn {
-                background: linear-gradient(135deg, #059669, #047857);
-                color: white;
-                box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-              }
-              .export-excel-confirm-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
-              }
-              .export-excel-cancel-btn {
-                background: #f3f4f6;
-                color: #6b7280;
-              }
-              .export-excel-cancel-btn:hover {
-                background: #e5e7eb;
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
               }
             </style>
           `,
           showConfirmButton: false,
           allowOutsideClick: false,
-          allowEscapeKey: false,
-          didOpen: () => {
-            simulateProgress();
-          }
+          allowEscapeKey: false
         });
 
-        try {
-          // Trigger download
-          const response = await fetch('/muzakki/export-excel', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
+        // Small delay to ensure Swal is fully rendered
+        setTimeout(async () => {
+          try {
+            const timestamp = new Date().toISOString().split('T')[0];
+            
+            // Fetch file as blob
+            const response = await fetch('/muzakki/export-excel', {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
             }
-          });
 
-          if (!response.ok) {
-            throw new Error('Export failed');
-          }
+            // Get blob from response
+            const blob = await response.blob();
+            
+            if (blob.size === 0) {
+              throw new Error('File kosong - tidak ada data untuk diexport');
+            }
 
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `Data_Muzakki_${new Date().toISOString().split('T')[0]}.xlsx`;
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          document.body.removeChild(a);
+            // Create object URL from blob
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Data_Muzakki_${timestamp}.xlsx`;
+            link.style.display = 'none';
+            
+            // Add to document, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Clean up object URL after a delay
+            setTimeout(() => {
+              window.URL.revokeObjectURL(url);
+            }, 100);
 
-          // Show success
-          Swal.fire({
-            icon: 'success',
-            title: '<div style="color: #065f46; font-size: 24px; font-weight: 700;">✅ Berhasil!</div>',
-            html: `
-              <style>
-                .success-excel-popup {
-                  border-radius: 20px !important;
-                  box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
-                }
-                .success-excel-btn {
-                  padding: 14px 32px !important;
-                  border-radius: 12px !important;
-                  font-weight: 600 !important;
-                  font-size: 15px !important;
-                  border: none !important;
-                  cursor: pointer !important;
-                  background: linear-gradient(135deg, #059669, #047857) !important;
-                  color: white !important;
-                  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
-                  transition: all 0.3s ease !important;
-                }
-                .success-excel-btn:hover {
-                  transform: translateY(-2px) !important;
-                  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
-                }
-              </style>
-              <div style="padding: 20px;">
-                <div style="font-size: 15px; color: #374151; margin-bottom: 12px;">
-                  File Excel berhasil didownload
-                </div>
-                <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 8px; padding: 12px; border-left: 4px solid #059669;">
-                  <div style="font-size: 13px; color: #059669; font-weight: 600;">
-                    📄 Data_Muzakki_${new Date().toISOString().split('T')[0]}.xlsx
+            // Clean up object URL after a delay
+            setTimeout(() => {
+              window.URL.revokeObjectURL(url);
+            }, 100);
+
+            // Close loading and show success
+            Swal.fire({
+              icon: 'success',
+              title: '<div style="color: #065f46; font-size: 24px; font-weight: 700;">✅ Download Berhasil!</div>',
+              html: `
+                <div style="padding: 20px;">
+                  <div style="font-size: 15px; color: #374151; margin-bottom: 12px;">
+                    File Excel berhasil didownload
+                  </div>
+                  <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 8px; padding: 16px; border-left: 4px solid #059669;">
+                    <div style="font-size: 14px; color: #059669; font-weight: 600; margin-bottom: 8px;">
+                      📄 Data_Muzakki_${timestamp}.xlsx
+                    </div>
+                    <div style="font-size: 12px; color: #6b7280;">
+                      Periksa folder Downloads Anda
+                    </div>
                   </div>
                 </div>
-              </div>
-            `,
-            confirmButtonText: 'OK, Saya Mengerti',
-            customClass: {
-              popup: 'success-excel-popup',
-              confirmButton: 'success-excel-btn'
-            },
-            buttonsStyling: false,
-            width: '500px'
-          });
+              `,
+              confirmButtonText: 'OK, Saya Mengerti',
+              confirmButtonColor: '#059669',
+              width: '500px'
+            });
 
-        } catch (error) {
-          console.error('Export error:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal Export',
-            text: 'Terjadi kesalahan saat export data ke Excel',
-            confirmButtonColor: '#ef4444'
-          });
-        }
+          } catch (error) {
+            console.error('Export error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal Export',
+              html: `
+                <div style="padding: 20px;">
+                  <div style="font-size: 15px; color: #374151; margin-bottom: 12px;">
+                    Terjadi kesalahan saat export data ke Excel
+                  </div>
+                  <div style="background: #fef2f2; border-radius: 8px; padding: 12px; border-left: 4px solid #ef4444;">
+                    <div style="font-size: 13px; color: #dc2626;">
+                      ${error.message || 'Unknown error'}
+                    </div>
+                  </div>
+                  <div style="margin-top: 16px; font-size: 12px; color: #6b7280;">
+                    💡 Tips: Pastikan ada data muzakki yang terdaftar
+                  </div>
+                </div>
+              `,
+              confirmButtonColor: '#ef4444'
+            });
+          }
+        }, 300); // 300ms delay untuk memastikan Swal loading muncul
       }
-    }
-
-    // Simulate progress for better UX
-    function simulateProgress() {
-      let progress = 0;
-      const progressBar = document.getElementById('progressBarFill');
-      const progressText = document.getElementById('progressText');
-      const progressStatus = document.getElementById('progressStatus');
-      
-      const statuses = [
-        'Memulai...',
-        'Mengambil data RT...',
-        'Mengambil data muzakki...',
-        'Membuat sheets Excel...',
-        'Memformat data...',
-        'Menambahkan styling...',
-        'Finalisasi...',
-        'Selesai!'
-      ];
-      
-      const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress > 100) progress = 100;
-        
-        progressBar.style.width = progress + '%';
-        progressText.textContent = Math.floor(progress) + '%';
-        
-        const statusIndex = Math.floor((progress / 100) * (statuses.length - 1));
-        progressStatus.textContent = statuses[statusIndex];
-        
-        if (progress >= 100) {
-          clearInterval(interval);
-        }
-      }, 200);
     }
   </script>
 

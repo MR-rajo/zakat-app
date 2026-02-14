@@ -212,6 +212,7 @@
                     <th>Mustahik</th>
                     <th>Distribusi</th>
                     <th>Status</th>
+                    <th>Bukti Foto</th>
                     <th>PIC & Tanggal</th>
                     <th>Aksi</th>
                   </tr>
@@ -276,6 +277,25 @@
                                   <% } %>
                                     <%= d.status.charAt(0).toUpperCase() + d.status.slice(1) %>
                         </span>
+                      </td>
+                      <td>
+                        <div class="cell-bukti-foto">
+                          <% if (d.bukti_foto) { %>
+                            <button type="button" class="btn-preview-foto" 
+                              onclick="showPhotoModal('<%= d.bukti_foto %>', '<%= d.mustahik_nama %>')" 
+                              title="Lihat Bukti Foto">
+                              <div class="foto-thumbnail">
+                                <img src="<%= d.bukti_foto %>" alt="Bukti Foto">
+                              </div>
+                              <i class="fas fa-search-plus foto-icon"></i>
+                            </button>
+                          <% } else { %>
+                            <span class="no-foto-badge">
+                              <i class="fas fa-image-slash"></i>
+                              <span>Tidak ada foto</span>
+                            </span>
+                          <% } %>
+                        </div>
                       </td>
                       <td>
                         <div class="cell-pic">
@@ -1374,6 +1394,189 @@
       }
     }
 
+    /* Cell Bukti Foto */
+    .cell-bukti-foto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-preview-foto {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-preview-foto:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(30, 175, 47, 0.3);
+    }
+
+    .btn-preview-foto:hover .foto-icon {
+      opacity: 1;
+    }
+
+    .foto-thumbnail {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .foto-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .foto-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      color: white;
+      background: rgba(30, 175, 47, 0.9);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .no-foto-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #f3f4f6;
+      color: #6b7280;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Photo Modal */
+    .photo-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .photo-modal-content-wrapper {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .photo-modal-image {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .photo-modal-caption {
+      margin-top: 16px;
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      background: rgba(30, 175, 47, 0.9);
+      padding: 12px 24px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+    }
+
+    .photo-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: white;
+      font-size: 48px;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 10000;
+      transition: all 0.3s ease;
+      background: rgba(239, 68, 68, 0.9);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .photo-modal-close:hover {
+      background: rgba(220, 38, 38, 1);
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    /* Responsive adjustments for photo modal */
+    @media (max-width: 768px) {
+      .photo-modal-close {
+        top: 10px;
+        right: 10px;
+        font-size: 36px;
+        width: 40px;
+        height: 40px;
+      }
+
+      .photo-modal-caption {
+        font-size: 14px;
+        padding: 10px 16px;
+      }
+
+      .btn-preview-foto {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
     /* Utility Classes */
     .mr-1 {
       margin-right: 4px;
@@ -1416,7 +1619,52 @@
           }
         });
     }
+
+    // Show photo modal
+    function showPhotoModal(photoUrl, mustahikNama) {
+      const modal = document.getElementById('photoModal');
+      const modalImage = document.getElementById('modalPhotoImage');
+      const modalCaption = document.getElementById('modalPhotoCaption');
+      
+      modalImage.src = photoUrl;
+      modalCaption.textContent = `Bukti Foto - ${mustahikNama}`;
+      modal.style.display = 'flex';
+      
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close photo modal
+    function closePhotoModal() {
+      const modal = document.getElementById('photoModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+      const modal = document.getElementById('photoModal');
+      if (event.target === modal) {
+        closePhotoModal();
+      }
+    }
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closePhotoModal();
+      }
+    });
   </script>
+
+  <!-- Photo Preview Modal -->
+  <div id="photoModal" class="photo-modal">
+    <span class="photo-modal-close" onclick="closePhotoModal()">&times;</span>
+    <div class="photo-modal-content-wrapper">
+      <img id="modalPhotoImage" class="photo-modal-image" src="" alt="Bukti Foto">
+      <div id="modalPhotoCaption" class="photo-modal-caption"></div>
+    </div>
+  </div>
 
   <!-- Include Modal -->
   <%- include('./partials/modal-form') %>

@@ -1,5 +1,50 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+// Configure multer untuk upload bukti foto
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = "public/uploads/bukti-distribusi";
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Generate unique filename: distribusi-{timestamp}-{random}.{ext}
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, "distribusi-" + uniqueSuffix + ext);
+  },
+});
+
+// File filter untuk hanya accept gambar
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif/;
+  const extname = allowedTypes.test(
+    path.extname(file.originalname).toLowerCase()
+  );
+  const mimetype = allowedTypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new Error("Hanya file gambar (JPG, JPEG, PNG, GIF) yang diperbolehkan!"));
+  }
+};
+
+// Initialize multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Max 5MB
+  },
+  fileFilter: fileFilter,
+});
 
 // Middleware untuk auth
 function isAuthenticated(req, res, next) {
@@ -144,10 +189,11 @@ router.get("/create", async (req, res) => {
 });
 
 // Create new distribusi
-router.post("/create", async (req, res) => {
+router.post("/create", upload.single("bukti_foto"), async (req, res) => {
   try {
     const { mustahik_id, jenis_zakat, jumlah } = req.body;
     const user_id = req.session.user.id;
+    const bukti_foto = req.file ? `/uploads/bukti-distribusi/${req.file.filename}` : null;
 
     // Validation
     if (!mustahik_id || !jenis_zakat || !jumlah) {
@@ -184,6 +230,10 @@ router.post("/create", async (req, res) => {
       (distributedStats[0].total_terdistribusi || 0);
 
     if (parseFloat(jumlah) > available) {
+      // Delete uploaded file if validation fails
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
       req.flash(
         "error",
         `Jumlah ${jenis_zakat} yang tersedia hanya ${available.toLocaleString(
@@ -195,16 +245,132 @@ router.post("/create", async (req, res) => {
 
     // Insert distribusi
     await db.execute(
-      "INSERT INTO distribusi_zakat (mustahik_id, jenis_zakat, jumlah, user_id, status) VALUES (?, ?, ?, ?, ?)",
-      [mustahik_id, jenis_zakat, jumlah, user_id, "pending"]
+      "INSERT INTO distribusi_zakat (mustahik_id, jenis_zakat, jumlah, bukti_foto, user_id, status) VALUES (?, ?, ?, ?, ?, ?)",
+      [mustahik_id, jenis_zakat, jumlah, bukti_foto, user_id, "pending"]
     );
 
     req.flash("success", "Distribusi zakat berhasil ditambahkan");
     res.redirect("/distribusi");
   } catch (error) {
+    // Delete uploaded file if error occurs
+    if (req.file) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.error("Error deleting file:", unlinkError);
+      }
+    }
     console.error("Error creating distribusi:", error);
     req.flash("error", "Gagal menambahkan distribusi zakat");
     res.redirect("/distribusi/create");
+  }
+});
+
+// API endpoint to get distribusi by ID (for edit modal)
+router.get("/api/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = req.app.locals.db;
+
+    const [distribusi] = await db.execute(
+      `SELECT dz.*, m.nama as mustahik_nama 
+       FROM distribusi_zakat dz
+       LEFT JOIN mustahik m ON dz.mustahik_id = m.id
+       WHERE dz.id = ?`,
+      [id]
+    );
+
+    if (distribusi.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Distribusi tidak ditemukan" 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      data: distribusi[0] 
+    });
+  } catch (error) {
+    console.error("Error fetching distribusi:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Gagal memuat data distribusi" 
+    });
+  }
+});
+
+// Update distribusi
+router.post("/update/:id", upload.single("bukti_foto"), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { mustahik_id, jenis_zakat, jumlah, status } = req.body;
+    const db = req.app.locals.db;
+
+    // Get existing distribusi data
+    const [existingData] = await db.execute(
+      "SELECT bukti_foto FROM distribusi_zakat WHERE id = ?",
+      [id]
+    );
+
+    if (existingData.length === 0) {
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      req.flash("error", "Distribusi tidak ditemukan");
+      return res.redirect("/distribusi");
+    }
+
+    // Handle bukti_foto
+    let bukti_foto = existingData[0].bukti_foto;
+    
+    if (req.file) {
+      // Delete old file if exists
+      if (bukti_foto) {
+        const oldFilePath = path.join("public", bukti_foto);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+      bukti_foto = `/uploads/bukti-distribusi/${req.file.filename}`;
+    }
+
+    // Validation
+    if (!mustahik_id || !jenis_zakat || !jumlah) {
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      req.flash("error", "Semua field harus diisi");
+      return res.redirect("/distribusi");
+    }
+
+    if (parseFloat(jumlah) <= 0) {
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+      req.flash("error", "Jumlah distribusi harus lebih dari 0");
+      return res.redirect("/distribusi");
+    }
+
+    // Update distribusi
+    await db.execute(
+      "UPDATE distribusi_zakat SET mustahik_id = ?, jenis_zakat = ?, jumlah = ?, bukti_foto = ?, status = ? WHERE id = ?",
+      [mustahik_id, jenis_zakat, jumlah, bukti_foto, status || "pending", id]
+    );
+
+    req.flash("success", "Distribusi zakat berhasil diupdate");
+    res.redirect("/distribusi");
+  } catch (error) {
+    if (req.file) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.error("Error deleting file:", unlinkError);
+      }
+    }
+    console.error("Error updating distribusi:", error);
+    req.flash("error", "Gagal mengupdate distribusi zakat");
+    res.redirect("/distribusi");
   }
 });
 

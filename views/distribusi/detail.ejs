@@ -122,6 +122,31 @@
               </p>
             </div>
             <% } %>
+
+            <!-- Bukti Foto -->
+            <% if (distribusi.bukti_foto) { %>
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-500 mb-2">
+                <i class="fas fa-camera mr-2"></i>Bukti Foto Distribusi
+              </label>
+              <div class="relative group">
+                <img 
+                  src="<%= distribusi.bukti_foto %>" 
+                  alt="Bukti Distribusi" 
+                  class="w-full h-auto max-h-96 object-contain rounded-lg border-2 border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                  onclick="openImageModal('<%= distribusi.bukti_foto %>')"
+                >
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-all flex items-center justify-center">
+                  <button 
+                    onclick="openImageModal('<%= distribusi.bukti_foto %>')"
+                    class="opacity-0 group-hover:opacity-100 bg-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+                  >
+                    <i class="fas fa-search-plus mr-2"></i>Lihat Lebih Besar
+                  </button>
+                </div>
+              </div>
+            </div>
+            <% } %>
           </div>
         </div>
       </div>
@@ -473,7 +498,47 @@
   </div>
 </div>
 
+<!-- Image Modal for Full View -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4" onclick="closeImageModal()">
+  <div class="relative max-w-5xl max-h-full" onclick="event.stopPropagation()">
+    <button 
+      onclick="closeImageModal()" 
+      class="absolute top-4 right-4 bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition-all shadow-lg z-10"
+    >
+      <i class="fas fa-times"></i>
+    </button>
+    <img 
+      id="modalImage" 
+      src="" 
+      alt="Bukti Distribusi" 
+      class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+    >
+  </div>
+</div>
+
 <script>
+  // Image modal functions
+  function openImageModal(imageSrc) {
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    modalImage.src = imageSrc;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Close modal on ESC key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeImageModal();
+    }
+  });
+
   // Handle cancel form submission with SweetAlert2
   document
     .getElementById("cancelForm")

@@ -172,26 +172,6 @@
         let value = input.value.replace(/[^\d]/g, "");
         input.value = new Intl.NumberFormat("id-ID").format(value);
       }
-
-      // Calculate zakat automatically
-      function calculateZakat() {
-        const jiwa =
-          parseInt(document.getElementById("jumlah_jiwa")?.value) || 0;
-        const jenisZakat = document.getElementById("jenis_zakat")?.value;
-
-        if (jiwa > 0 && jenisZakat) {
-          let kewajiban = 0;
-          if (jenisZakat === "beras") {
-            kewajiban = jiwa * 2.5; // 2.5 kg per jiwa
-            document.getElementById("kewajiban_display").textContent =
-              kewajiban.toFixed(1) + " kg";
-          } else if (jenisZakat === "uang") {
-            kewajiban = jiwa * 45000; // Rp 45.000 per jiwa
-            document.getElementById("kewajiban_display").textContent =
-              "Rp " + kewajiban.toLocaleString("id-ID");
-          }
-        }
-      }
     </script>
   </body>
 </html>
